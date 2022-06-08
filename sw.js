@@ -1,8 +1,8 @@
 //https://developer.mozilla.org/ja/docs/Web/Progressive_web_apps/Offline_Service_workers
 //https://developers.google.com/web/fundamentals/primers/service-workers?hl=ja
-const cname='2206060',
+const cname='2206080',
 cstore=[
-	'index.html'
+	'index.html?pwa=0'
 ],
 cprev=[
 	'_.html'
@@ -29,7 +29,7 @@ self.addEventListener('fetch',e=>{
 		console.log('sw Fetch (Range): '+e.request.url);
 		const p=e.request.headers.get('range').slice(6).split('-').map(Number);
 		e.respondWith(
-			caches.match(e.request.url,{ignoreSearch:true}).then(r=>(r||cacheNew()).arrayBuffer()).then(b=>{
+			caches.match(e.request.url).then(r=>r||cacheNew()).then(r=>r.arrayBuffer()).then(b=>{
 				if(p[1])p[1]++;else p[1]=b.byteLength;
 				new Response(b.slice(...p),{
 					status:206,statusText:'Partial Content',
@@ -42,6 +42,6 @@ self.addEventListener('fetch',e=>{
 		);
 	}else{
 		console.log('sw Fetch: '+e.request.url);
-		e.respondWith(caches.match(e.request.url,{ignoreSearch:true}).then(r=>r||cacheNew()));
+		e.respondWith(caches.match(e.request.url).then(r=>r||cacheNew()));
 	}
 });
