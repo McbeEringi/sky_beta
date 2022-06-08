@@ -19,7 +19,7 @@
 	<!--sw-->
 	<link rel="manifest" href="mf.json">
 	<meta name="theme-color" content="#214">
-	<script>if('serviceWorker'in navigator&&location.protocol.includes('https'))addEventListener('load',()=>navigator.serviceWorker.register('skysw.js').then(x=>{console.log('sw Registered',x);}),{once:true});</script>
+	<script>if('serviceWorker'in navigator&&location.protocol.includes('https'))window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').then(x=>{console.log('sw Registered',x);}),{once:true});</script>
 </head>
 <body>
 	<script src="style.js"></script>
