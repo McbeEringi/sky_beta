@@ -26,7 +26,8 @@
 	<h1>Sky Stuff</h1>
 	<hr>
 	工事中…
-	<span id="cachedisp"></span>
+	<span id="cachedisp"></span><br>
+	<button onclick="caches.keys().then(x=>caches.delete(x));">del caches</button>
 	<script>
 		caches.keys().then(x=>cachedisp.textContent=x.join());
 	</script>
