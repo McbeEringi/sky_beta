@@ -9,7 +9,18 @@ cstore=[
 cprev=[
 	'_.html'
 ];
+/*
+const clist={
+	common:[
+		'style.js',
+		'img/icon.svg','img/icon_.svg','img/icon.png','img/icon192.png',
+		'index.html'
+	],
+	instr$2206081:[
 
+	],
+}
+*/
 self.addEventListener('install',e=>{
 	console.log('sw Install');
 	e.waitUntil(caches.open(cname).then(c=>c.addAll(cstore)));
