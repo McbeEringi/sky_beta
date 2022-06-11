@@ -40,8 +40,8 @@ document.body.insertAdjacentHTML('afterbegin',`<link rel="stylesheet" href="http
 .alert>.cont{position:absolute;background-color:#000c;top:50%;left:50%;max-width:calc(100% - 64px);max-height:calc(100% - 64px);margin:0;padding:16px;border-radius:16px;box-sizing:border-box;transform-origin:top center;transform:translate(-50%,-50%);white-space:pre-wrap;overflow:auto;overflow-wrap:break-word;}
 .alert.fade{opacity:0;pointer-events:none;}
 .alert.fade>.cont{transform:translate(-50%,calc(-50% - 32px));}
-.alert:nth-last-of-type(n+2)>.bg{opacity:0;}
 .alert:nth-last-of-type(n+2)>.cont{opacity:.5;top:calc(100% - 48px);transform:translate(-50%,0)scale(.8);}
+.alert:nth-last-of-type(n+3)>.bg{opacity:0;}
 .alert:nth-last-of-type(n+3)>.cont{top:100%;}
 
 </style>
