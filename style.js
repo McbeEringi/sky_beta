@@ -46,7 +46,7 @@ hr{border:1px solid #8888;border-radius:1px;backdrop-filter:blur(2px);-webkit-ba
 
 .btn{position:relative;vertical-align:middle;display:inline-block;width:var(--btn);height:var(--btn);margin:0;padding:0;border:0;outline:0;background:none;overflow:hidden;touch-action:manipulation;cursor:pointer;}
 .btn::before,.btn::after{content:"";position:absolute;top:0;left:0;display:block;width:80%;height:80%;margin:10%;border-radius:25%;box-sizing:border-box;}
-.btn::before{background:no-repeat var(--bp_,var(--bp))/800% var(--g);}.btn::after{content:none;}
+.btn::before{background:var(--bp_,var(--bp))/800% var(--g);}.btn::after{content:none;}
 .btn::before{background-image:url(img/atlas0.svg);}.btn.a1::before{background-image:url(img/tex.webp);}.nowebp .btn.a1::before{background-image:url(img/tex.png);}
 :focus+.btn::before,.btn:focus::before{box-shadow:0 0 0 calc(var(--btn)*.01) var(--l) inset;}
 :checked+.btn::after,.btn.a::after{content:"";border:calc(var(--btn)*.2) solid #00000001;border-image:url(img/sel.svg) 32%;}:checked+.btn,.btn.a{transform:rotateY(360deg);transition:transform .5s;}
