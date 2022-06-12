@@ -20,7 +20,10 @@ alert=x=>{
 setTimeout(()=>{bgset();setInterval(bgset,36e5);},36e5-(Date.now()%36e5));bgset();
 addEventListener('keydown',e=>{
 	const al=getAlert();
-	if(e.key=='Escape'&&al.length)rmAlert(al.pop(),e.preventDefault());
+	if(e.key=='Escape'){
+		if(['INPUT','TEXTAREA'].includes(document.activeElement.tagName))document.activeElement.blur(e.preventDefault());
+		else if(al.length)rmAlert(al.pop(),e.preventDefault());
+	}
 });
 
 document.body.insertAdjacentHTML('afterbegin',`<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@300&family=M+PLUS+Rounded+1c&display=swap" media="print" onload="this.media='all'"><style>
