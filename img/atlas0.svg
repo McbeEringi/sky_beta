@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
-	<desc>sky seq sprite</desc>
+	<desc>atlas0</desc>
 	<style>
 		g>path,g>text{fill:none;stroke:#fea;stroke-width:3;filter:url(#sh);stroke-linecap:round;stroke-linejoin:round;font-family:sans-serif;text-anchor:middle;dominant-baseline:central;}
 	</style>

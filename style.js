@@ -3,7 +3,7 @@ let idb=indexedDB.open('sky_idb',4),
 	tex=new Image();
 
 const bgset=(x=-1)=>{
-		const bgcol=['#fff1cf,#ced980','#cce5f0,#ced980','#f08300,#f8b862','#192f60,#274a78','#fbfaf6,#ced980'],//morn day dusk night cloud
+		const bgcol=['#dca,#ac8','#bcd,#ac8','#c84,#f80','#002,#014','#bbc,#ac8'],//morn day dusk night cloud
 		url='https://mcbeeringi.github.io/sky/img/photo/performance.jpg';
 		({
 			0:()=>{bgi.hidden=false;bg.style.backgroundImage=`linear-gradient(${bgcol[~x?x:[3,3,3,3,3,0,0,0,0,4,1,1,1,1,1,1,4,2,2,2,2,3,3,3][new Date().getHours()]]})`;},
@@ -45,18 +45,18 @@ hr{border:1px solid #8888;border-radius:1px;backdrop-filter:blur(2px);-webkit-ba
 .alert:nth-last-of-type(n+3)>.bg{opacity:0;}
 
 .btn{position:relative;vertical-align:middle;display:inline-block;width:var(--btn);height:var(--btn);margin:0;padding:0;border:0;outline:0;background:none;overflow:hidden;touch-action:manipulation;cursor:pointer;}
-.btn::before,.btn::after{content:"";position:absolute;top:0;left:0;display:block;width:78.4%;height:78.4%;margin:10.8%;border-radius:17%;box-sizing:border-box;}
+.btn::before,.btn::after{content:"";position:absolute;top:0;left:0;display:block;width:80%;height:80%;margin:10%;border-radius:25%;box-sizing:border-box;}
 .btn::before{background:no-repeat var(--bp_,var(--bp))/800% var(--g);}.btn::after{content:none;}
 .btn::before{background-image:url(img/atlas0.svg);}.btn.a1::before{background-image:url(img/tex.webp);}.nowebp .btn.a1::before{background-image:url(img/tex.png);}
-:focus+.btn::before,.btn:focus::before{box-shadow:0 0 0 calc(var(--btn)*.02) var(--l) inset;}
-:checked+.btn::after,.btn.a::after{content:"";border:calc(var(--btn)*.13328) solid #00000001;border-image:url(img/sel.svg) 33.333%;}:checked+.btn,.btn.a{transform:rotateY(360deg);transition:transform .5s;}
+:focus+.btn::before,.btn:focus::before{box-shadow:0 0 0 calc(var(--btn)*.01) var(--l) inset;}
+:checked+.btn::after,.btn.a::after{content:"";border:calc(var(--btn)*.2) solid #00000001;border-image:url(img/sel.svg) 32%;}:checked+.btn,.btn.a{transform:rotateY(360deg);transition:transform .5s;}
 :disabled+.btn,.btn.d,.d .btn{filter:grayscale(1)opacity(.5);pointer-events:none;}
 .btn:active::before,.btn:active::after{transform:scale(.85);}.btn:not(:active)::before,.btn:not(:active)::after{transition:transform .2s;}
 
 .spin{--bp:-2% 0;--col:#0000;animation:2s linear spin infinite;}
 
 </style>
-<div id="bg"><img id="bgi" src="https://mcbeeringi.github.io/sky_beta/img/icon_.svg" width="1" height="1"></div>
+<div id="bg"><img id="bgi" src="img/icon_.svg" width="1" height="1"></div>
 `);
 alert=x=>{
 	const wrap=document.createElement('div'),bg=document.createElement('p'),cont=document.createElement('p');
