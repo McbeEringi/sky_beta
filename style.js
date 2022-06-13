@@ -24,7 +24,7 @@ const bgset=(x=-1)=>{
 			<div class="items">
 				<div><button class="btn" style="--bp:-400% 0;"></button><div>${texts.bgsl[0]}</div></div>
 				<div><button class="btn" style="--bp:-400% 0;"></button><div>${texts.bgsl[1]}<br>
-					<button class="btn" style="--bp:-600% -400%;" onclick="this.childNodes[0].click();"><input tabindex="-1" type="file" style="width:100%;height:100%;opacity:0;" accept="image/*" onchange="e2p(idbos().put(this.files[0],'bgimg')).then(()=>bgset()).catch(alert);">
+					<button class="btn" style="--bp:-600% -400%;" onclick="this.childNodes[0].click();"><input tabindex="-1" type="file" style="width:100%;height:100%;opacity:0;" accept="image/*" onclick="event.stopPropagation();" onchange="e2p(idbos().put(this.files[0],'bgimg')).then(()=>bgset()).catch(alert);">
 					</button><button class="btn" style="--bp:-400% -300%;" onclick="e2p(idbos().delete('bgimg')).then(()=>bgset()).catch(alert);">
 					</button>
 				</div></div>
