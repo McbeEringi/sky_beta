@@ -28,7 +28,7 @@
 	<hr>
 	工事中…<br>
 	<button class="btn" style="--bp:-400% -100%;" onclick="caches.keys().then(alert);">caches</button>
-	<button class="btn" style="--bp:-500% 0;" onclick="caches.keys().then(x=>caches.delete(x)).then(alert);">del caches</button>
+	<button class="btn" style="--bp:-500% 0;" onclick="caches.keys().then(x=>Promise.all(x.map(y=>caches.delete(y)))).then(alert);">del caches</button>
 	<button class="btn" style="--bp:0 -200%;" onclick="for(let i=0;i<16;i++)alert(i+'\n<input class=input>\nQuis diam eros nonumy. Dolor sed dolore sea praesent vero sadipscing at dolor nulla illum tempor clita et stet duo gubergren. Takimata eos aliquyam quis duo nisl nibh magna ipsum et volutpat diam consequat hendrerit iusto accusam eos. Nonumy stet gubergren ut ipsum sit dolor eros duo elitr et sit et duis amet nonumy eirmod. Et vero vero eros duis et stet nisl takimata. Sadipscing sea labore no dolores ut clita eos duis diam.')">alert test</button>
 	<button class="btn a1" style="--bp:-200% 0;" onclick="alert(`<p class='btn a1 spin'></p>`);">spinner</button>
 

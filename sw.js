@@ -1,6 +1,6 @@
 //https://developer.mozilla.org/ja/docs/Web/Progressive_web_apps/Offline_Service_workers
 //https://developers.google.com/web/fundamentals/primers/service-workers?hl=ja
-const cname='2206131',
+const cname='2206132',
 cstore=[
 	'style.js',
 	'img/icon.svg','img/icon_.svg','img/icon.png','img/icon192.png',
@@ -27,7 +27,7 @@ self.addEventListener('install',e=>{
 });
 self.addEventListener('activate',e=>{
 	console.log('sw Activate');
-	e.waitUntil(caches.keys().then(x=>Promise.all(x.map(y=>y==cname||caches.delete(y)))));
+	e.waitUntil(caches.keys().then(x=>Promise.all(x.map(y=>(y==cname||caches.delete(y))))));
 });
 
 self.addEventListener('fetch',e=>{
