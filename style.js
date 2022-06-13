@@ -33,7 +33,7 @@ const bgset=(x=-1)=>{
 				</div></div>
 			</div>
 		`);
-		e.querySelectorAll('.items>div>.btn').forEach((x,i,a)=>(localStorage.sky_bgmode==i&&x.focus(x.classList.add('a')),x.onclick=()=>{a[localStorage.sky_bgmode].classList.remove('a');localStorage.sky_bgmode=i;x.classList.add('a');bgset();}));
+		e.querySelectorAll('.items>div>.btn').forEach((x,i,a)=>(localStorage.sky_bgmode==i&&x.classList.add('a'),x.onclick=()=>{a[localStorage.sky_bgmode].classList.remove('a');localStorage.sky_bgmode=i;x.classList.add('a');bgset();}));
 		e.querySelector('.bgcedt').onclick=()=>alert(`<textarea class="input" rows="8" cols="40" oninput="(localStorage.sky_bgmode==2&&(localStorage.sky_bgcode=this.value,bgset()));">${localStorage.sky_bgcode}</textarea>`).querySelector('textarea').focus();
 	},
 	getAlert=()=>[...document.querySelectorAll('.alert:not(.fade)>.cont')],
