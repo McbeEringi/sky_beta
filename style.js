@@ -1,5 +1,7 @@
 'use strict';
 if('serviceWorker'in navigator&&location.protocol.includes('https'))addEventListener('load',()=>navigator.serviceWorker.register('sw.js').then(x=>{console.log('sw Registered',x);}),{once:true});
+localStorage.sky_bgcode||='linear-gradient(60deg,#214,#415)';
+localStorage.sky_bgmode||=0;
 let idb=indexedDB.open('sky_idb',4),
 	tex=new Image(),
 	texts={
@@ -17,7 +19,7 @@ const bgset=(x=-1)=>{
 			0:()=>{bgi.hidden=false;bg.style.backgroundImage=`linear-gradient(${bgcol[~x?x:[3,3,3,3,3,0,0,0,0,4,1,1,1,1,1,1,4,2,2,2,2,3,3,3][new Date().getHours()]]})`;},
 			1:()=>{bgi.hidden=true;e2p(idbos().get('bgimg')).then(e=>bg.style.backgroundImage=`url(${e.target.result?URL.createObjectURL(e.target.result):url})`).catch(e=>bg.style.backgroundImage=`url(${url})`);},
 			2:()=>{bgi.hidden=true;bg.style.backgroundImage=localStorage.sky_bgcode;}
-		})[~x?0:localStorage.sky_bgmode||=0]();
+		})[~x?0:localStorage.sky_bgmode]();
 	},
 	bgcfg=()=>{
 		const e=alert(`${texts.bgcfg}<hr>
