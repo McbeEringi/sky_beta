@@ -1,8 +1,8 @@
 //https://developer.mozilla.org/ja/docs/Web/Progressive_web_apps/Offline_Service_workers
 //https://developers.google.com/web/fundamentals/primers/service-workers?hl=ja
-const cname='2206133',
+const cname='2206134',
 cstore=[
-	'style.js',
+	'com.js',
 	'img/icon.svg','img/icon_.svg','img/icon.png','img/icon192.png',
 	'index.html'
 ],
@@ -12,7 +12,7 @@ cprev=[
 /*
 const clist={
 	common:[
-		'style.js',
+		'com.js',
 		'img/icon.svg','img/icon_.svg','img/icon.png','img/icon192.png',
 		'index.html'
 	],
