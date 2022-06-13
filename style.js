@@ -1,6 +1,15 @@
 'use strict';
+if('serviceWorker'in navigator&&location.protocol.includes('https'))addEventListener('load',()=>navigator.serviceWorker.register('sw.js').then(x=>{console.log('sw Registered',x);}),{once:true});
 let idb=indexedDB.open('sky_idb',4),
-	tex=new Image();
+	tex=new Image(),
+	texts={
+		back2top:'Back to Top',bgcfg:'Background Config',bgsl:['dynamic','photo','CSS code'],
+		...{
+			ja:{
+				back2top:'トップに戻る',bgcfg:'背景設定',bgsl:['ダイナミック','画像','CSSコード']
+			}
+		}[navigator.language.slice(0,2)]
+	};
 const bgset=(x=-1)=>{
 		const bgcol=['#dca,#ac8','#bde,#ac8','#f80,#fb7','#112,#126','#bbc,#ac8'],//morn day dusk night cloud
 		url='https://mcbeeringi.github.io/sky/img/photo/performance.jpg';
@@ -9,6 +18,23 @@ const bgset=(x=-1)=>{
 			1:()=>{bgi.hidden=true;e2p(idbos().get('bgimg')).then(e=>bg.style.backgroundImage=`url(${e.target.result?URL.createObjectURL(e.target.result):url})`).catch(e=>bg.style.backgroundImage=`url(${url})`);},
 			2:()=>{bgi.hidden=true;bg.style.backgroundImage=localStorage.sky_bgcode;}
 		})[~x?0:localStorage.sky_bgmode||0]();
+	},
+	bgcfg=()=>{
+		const e=alert(`${texts.bgcfg}<hr>
+			<div class="items">
+				<div><button class="btn" style="--bp:-400% 0;"></button><div>${texts.bgsl[0]}</div></div>
+				<div><button class="btn" style="--bp:-400% 0;"></button><div>${texts.bgsl[1]}<br>
+					<button class="btn" style="--bp:-600% -400%;" onclick="this.childNodes[0].click();"><input tabindex="-1" type="file" style="width:100%;height:100%;opacity:0;" accept="image/*" onchange="e2p(idbos().put(this.files[0],'bgimg')).then(()=>bgset()).catch(alert);">
+					</button><button class="btn" style="--bp:-400% -300%;" onclick="e2p(idbos().delete('bgimg')).then(()=>bgset()).catch(alert);">
+					</button>
+				</div></div>
+				<div><button class="btn" style="--bp:-400% 0;"></button><div>${texts.bgsl[2]}<br>
+					<button class="btn bgcedt" style="--bp:-400% -400%;"></button>
+				</div></div>
+			</div>
+		`);
+		e.querySelectorAll('.items>div>.btn').forEach((x,i,a)=>(localStorage.sky_bgmode==i&&x.focus(x.classList.add('a')),x.onclick=()=>{a[localStorage.sky_bgmode].classList.remove('a');localStorage.sky_bgmode=i;x.classList.add('a');bgset();}));
+		e.querySelector('.bgcedt').onclick=()=>alert(`<textarea class="input" rows="8" cols="40" oninput="(localStorage.sky_bgmode==2&&(localStorage.sky_bgcode=this.value,bgset()));">${localStorage.sky_bgcode}</textarea>`).querySelector('textarea').focus();
 	},
 	getAlert=()=>[...document.querySelectorAll('.alert:not(.fade)>.cont')],
 	rmAlert=(e=getAlert().pop())=>e.parentNode.querySelector('.bg').onclick(),
@@ -36,13 +62,14 @@ hr{border:1px solid #fff8;border-radius:1px;backdrop-filter:blur(2px);-webkit-ba
 
 .alert{position:fixed;top:0;left:0;width:100%;height:100%;z-index:16;transition:.2s;}.alert *{transition:.2s;}
 .alert>.bg{width:100%;height:100%;margin:0;background-color:#0004;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);}
-.alert>.cont{position:absolute;background-color:#000c;top:50%;left:50%;max-width:calc(100% - 64px);max-height:calc(100% - 64px);margin:0;padding:16px;border-radius:16px;box-sizing:border-box;transform-origin:top center;transform:translate(-50%,-50%);white-space:pre-wrap;overflow:auto;overflow-wrap:break-word;}
+.alert>.cont{position:absolute;background-color:#000c;top:50%;left:50%;max-width:calc(100% - 64px);max-height:calc(100% - 64px);margin:0;padding:16px;border-radius:16px;box-sizing:border-box;transform-origin:top center;transform:translate(-50%,-50%);overflow:auto;overflow-wrap:break-word;}
 .alert.fade{opacity:0;pointer-events:none;}
 .alert.fade>.cont{transform:translate(-50%,calc(-50% - 32px));}
 .alert:nth-last-of-type(n+2)>.cont{opacity:.5;top:100%;visibility:hidden;transform:translate(-50%,0)scale(.8);}
 .alert:nth-last-of-type(n+3)>.bg{opacity:0;}
 
-.btn{position:relative;vertical-align:middle;display:inline-block;width:var(--btn);height:var(--btn);margin:0;padding:0;border:0;outline:0;background:none;overflow:hidden;touch-action:manipulation;cursor:pointer;}
+.btn{position:relative;vertical-align:middle;display:inline-block;width:var(--btn);height:var(--btn);margin:0;padding:0;border:0;outline:0;background:none;overflow:hidden;}
+.btn,.btn *{touch-action:manipulation;cursor:pointer;}
 .btn::before,.btn::after{content:"";position:absolute;top:0;left:0;display:block;width:80%;height:80%;margin:10%;border-radius:25%;box-sizing:border-box;}
 .btn::before{background:var(--bp_,var(--bp))/800% var(--g);}.btn::after{content:none;}
 .btn::before{background-image:url(img/atlas0.svg);}.btn.a1::before{background-image:url(img/atlas1.webp);}.nowebp .btn.a1::before{background-image:url(img/atlas1.png);}
@@ -57,8 +84,9 @@ hr{border:1px solid #fff8;border-radius:1px;backdrop-filter:blur(2px);-webkit-ba
 .items{display:grid;max-width:100%;width:100vw;grid-template-columns:repeat(auto-fill,minmax(min(200px,100%),1fr));grid-auto-rows:1fr;grid-gap:8px;}
 .items::after{content:"";grid-column:1/-1;}
 .items>*{box-sizing:border-box;padding:4px;}
-.items>div{display:flex;justify-content:center;align-items:center;--size:40px;}
-.items>div>.grid{--size:56px;flex-shrink:0;align-self:start;}
+.items>div{display:flex;justify-content:center;align-items:center;}
+.items>div .btn{--btn:44px;}
+.items>div>.btn{--btn:60px;flex-shrink:0;align-self:start;}
 </style>
 <div id="bg"><img id="bgi" src="img/icon_.svg" width="1" height="1"></div>
 `);
