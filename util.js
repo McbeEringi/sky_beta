@@ -1,7 +1,7 @@
 'use strict';
 if('serviceWorker'in navigator&&location.protocol.includes('https'))addEventListener('load',()=>navigator.serviceWorker.register('sw.js').then(x=>{console.log('sw Registered',x);}),{once:true});
-localStorage.sky_bgcode||='linear-gradient(60deg,#214,#415)';
-localStorage.sky_bgmode||=0;
+localStorage.sky_bgcode||(localStorage.sky_bgcode='linear-gradient(60deg,#214,#415)');
+localStorage.sky_bgmode||(localStorage.sky_bgmode=0);
 let idb=indexedDB.open('sky_idb',4),
 	tex=new Image(),
 	texts={
@@ -24,24 +24,27 @@ const bgset=(x=-1)=>{
 	bgcfg=()=>{
 		const e=alert(`${texts.bgcfg}<hr>
 			<div class="items">
-				<div><button class="btn" style="--bp:-400% 0;"></button><div>${texts.bgsl[0]}</div></div>
-				<div><button class="btn" style="--bp:-400% 0;"></button><div>${texts.bgsl[1]}<br>
+				<div><input type="radio" name="bgcfg" value="0" id="bgcfg0"><label for="bgcfg0" class="btn" style="--bp:-400% 0;"></label><div>${texts.bgsl[0]}</div></div>
+				<div><input type="radio" name="bgcfg" value="1" id="bgcfg1"><label for="bgcfg1" class="btn" style="--bp:-400% 0;"></label><div>${texts.bgsl[1]}<br>
 					<button class="btn" style="--bp:-600% -400%;" onclick="this.childNodes[0].click();"><input tabindex="-1" type="file" style="width:100%;height:100%;opacity:0;" accept="image/*" onclick="event.stopPropagation();" onchange="e2p(idbos().put(this.files[0],'bgimg')).then(()=>bgset()).catch(alert);">
 					</button><button class="btn" style="--bp:-400% -300%;" onclick="e2p(idbos().delete('bgimg')).then(()=>bgset()).catch(alert);">
 					</button>
 				</div></div>
-				<div><button class="btn" style="--bp:-400% 0;"></button><div>${texts.bgsl[2]}<br>
+				<div><input type="radio" name="bgcfg" value="2" id="bgcfg2"><label for="bgcfg2" class="btn" style="--bp:-400% 0;"></label><div>${texts.bgsl[2]}<br>
 					<button class="btn bgcedt" style="--bp:-400% -400%;"></button>
 				</div></div>
 			</div>
 		`);
-		e.querySelectorAll('.items>div>.btn').forEach((x,i,a)=>(localStorage.sky_bgmode==i&&x.classList.add('a'),x.onclick=()=>{a[localStorage.sky_bgmode||0].classList.remove('a');localStorage.sky_bgmode=i;x.classList.add('a');bgset();}));
+		e.querySelector(`input[type=radio][name=bgcfg][value="${localStorage.sky_bgmode}"]`).checked=true;
+		e.querySelectorAll(`input[type=radio][name=bgcfg]`).forEach(x=>x.onchange=()=>(localStorage.sky_bgmode=x.value,bgset()));
 		e.querySelector('.bgcedt').onclick=()=>alert(`<textarea class="input" rows="8" cols="40" oninput="(localStorage.sky_bgmode==2&&(localStorage.sky_bgcode=this.value,bgset()));">${localStorage.sky_bgcode}</textarea>`).querySelector('textarea').focus();
 	},
 	getAlert=()=>[...document.querySelectorAll('.alert:not(.fade)>.cont')],
 	rmAlert=(e=getAlert().pop())=>e.parentNode.querySelector('.bg').onclick(),
 	idbos=(x='stuff')=>idb.transaction(x,'readwrite').objectStore(x),
-	e2p=x=>new Promise((f,r)=>Object.assign(x,{onsuccess:f,onerror:r}));
+	e2p=x=>new Promise((f,r)=>Object.assign(x,{onsuccess:f,onerror:r})),
+	
+	getRadio=(x,e=document)=>e.querySelector(`input[type=radio][name=${x}]:checked`).value;
 idb.onupgradeneeded=e=>{console.log('IDB UPG',e=idb.result);[['stuff'],['seq',{keyPath:'name'}],['instr',{keyPath:'name'}]].forEach(x=>e.objectStoreNames.contains(x[0])||e.createObjectStore(...x));};
 idb.onsuccess=e=>{console.log('IDB OK',idb=idb.result);e=()=>dispatchEvent(new Event('idbready'));if(document.readyState=='loading')addEventListener('DOMContentLoaded',e);else e();bgset();};
 idb.onerror=e=>{console.log('IDB ERR',idb,e);idb=null;bgset();};
@@ -85,6 +88,7 @@ hr{border:1px solid #fff8;border-radius:1px;backdrop-filter:blur(2px);-webkit-ba
 
 .items{display:grid;max-width:100%;width:100vw;grid-template-columns:repeat(auto-fill,minmax(min(200px,100%),1fr));grid-auto-rows:1fr;grid-gap:8px;}
 .items::after{content:"";grid-column:1/-1;}
+.items input[type=radio]{position:absolute;opacity:0;pointer-event:none;}
 .items>*{box-sizing:border-box;padding:4px;}
 .items>div{display:flex;justify-content:center;align-items:center;}
 .items>div .btn{--btn:44px;}
