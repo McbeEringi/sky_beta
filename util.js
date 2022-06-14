@@ -42,9 +42,7 @@ const bgset=(x=-1)=>{
 	getAlert=()=>[...document.querySelectorAll('.alert:not(.fade)>.cont')],
 	rmAlert=(e=getAlert().pop())=>e.parentNode.querySelector('.bg').onclick(),
 	idbos=(x='stuff')=>idb.transaction(x,'readwrite').objectStore(x),
-	e2p=x=>new Promise((f,r)=>Object.assign(x,{onsuccess:f,onerror:r})),
-	
-	getRadio=(x,e=document)=>e.querySelector(`input[type=radio][name=${x}]:checked`).value;
+	e2p=x=>new Promise((f,r)=>Object.assign(x,{onsuccess:f,onerror:r}));
 idb.onupgradeneeded=e=>{console.log('IDB UPG',e=idb.result);[['stuff'],['seq',{keyPath:'name'}],['instr',{keyPath:'name'}]].forEach(x=>e.objectStoreNames.contains(x[0])||e.createObjectStore(...x));};
 idb.onsuccess=e=>{console.log('IDB OK',idb=idb.result);e=()=>dispatchEvent(new Event('idbready'));if(document.readyState=='loading')addEventListener('DOMContentLoaded',e);else e();bgset();};
 idb.onerror=e=>{console.log('IDB ERR',idb,e);idb=null;bgset();};
@@ -108,7 +106,7 @@ alert=x=>{
 addEventListener('keydown',e=>{
 	const al=getAlert();
 	if(e.key=='Escape'){
-		if(['INPUT','TEXTAREA'].includes(document.activeElement.tagName))document.activeElement.blur(e.preventDefault());
+		if(document.activeElement.matches('input:not([type=radio]),textarea'))document.activeElement.blur(e.preventDefault());
 		else if(al.length)rmAlert(al.pop(),e.preventDefault());
 	}
 });
