@@ -2,17 +2,18 @@
 if('serviceWorker'in navigator&&location.protocol.includes('https'))addEventListener('load',()=>navigator.serviceWorker.register('sw.js').then(x=>{console.log('sw Registered',x);}),{once:true});
 localStorage.sky_bgicode||(localStorage.sky_bgicode='linear-gradient(60deg,#214,#415)');
 localStorage.sky_bgi||(localStorage.sky_bgi=0);
-localStorage.sky_bgagain||(localStorage.sky_bgagain=0);
-localStorage.sky_bga||(localStorage.sky_bga=1);
+localStorage.sky_bgagain||(localStorage.sky_bgagain=1);
+localStorage.sky_bgafade||(localStorage.sky_bgafade=10);
+localStorage.sky_bga||(localStorage.sky_bga=-1);
 let idb=indexedDB.open('sky_idb',4),
 	tex=new Image(),
 	texts={
-		idberr:'Failed to access indexedDB.<br>The app may not work properly.<br>Make sure your browser is not in private mode.',
-		back2top:'Back to Top',gcfg:'General Config',bgi:'Background Image',bgil:['Dynamic','Photo','CSS Code'],bga:'Background Audio',bgal:['Hotspring','Home','Forest','Vault'],custom:'Custom',gain:'Volume',nodata:'nData not found',
+		idberr:'Failed to access indexedDB.<br>The app may not work properly.<br>Make sure your browser is not in private mode.',nodata:'Data not found',
+		back2top:'Back to Top',gcfg:'General Config',bgi:'Background Image',bgil:['Dynamic','Photo','CSS Code'],bga:'Background Audio',bgal:['Hotspring','Home','Forest','Vault'],custom:'Custom',gain:'Volume',xfade:'Crossfade(sec)',
 		...{
 			ja:{
-				idberr:'indexedDBのアクセスに失敗しました。<br>アプリが正常に動作しない可能性があります。<br>ブラウザがプライベートモードでないことを確認してください。',
-				back2top:'トップに戻る',gcfg:'一般設定',bgi:'背景画像',bgil:['ダイナミック','画像','CSSコード'],bga:'背景音',bgal:['温泉','ホーム','雨林','書庫'],custom:'カスタム',gain:'音量',nodata:'データがありません!'
+				idberr:'indexedDBのアクセスに失敗しました。<br>アプリが正常に動作しない可能性があります。<br>ブラウザがプライベートモードでないことを確認してください。',nodata:'データがありません!',
+				back2top:'トップに戻る',gcfg:'一般設定',bgi:'背景画像',bgil:['ダイナミック','画像','CSSコード'],bga:'背景音',bgal:['温泉','ホーム','雨林','書庫'],custom:'カスタム',gain:'音量',xfade:'クロスフェード(秒)'
 			}
 		}[navigator.language.slice(0,2)]
 	};
@@ -26,12 +27,12 @@ const bgiset=(x=-1)=>{
 			2:()=>{bgi.hidden=true;set(localStorage.sky_bgicode);}
 		})[~x?0:localStorage.sky_bgi]();
 	},
-	bgaset=(fade=0)=>{
+	bgaset=(fade=+localStorage.sky_bgafade||0)=>{
 		bga.abs&&bga.abs.stop();
 		if(!idb.name&&!~localStorage.sky_bga)return;
 		(~localStorage.sky_bga?fetch(`audio/bga/${['onsen','home','forest','vault'][localStorage.sky_bga]}.mp3`):e2p(idbos().get('bga')).then(w=>new Response(w.target.result)))
 		.then(async w=>{
-			w=await w.arrayBuffer();if(!w.byteLength&&!~localStorage.sky_bga)return alert(texts.custom+' '+texts.bga+'<br>'+texts.nodata);
+			w=await w.arrayBuffer();if(!w.byteLength&&!~localStorage.sky_bga)return;// alert(texts.custom+' '+texts.bga+'<br>'+texts.nodata);
 			w=await new Promise((f,r)=>actx.decodeAudioData(w,f,r));
 			if(fade)
 				for(let i=0;i<w.numberOfChannels;i++){
@@ -58,18 +59,19 @@ const bgiset=(x=-1)=>{
 				</div></div>
 			</div>
 			<h3>${texts.bga}</h3>
-			<div class="items" style="--items:140px;">
+			<div class="items" style="--items:160px;">
 				${texts.bgal.map((x,i)=>'<label><input type="radio" name="bgar" value="'+i+'"><p class="btn" style="--bp:-400% 0;"></p>'+x+'</label>').join('')}
 				<div><input type="radio" name="bgar" value="-1" id="bgar-1"><label for="bgar-1" class="btn" style="--bp:-400% 0;"></label><div>${texts.custom}<br>
-					<button class="btn" style="--bp:-600% -400%;" onclick="this.childNodes[0].click();"><input tabindex="-1" type="file" style="width:100%;height:100%;opacity:0;" accept="audio/*" onclick="event.stopPropagation();" onchange="e2p(idbos().put(this.files[0],'bga')).then(()=>(~localStorage.sky_bga||bgaset())).catch(alert);"></button>
+					<button class="btn" style="--bp:-600% -400%;" onclick="this.childNodes[0].click();"><input tabindex="-1" type="file" style="width:100%;height:100%;opacity:0;" accept="audio/*" onclick="event.stopPropagation();" onchange="e2p(idbos().put(this.files[0],'bga')).then(()=>(~localStorage.sky_bga||bgaset())).catch(alert);">
+					</button><button class="btn" style="--bp:-500% 0;" onclick="e2p(idbos().delete('bga')).then(()=>(~localStorage.sky_bga||bgaset())).catch(alert);"></button>
 				</div></div>
-				<label><div>${texts.gain}<br><input type="range" step=".125" max="1" value="${localStorage.sky_bgagain}"></div></label>
+				<label><div>${texts.gain}<br><input type="range" step="any" max="1" value="${localStorage.sky_bgagain}" oninput="localStorage.sky_bgagain=bga.g.gain.value=+this.value;"></div></label>
+				<label><div>${texts.xfade}<br><input type="number" min="0" class="input" value="${localStorage.sky_bgafade}" oninput="this.checkValidity()&&(localStorage.sky_bgafade=+this.value);"></div></label>
 			</div>
 		`);
 		setRadio('bgir',localStorage.sky_bgi,e);forRadio('bgir',x=>x.onchange=()=>(localStorage.sky_bgi=x.value,bgiset()));
 		e.querySelector('.bgicode').onclick=()=>alert(`<textarea class="input" rows="8" cols="40" oninput="(localStorage.sky_bgi==2&&(localStorage.sky_bgicode=this.value,bgiset()));">${localStorage.sky_bgicode}</textarea>`).querySelector('textarea').focus();
 		setRadio('bgar',localStorage.sky_bga,e);forRadio('bgar',x=>x.onchange=()=>(localStorage.sky_bga=x.value,bgaset()));
-		e.querySelector('[type=range]').oninput=x=>localStorage.sky_bgagain=bga.g.gain.value=+x.currentTarget.value;
 	},
 	actx=new(window.AudioContext||webkitAudioContext)(),
 	bga={abs:null,g:actx.createGain()},
@@ -87,7 +89,7 @@ Object.assign(new Image(),{onerror:()=>document.body.classList.add('nowebp'),src
 document.body.insertAdjacentHTML('afterbegin',`<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@300&family=M+PLUS+Rounded+1c&display=swap" media="print" onload="this.media='all'"><style>
 @keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
 :root,.input,.btn{
-	--bc:#222;--fc:#fff;--l:#fea;--b0:#48f;--b1:#8af;--b2:#aef;--p0:#84f;--p1:#a8f;--p2:#eaf;
+	--bc:#222;--fc:#fff;--l:#fea;--b0:#48f;--b1:#8af;--b2:#aef;--p0:#84f;--p1:#a8f;--p2:#eaf;--r0:#f44;
 	--g:#3338;--btn:64px;--bp:0 0;--items:200px;
 	background-color:var(--bc);color:var(--fc);font-family:"M PLUS Rounded 1c",sans-serif;text-shadow:0 0 4px var(--bc);
 }
@@ -99,6 +101,7 @@ hr{border:1px solid #fff8;border-radius:1px;backdrop-filter:blur(2px);-webkit-ba
 
 .input{background-color:var(--g);margin:8px 0;padding:8px;border:0;border-radius:8px;outline:0;box-sizing:border-box;max-width:100%;resize:none;}
 .input:focus{box-shadow:0 0 0 2px var(--l);}
+.input:invalid{box-shadow:0 0 0 2px var(--r0);}
 
 .alert{position:fixed;top:0;left:0;width:100%;height:100%;z-index:16;transition:.2s;}.alert *{transition:.2s;}
 .alert>.bg{width:100%;height:100%;margin:0;background-color:#0004;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);}
