@@ -8,11 +8,11 @@ localStorage.sky_bga||(localStorage.sky_bga=-1);
 let idb=indexedDB.open('sky_idb',4),
 	tex=new Image(),
 	texts={
-		idberr:'Failed to access indexedDB.<br>The app may not work properly.<br>Make sure your browser is not in private mode.',nodata:'Data not found',
+		idberr:'Failed to access indexedDB.<br>The app may not work properly.<br>Make sure your browser is not in private mode.',nodata:'Data not found',caches:'Caches',
 		back2top:'Back to Top',gcfg:'General Config',bgi:'Background Image',bgil:['Dynamic','Photo','CSS Code'],bga:'Background Audio',bgal:['Hotspring','Home','Forest','Vault'],custom:'Custom',gain:'Volume',xfade:'Crossfade(sec)',
 		...{
 			ja:{
-				idberr:'indexedDBのアクセスに失敗しました。<br>アプリが正常に動作しない可能性があります。<br>ブラウザがプライベートモードでないことを確認してください。',nodata:'データがありません!',
+				idberr:'indexedDBのアクセスに失敗しました。<br>アプリが正常に動作しない可能性があります。<br>ブラウザがプライベートモードでないことを確認してください。',nodata:'データがありません!',caches:'キャッシュ',
 				back2top:'トップに戻る',gcfg:'一般設定',bgi:'背景画像',bgil:['ダイナミック','画像','CSSコード'],bga:'背景音',bgal:['温泉','ホーム','雨林','書庫'],custom:'カスタム',gain:'音量',xfade:'クロスフェード(秒)'
 			}
 		}[navigator.language.slice(0,2)]
@@ -68,9 +68,12 @@ const root=document.querySelector('script[src$="util.js"]').outerHTML.match(/"(.
 				<label><div>${texts.gain}<br><input type="range" step="any" max="1" value="${localStorage.sky_bgagain}" oninput="localStorage.sky_bgagain=bga.g.gain.value=+this.value;"></div></label>
 				<label><div>${texts.xfade}<br><input type="number" min="0" class="input" value="${localStorage.sky_bgafade}" oninput="this.checkValidity()&&(localStorage.sky_bgafade=+this.value);"></div></label>
 			</div>
-		`);
+			<h3>${texts.caches}</h3>
+			<button class="btn" style="--bp:0 -400%;" onclick="caches.keys().then(alert);">
+			</button><button class="btn" style="--bp:-200% -400%;" onclick="caches.keys().then(x=>Promise.all(x.map(y=>caches.delete(y)))).then(x=>(x.every(y=>y)&&location.reload(true)));"></button>
+		`).e;
 		setRadio('bgir',localStorage.sky_bgi,e);forRadio('bgir',x=>x.onchange=()=>(localStorage.sky_bgi=x.value,bgiset()));
-		e.querySelector('.bgicode').onclick=()=>alert(`<textarea class="input" rows="8" cols="40" oninput="(localStorage.sky_bgi==2&&(localStorage.sky_bgicode=this.value,bgiset()));">${localStorage.sky_bgicode}</textarea>`).querySelector('textarea').focus();
+		e.querySelector('.bgicode').onclick=()=>alert(`<a href="https://developer.mozilla.org/docs/Web/CSS/gradient">background-image</a>:<br><textarea class="input" rows="8" cols="40" oninput="(localStorage.sky_bgi==2&&(localStorage.sky_bgicode=this.value,bgiset()));">${localStorage.sky_bgicode}</textarea>`).e.querySelector('textarea').focus();
 		setRadio('bgar',localStorage.sky_bga,e);forRadio('bgar',x=>x.onchange=()=>(localStorage.sky_bga=x.value,bgaset()));
 	},
 	actx=new(window.AudioContext||webkitAudioContext)(),
@@ -78,7 +81,7 @@ const root=document.querySelector('script[src$="util.js"]').outerHTML.match(/"(.
 	ourls=[],
 	errfx=(e={})=>{e.target&&(e=e.target.error);alert(`⚠️${e.name||'Error'}<br>${e.message||'Something went wrong :('}`);console.error(e);},
 	getAlert=()=>[...document.querySelectorAll('.alert:not(.fade)>.cont')],
-	rmAlert=(e=getAlert().pop())=>e.parentNode.querySelector('.bg').onclick(),
+	rmAlert=(e=getAlert().pop())=>e.parentNode.querySelector('.bg').onclick('rm'),
 	setRadio=(x,y,e=document)=>e.querySelector(`input[type=radio][name=${x}][value="${y}"]`).checked=true,
 	forRadio=(x,y,e=document)=>e.querySelectorAll(`input[type=radio][name=${x}]`).forEach(y),
 	idbos=(x='stuff')=>idb.transaction(x,'readwrite').objectStore(x),
@@ -112,7 +115,7 @@ hr{border:1px solid #fff8;border-radius:1px;backdrop-filter:blur(2px);-webkit-ba
 .alert:nth-last-of-type(n+2)>.cont{opacity:.5;top:100%;visibility:hidden;transform:translate(-50%,0)scale(.8);}
 .alert:nth-last-of-type(n+3)>.bg{opacity:0;}
 
-.btn{position:relative;vertical-align:middle;display:inline-block;width:var(--btn);height:var(--btn);margin:0;padding:0;border:0;outline:0;background:none;overflow:hidden;}
+.btn{position:relative;vertical-align:middle;display:inline-block;width:var(--btn);height:var(--btn);margin:0;padding:0;border:0;outline:0;background:none;overflow:hidden;user-select:none;-webkit-user-select:none;}
 .btn,.btn *{touch-action:manipulation;cursor:pointer;}
 .btn::before,.btn::after{content:"";position:absolute;top:0;left:0;display:block;width:80%;height:80%;margin:10%;border-radius:25%;box-sizing:border-box;}
 .btn::before{background:var(--bp_,var(--bp))/800% var(--g);}.btn::after{content:none;}
@@ -136,13 +139,14 @@ hr{border:1px solid #fff8;border-radius:1px;backdrop-filter:blur(2px);-webkit-ba
 <div id="bg"><img id="bgi" src="${root}img/icon_.svg" width="1" height="1"></div>
 `);
 alert=x=>{
-	const wrap=document.createElement('div'),bg=document.createElement('p'),cont=document.createElement('p');
-	wrap.classList.add('alert','fade');bg.classList.add('bg');cont.classList.add('cont');
-	bg.onclick=()=>{wrap.ontransitionend=()=>wrap.remove();wrap.classList.add('fade');};
-	cont.insertAdjacentHTML('beforeend',x);
-	wrap.append(bg,cont);document.body.append(wrap);
-	wrap.offsetWidth;wrap.classList.remove('fade');
-	return cont;
+	const wrap=document.createElement('div'),bg=document.createElement('p'),e=document.createElement('p'),p=new Promise(f=>{
+		wrap.classList.add('alert','fade');bg.classList.add('bg');e.classList.add('cont');
+		bg.onclick=y=>{wrap.ontransitionend=()=>wrap.remove();wrap.classList.add('fade');f(y);};
+		e.insertAdjacentHTML('beforeend',x);
+		wrap.append(bg,e);document.body.append(wrap);
+		wrap.offsetWidth;wrap.classList.remove('fade');
+	});
+	return{e,p};
 };
 addEventListener('keydown',e=>{
 	const al=getAlert();
