@@ -28,7 +28,7 @@
 		.stuff>a::before{content:"";display:block;height:150px;border-radius:25%;background:no-repeat center/cover var(--img);}
 		.stuff>a:hover{transform:scale(1.05);filter:brightness(1.2)saturate(1.2)drop-shadow(0 0 8px var(--l));}
 		@media(max-width:504px){.stuff{text-align:center;}}
-		#pwab{vertical-align:middle;width:100%;max-width:128px;height:auto;image-rendering:crisp-edges;image-rendering:pixelated;background:#0004;border-radius:8px;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);display:none;pointer-events:none;}
+		#pwab{vertical-align:middle;width:100%;max-width:256px;height:auto;image-rendering:crisp-edges;image-rendering:pixelated;background:var(--g);border-radius:8px;pointer-events:none;}
 	</style>
 	<h1>Sky Stuff</h1>
 	<hr>
@@ -39,17 +39,17 @@
 		<a href="wings.html" style="--img:url(img/icon.svg);">sky_wings</a>
 		<a href="manual/index.html" style="--img:url(img/icon/manual.svg);">sky_manual</a>
 	</div>
-	<img id="pwab" width="7" height="3" alt="pwa_banner">
-	<button class="btn a1" style="--bp:-200% 0;" onclick="alert(`<p class='btn a1 spin'></p>`);"></button>
+	<img hidden id="pwab" width="7" height="3" alt="pwa_banner">
 	<button class="btn a1" style="--bp:-100% 0;" onclick="gcfg();"></button>
 	<script>
 		if(urlq.pwa){
 			document.querySelectorAll('a[href]').forEach(e=>e.href+='?pwa=0');
 			document.querySelectorAll('.nopwa').forEach(e=>e.style.display='none');
 		}else{
-			pwab.style.display='inline';
+			pwab.hidden=false;
 			pwab.src='img/pwab.png';
 		}
 	</script>
+	<!--<button class="btn a1" style="--bp:-200% 0;" onclick="alert(`<p class='btn a1 spin'></p>`);"></button>-->
 </body>
 </html>
