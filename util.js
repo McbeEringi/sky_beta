@@ -53,7 +53,7 @@ const root=document.querySelector('script[src$="util.js"]').outerHTML.match(/"(.
 				<label><input type="radio" name="bgir" value="0"><p class="btn" style="--bp:-400% 0;"></p>${texts.bgil[0]}</label>
 				<div><input type="radio" name="bgir" value="1" id="bgir1"><label for="bgir1" class="btn" style="--bp:-400% 0;"></label><div>${texts.bgil[1]}<br>
 					<button class="btn" style="--bp:-600% -400%;" onclick="this.childNodes[0].click();"><input tabindex="-1" type="file" style="width:100%;height:100%;opacity:0;" accept="image/*" onclick="event.stopPropagation();" onchange="altimggen(this.files[0]).then(x=>localStorage.sky_bgialt=x);e2p(idbos().put(this.files[0],'bgimg')).then(()=>(localStorage.sky_bgi==1&&bgiset())).catch(errfx);">
-					</button><button class="btn" style="--bp:-400% -300%;" onclick="e2p(idbos().delete('bgimg')).then(()=>(localStorage.sky_bgi==1&&bgiset())).catch(errfx);"></button>
+					</button><button class="btn" style="--bp:-400% -300%;" onclick="delete localStorage.sky_bgialt;e2p(idbos().delete('bgimg')).then(()=>(localStorage.sky_bgi==1&&bgiset())).catch(errfx);"></button>
 				</div></div>
 				<div><input type="radio" name="bgir" value="2" id="bgir2"><label for="bgir2" class="btn" style="--bp:-400% 0;"></label><div>${texts.bgil[2]}<br>
 					<button class="btn bgicode" style="--bp:-400% -400%;"></button>
