@@ -43,8 +43,8 @@
 	<button class="btn a1" style="--bp:-100% 0;" onclick="gcfg();"></button>
 	<script>
 		if(urlq.pwa){
-			document.querySelectorAll('a[href]').forEach(e=>e.href+='?pwa=0');
-			document.querySelectorAll('.nopwa').forEach(e=>e.style.display='none');
+			document.querySelectorAll('.stuff>a[href]').forEach(e=>e.href+='?pwa=0');
+			document.querySelectorAll('.nopwa').forEach(e=>e.hidden=true);
 		}else{
 			pwab.hidden=false;
 			pwab.src='img/pwab.png';
