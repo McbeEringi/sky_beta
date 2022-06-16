@@ -43,7 +43,7 @@ const root=document.querySelector('script[src$="util.js"]').outerHTML.match(/"(.
 			(bga.abs=Object.assign(actx.createBufferSource(),{buffer:w,loop:true,loopEnd:w.duration-fade})).start();
 			bga.g.gain.value=localStorage.sky_bgagain;
 			[bga.abs,bga.g,actx.destination].reduce((a,x)=>(a.connect(x),x));
-		})
+		}).catch(errfx);
 	},
 	gcfg=()=>{
 		const e=alert(`<h2>${texts.gcfg}</h2><hr>
@@ -51,8 +51,8 @@ const root=document.querySelector('script[src$="util.js"]').outerHTML.match(/"(.
 			<div class="items" style="--items:170px;">
 				<label><input type="radio" name="bgir" value="0"><p class="btn" style="--bp:-400% 0;"></p>${texts.bgil[0]}</label>
 				<div><input type="radio" name="bgir" value="1" id="bgir1"><label for="bgir1" class="btn" style="--bp:-400% 0;"></label><div>${texts.bgil[1]}<br>
-					<button class="btn" style="--bp:-600% -400%;" onclick="this.childNodes[0].click();"><input tabindex="-1" type="file" style="width:100%;height:100%;opacity:0;" accept="image/*" onclick="event.stopPropagation();" onchange="e2p(idbos().put(this.files[0],'bgimg')).then(()=>(localStorage.sky_bgi==1&&bgiset())).catch(alert);">
-					</button><button class="btn" style="--bp:-400% -300%;" onclick="e2p(idbos().delete('bgimg')).then(()=>(localStorage.sky_bgi==1&&bgiset())).catch(alert);"></button>
+					<button class="btn" style="--bp:-600% -400%;" onclick="this.childNodes[0].click();"><input tabindex="-1" type="file" style="width:100%;height:100%;opacity:0;" accept="image/*" onclick="event.stopPropagation();" onchange="e2p(idbos().put(this.files[0],'bgimg')).then(()=>(localStorage.sky_bgi==1&&bgiset())).catch(errfx);">
+					</button><button class="btn" style="--bp:-400% -300%;" onclick="e2p(idbos().delete('bgimg')).then(()=>(localStorage.sky_bgi==1&&bgiset())).catch(errfx);"></button>
 				</div></div>
 				<div><input type="radio" name="bgir" value="2" id="bgir2"><label for="bgir2" class="btn" style="--bp:-400% 0;"></label><div>${texts.bgil[2]}<br>
 					<button class="btn bgicode" style="--bp:-400% -400%;"></button>
@@ -62,8 +62,8 @@ const root=document.querySelector('script[src$="util.js"]').outerHTML.match(/"(.
 			<div class="items" style="--items:160px;">
 				${texts.bgal.map((x,i)=>'<label><input type="radio" name="bgar" value="'+i+'"><p class="btn" style="--bp:-400% 0;"></p>'+x+'</label>').join('')}
 				<div><input type="radio" name="bgar" value="-1" id="bgar-1"><label for="bgar-1" class="btn" style="--bp:-400% 0;"></label><div>${texts.custom}<br>
-					<button class="btn" style="--bp:-600% -400%;" onclick="this.childNodes[0].click();"><input tabindex="-1" type="file" style="width:100%;height:100%;opacity:0;" accept="audio/*" onclick="event.stopPropagation();" onchange="e2p(idbos().put(this.files[0],'bga')).then(()=>(~localStorage.sky_bga||bgaset())).catch(alert);">
-					</button><button class="btn" style="--bp:-500% 0;" onclick="e2p(idbos().delete('bga')).then(()=>(~localStorage.sky_bga||bgaset())).catch(alert);"></button>
+					<button class="btn" style="--bp:-600% -400%;" onclick="this.childNodes[0].click();"><input tabindex="-1" type="file" style="width:100%;height:100%;opacity:0;" accept="audio/*" onclick="event.stopPropagation();" onchange="e2p(idbos().put(this.files[0],'bga')).then(()=>(~localStorage.sky_bga||bgaset())).catch(errfx);">
+					</button><button class="btn" style="--bp:-500% 0;" onclick="e2p(idbos().delete('bga')).then(()=>(~localStorage.sky_bga||bgaset())).catch(errfx);"></button>
 				</div></div>
 				<label><div>${texts.gain}<br><input type="range" step="any" max="1" value="${localStorage.sky_bgagain}" oninput="localStorage.sky_bgagain=bga.g.gain.value=+this.value;"></div></label>
 				<label><div>${texts.xfade}<br><input type="number" min="0" class="input" value="${localStorage.sky_bgafade}" oninput="this.checkValidity()&&(localStorage.sky_bgafade=+this.value);"></div></label>
@@ -76,6 +76,7 @@ const root=document.querySelector('script[src$="util.js"]').outerHTML.match(/"(.
 	actx=new(window.AudioContext||webkitAudioContext)(),
 	bga={abs:null,g:actx.createGain()},
 	ourls=[],
+	errfx=(e={})=>{e.target&&(e=e.target.error);alert(`⚠️${e.name||'Error'}<br>${e.message||'Something went wrong :('}`);console.error(e);},
 	getAlert=()=>[...document.querySelectorAll('.alert:not(.fade)>.cont')],
 	rmAlert=(e=getAlert().pop())=>e.parentNode.querySelector('.bg').onclick(),
 	setRadio=(x,y,e=document)=>e.querySelector(`input[type=radio][name=${x}][value="${y}"]`).checked=true,
