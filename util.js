@@ -30,20 +30,23 @@ const urlq=Object.fromEntries(location.search.slice(1).split('&').filter(y=>y).m
 			2:()=>{bgi.hidden=true;set(localStorage.sky_bgicode);}
 		})[~x?0:localStorage.sky_bgi]();
 	},
-	bgaset=()=>{
+	bgaset=(fade=+localStorage.sky_bgafade)=>{
 		bga.abs&&(bga.abs.stop(),bga.abs=null);
 		if(!idb.name&&!~localStorage.sky_bga)return;
 		(~localStorage.sky_bga?fetch(`${root}audio/bga/${['onsen','home','forest','vault'][localStorage.sky_bga]}.mp3`):e2p(idbos().get('bga')).then(w=>new Response(w.target.result)))
 		.then(async w=>{
-			w=await w.arrayBuffer();if(!w.byteLength&&!~localStorage.sky_bga)return;// alert(texts.custom+' '+texts.bga+'<br>'+texts.nodata);
+			w=await w.arrayBuffer();if(!w.byteLength&&!~localStorage.sky_bga)return;
 			w=await new Promise((f,r)=>actx.decodeAudioData(w,f,r));
-			const fade=+localStorage.sky_bgafade;
-			for(let i=0;fade&&i<w.numberOfChannels;i++){
-				const v=w.getChannelData(i),x=[...v],p=[fade,w.duration-fade,w.duration].map(y=>y*w.sampleRate);
-				x.slice(p[0],p[1]).concat(x.slice(p[1],p[2]).reduce((a,y,j,z)=>(z=j/z.length,a[j]=a[j]*z+y*(1-z),a),x.slice(0,p[0]))).forEach((y,i)=>v[i]=y);
-			};
+			w=await new Promise(f=>{
+				const d=w.duration-fade,r=w.sampleRate,
+					oac=new(window.OfflineAudioContext||webkitOfflineAudioContext)(w.numberOfChannels,d*r,r),
+					abs0=oac.createBufferSource(),g0=oac.createGain(),abs1=oac.createBufferSource(),g1=oac.createGain();g1.gain.setValueAtTime(0,0);
+				g0.gain.setValueAtTime(1,d-fade);g0.gain.linearRampToValueAtTime(0,d);g1.gain.setValueAtTime(0,d-fade);g1.gain.linearRampToValueAtTime(1,d);
+				abs1.buffer=abs0.buffer=w;[[abs0,g0,oac.destination],[abs1,g1,oac.destination]].forEach(x=>x.reduce((a,y)=>(a.connect(y),y)));
+				abs0.start(0,fade);abs1.start(d-fade);oac.startRendering();oac.oncomplete=e=>f(e.renderedBuffer);
+			});
 			bga.abs&&(bga.abs.stop(),bga.abs=null);
-			(bga.abs=Object.assign(actx.createBufferSource(),{buffer:w,loop:true,loopEnd:w.duration-fade})).start();
+			(bga.abs=Object.assign(actx.createBufferSource(),{buffer:w,loop:true})).start();
 			bga.g.gain.value=localStorage.sky_bgagain;
 			[bga.abs,bga.g,actx.destination].reduce((a,x)=>(a.connect(x),x));
 		}).catch(errfx);
