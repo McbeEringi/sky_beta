@@ -111,8 +111,7 @@ hr{border:1px solid #fff8;border-radius:1px;backdrop-filter:blur(2px);-webkit-ba
 #bgi{width:100vmin;height:auto;float:right;transform:translateX(25%);filter:drop-shadow(0 0 16px var(--l))blur(4px)opacity(.2);}
 
 .input{appearance:none;-webkit-appearance:none;background-color:var(--g);margin:8px 0;padding:8px;border:0;border-radius:8px;outline:0;box-sizing:border-box;max-width:100%;resize:none;transition:.5s;}
-.input:focus{box-shadow:0 0 0 2px var(--l);}
-.input:invalid{box-shadow:0 0 0 2px var(--r1);}
+.input:focus{box-shadow:0 0 0 2px var(--l);}.input:invalid{box-shadow:0 0 0 2px var(--r1);}
 
 .alert{position:fixed;top:0;left:0;width:100%;height:100%;z-index:16;transition:.2s;}.alert *{transition:.2s;}
 .alert>.bg{width:100%;height:100%;margin:0;background-color:#0004;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);}
@@ -122,7 +121,7 @@ hr{border:1px solid #fff8;border-radius:1px;backdrop-filter:blur(2px);-webkit-ba
 .alert:nth-last-of-type(n+2)>.cont{opacity:.5;top:100%;visibility:hidden;transform:translate(-50%,0)scale(.8);}
 .alert:nth-last-of-type(n+3)>.bg{opacity:0;}
 
-.btn{position:relative;vertical-align:middle;display:inline-block;width:var(--btn);height:var(--btn);margin:0;padding:0;border:0;outline:0;background:none;overflow:hidden;user-select:none;-webkit-user-select:none;}
+.btn{position:relative;vertical-align:middle;display:inline-block;width:var(--btn);height:var(--btn);margin:0;padding:0;border:0;outline:0;background:none;overflow:hidden;user-select:none;-webkit-user-select:none;color:#0000;text-shadow:none;}
 .btn,.btn *{touch-action:manipulation;cursor:pointer;}
 .btn::before,.btn::after{content:"";position:absolute;top:0;left:0;display:block;width:80%;height:80%;margin:10%;border-radius:25%;box-sizing:border-box;}
 .btn::before{background:var(--bp_,var(--bp))/800% var(--g);}.btn::after{content:none;}
@@ -143,7 +142,7 @@ hr{border:1px solid #fff8;border-radius:1px;backdrop-filter:blur(2px);-webkit-ba
 .items>* .btn{--btn:40px;}
 .items>*>.btn{--btn:56px;flex-shrink:0;align-self:start;}
 </style>
-<div id="bg"><img id="bgi" src="${root}img/icon_.svg" width="1" height="1"></div>
+<div id="bg"><img id="bgi" src="${root}img/icon_.svg" width="1" height="1" alt="background image"></div>
 `);
 alert=x=>{
 	const wrap=document.createElement('div'),bg=document.createElement('p'),e=document.createElement('p'),p=new Promise(f=>{
