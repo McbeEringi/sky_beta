@@ -29,13 +29,14 @@ const root=document.querySelector('script[src$="util.js"]').outerHTML.match(/"(.
 			2:()=>{bgi.hidden=true;set(localStorage.sky_bgicode);}
 		})[~x?0:localStorage.sky_bgi]();
 	},
-	bgaset=(fade=+localStorage.sky_bgafade||0)=>{
+	bgaset=()=>{
 		bga.abs&&(bga.abs.stop(),bga.abs=null);
 		if(!idb.name&&!~localStorage.sky_bga)return;
 		(~localStorage.sky_bga?fetch(`${root}audio/bga/${['onsen','home','forest','vault'][localStorage.sky_bga]}.mp3`):e2p(idbos().get('bga')).then(w=>new Response(w.target.result)))
 		.then(async w=>{
 			w=await w.arrayBuffer();if(!w.byteLength&&!~localStorage.sky_bga)return;// alert(texts.custom+' '+texts.bga+'<br>'+texts.nodata);
 			w=await new Promise((f,r)=>actx.decodeAudioData(w,f,r));
+			const fade=+localStorage.sky_bgafade;
 			for(let i=0;fade&&i<w.numberOfChannels;i++){
 				const v=w.getChannelData(i),x=[...v],p=[fade,w.duration-fade,w.duration].map(y=>y*w.sampleRate);
 				x.slice(p[0],p[1]).concat(x.slice(p[1],p[2]).reduce((a,y,j,z)=>(z=j/z.length,a[j]=a[j]*z+y*(1-z),a),x.slice(0,p[0]))).forEach((y,i)=>v[i]=y);
@@ -63,11 +64,11 @@ const root=document.querySelector('script[src$="util.js"]').outerHTML.match(/"(.
 			<div class="items" style="--items:150px;">
 				${texts.bgal.map((x,i)=>'<label><input type="radio" name="bgar" value="'+i+'"><p class="btn" style="--bp:-400% 0;"></p>'+x+'</label>').join('')}
 				<div><input type="radio" name="bgar" value="-1" id="bgar-1"><label for="bgar-1" class="btn" style="--bp:-400% 0;"></label><div>${texts.custom}<br>
-					<button class="btn" style="--bp:-600% -400%;" onclick="this.childNodes[0].click();"><input tabindex="-1" type="file" style="width:100%;height:100%;opacity:0;" accept="audio/*" onclick="event.stopPropagation();" onchange="e2p(idbos().put(this.files[0],'bga')).then(()=>(~localStorage.sky_bga||bgaset())).catch(errfx);">
+					<button class="btn" style="--bp:-600% -400%;" onclick="this.childNodes[0].click();"><input tabindex="-1" type="file" style="width:100%;height:100%;opacity:0;" accept="audio/aac,audio/flac,audio/mpeg,audio/ogg,audio/opus,audio/wav,audio/webm" onclick="event.stopPropagation();" onchange="e2p(idbos().put(this.files[0],'bga')).then(()=>(~localStorage.sky_bga||bgaset())).catch(errfx);">
 					</button><button class="btn" style="--bp:-500% 0;" onclick="e2p(idbos().delete('bga')).then(()=>(~localStorage.sky_bga||bgaset())).catch(errfx);"></button>
 				</div></div>
 				<label><div>${texts.gain}<br><input type="range" step="any" max="1" value="${localStorage.sky_bgagain}" oninput="localStorage.sky_bgagain=bga.g.gain.value=+this.value;"></div></label>
-				<label><div>${texts.xfade}<br><input type="number" min="0" class="input" value="${localStorage.sky_bgafade}" oninput="this.checkValidity()&&(localStorage.sky_bgafade=+this.value);"></div></label>
+				<label><div>${texts.xfade}<br><input type="number" min="0" class="input" value="${localStorage.sky_bgafade}" oninput="this.checkValidity()&&(localStorage.sky_bgafade=+this.value);" onchange="this.checkValidity()&&bgaset();"></div></label>
 			</div>
 			<h3>${texts.caches}</h3>
 			<button class="btn" style="--bp:0 -400%;" onclick="caches.keys().then(alert);">
