@@ -72,8 +72,8 @@ const urlq=Object.fromEntries(location.search.slice(1).split('&').filter(y=>y).m
 				<label><div>${texts.xfade}<br><input type="number" min="0" class="input" value="${localStorage.sky_bgafade}" oninput="this.checkValidity()&&(localStorage.sky_bgafade=+this.value);" onchange="this.checkValidity()&&bgaset();"></div></label>
 			</div>
 			<h3>${texts.caches}</h3>
-			<button class="btn" style="--bp:0 -400%;" onclick="caches.keys().then(alert);">
-			</button><button class="btn" style="--bp:-200% -400%;" onclick="caches.keys().then(x=>Promise.all(x.map(y=>caches.delete(y)))).then(x=>(x.every(y=>y)&&location.reload(true)));"></button>
+			<button class="btn" style="--bp:0 -500%;" onclick="caches.keys().then(alert);">
+			</button><button class="btn" style="--bp:-200% -500%;" onclick="caches.keys().then(x=>Promise.all(x.map(y=>caches.delete(y)))).then(x=>(x.every(y=>y)&&location.reload(true)));"></button>
 		`).e;
 		setRadio('bgir',localStorage.sky_bgi,e);forRadio('bgir',x=>x.onchange=()=>(localStorage.sky_bgi=x.value,bgiset()));
 		e.querySelector('.bgicode').onclick=()=>alert(`<a href="https://developer.mozilla.org/docs/Web/CSS/gradient">background-image</a>:<br><textarea class="input" rows="8" cols="40" oninput="(localStorage.sky_bgicode=this.value,localStorage.sky_bgi==2&&bgiset());">${localStorage.sky_bgicode}</textarea>`).e.querySelector('textarea').focus();
@@ -166,6 +166,6 @@ tex.onload=()=>{
 };tex.src=root+'img/atlas0.svg';
 {const bg_=()=>localStorage.sky_bgi==0&&bgiset();setTimeout(()=>{bg_();setInterval(bg_,36e5);},36e5-(Date.now()%36e5));bgiset();}
 ['touchstart','mousedown'].forEach(x=>addEventListener(x,()=>actx.resume(),{once:true}));bgaset();
-if('pwa'in urlq&&history.length>1)addEventListener('DOMContentLoaded',()=>document.body.insertAdjacentHTML('beforeend','<button class="btn" style="--bp:-400% -100%;--btn:48px;position:fixed;bottom:0;left:0;" onclick="history.back();"></button>'));
+if('pwa'in urlq&&document.referrer)addEventListener('DOMContentLoaded',()=>document.body.insertAdjacentHTML('beforeend','<button class="btn" style="--bp:-400% -100%;--btn:48px;position:fixed;bottom:0;left:0;" onclick="history.back();"></button>'));
 onbeforeunload=()=>ourls.forEach(URL.revokeObjectURL);
 
