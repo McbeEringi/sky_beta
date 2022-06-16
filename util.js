@@ -59,7 +59,7 @@ const root=document.querySelector('script[src$="util.js"]').outerHTML.match(/"(.
 				</div></div>
 			</div>
 			<h3>${texts.bga}</h3>
-			<div class="items" style="--items:160px;">
+			<div class="items" style="--items:150px;">
 				${texts.bgal.map((x,i)=>'<label><input type="radio" name="bgar" value="'+i+'"><p class="btn" style="--bp:-400% 0;"></p>'+x+'</label>').join('')}
 				<div><input type="radio" name="bgar" value="-1" id="bgar-1"><label for="bgar-1" class="btn" style="--bp:-400% 0;"></label><div>${texts.custom}<br>
 					<button class="btn" style="--bp:-600% -400%;" onclick="this.childNodes[0].click();"><input tabindex="-1" type="file" style="width:100%;height:100%;opacity:0;" accept="audio/*" onclick="event.stopPropagation();" onchange="e2p(idbos().put(this.files[0],'bga')).then(()=>(~localStorage.sky_bga||bgaset())).catch(errfx);">
@@ -133,8 +133,8 @@ hr{border:1px solid #fff8;border-radius:1px;backdrop-filter:blur(2px);-webkit-ba
 .items input[type=radio]{position:absolute;opacity:0;pointer-event:none;}
 .items *{max-width:100%;}
 .items>*{box-sizing:border-box;padding:4px;display:flex;align-items:center;}
-.items>* .btn{--btn:44px;}
-.items>*>.btn{--btn:60px;flex-shrink:0;align-self:start;}
+.items>* .btn{--btn:40px;}
+.items>*>.btn{--btn:56px;flex-shrink:0;align-self:start;}
 </style>
 <div id="bg"><img id="bgi" src="${root}img/icon_.svg" width="1" height="1"></div>
 `);
