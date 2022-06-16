@@ -29,18 +29,17 @@ const root=document.querySelector('script[src$="util.js"]').outerHTML.match(/"(.
 		})[~x?0:localStorage.sky_bgi]();
 	},
 	bgaset=(fade=+localStorage.sky_bgafade||0)=>{
-		bga.abs&&bga.abs.stop();
+		bga.abs&&(bga.abs.stop(),bga.abs=null);
 		if(!idb.name&&!~localStorage.sky_bga)return;
 		(~localStorage.sky_bga?fetch(`${root}audio/bga/${['onsen','home','forest','vault'][localStorage.sky_bga]}.mp3`):e2p(idbos().get('bga')).then(w=>new Response(w.target.result)))
 		.then(async w=>{
 			w=await w.arrayBuffer();if(!w.byteLength&&!~localStorage.sky_bga)return;// alert(texts.custom+' '+texts.bga+'<br>'+texts.nodata);
 			w=await new Promise((f,r)=>actx.decodeAudioData(w,f,r));
-			if(fade)
-				for(let i=0;i<w.numberOfChannels;i++){
-					const v=w.getChannelData(i),x=[...v],p=[fade,w.duration-fade,w.duration].map(y=>y*w.sampleRate);
-					x.slice(p[0],p[1]).concat(x.slice(p[1],p[2]).reduce((a,y,j,z)=>(z=j/z.length,a[j]=a[j]*z+y*(1-z),a),x.slice(0,p[0]))).forEach((y,i)=>v[i]=y);
-				};
-			bga.abs&&bga.abs.stop();
+			for(let i=0;fade&&i<w.numberOfChannels;i++){
+				const v=w.getChannelData(i),x=[...v],p=[fade,w.duration-fade,w.duration].map(y=>y*w.sampleRate);
+				x.slice(p[0],p[1]).concat(x.slice(p[1],p[2]).reduce((a,y,j,z)=>(z=j/z.length,a[j]=a[j]*z+y*(1-z),a),x.slice(0,p[0]))).forEach((y,i)=>v[i]=y);
+			};
+			bga.abs&&(bga.abs.stop(),bga.abs=null);
 			(bga.abs=Object.assign(actx.createBufferSource(),{buffer:w,loop:true,loopEnd:w.duration-fade})).start();
 			bga.g.gain.value=localStorage.sky_bgagain;
 			[bga.abs,bga.g,actx.destination].reduce((a,x)=>(a.connect(x),x));
