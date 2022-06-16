@@ -52,21 +52,21 @@ const urlq=Object.fromEntries(location.search.slice(1).split('&').filter(y=>y).m
 		const e=alert(`<h2>${texts.gcfg}</h2><hr>
 			<h3>${texts.bgi}</h3>
 			<div class="items" style="--items:170px;">
-				<label><input type="radio" name="bgir" value="0"><p class="btn" style="--bp:-400% 0;"></p>${texts.bgil[0]}</label>
-				<div><input type="radio" name="bgir" value="1" id="bgir1"><label for="bgir1" class="btn" style="--bp:-400% 0;"></label><div>${texts.bgil[1]}<br>
-					<button class="btn" style="--bp:-600% -400%;" onclick="this.childNodes[0].click();"><input tabindex="-1" type="file" style="width:100%;height:100%;opacity:0;" accept="image/*" onclick="event.stopPropagation();" onchange="altimggen(this.files[0]).then(x=>localStorage.sky_bgialt=x);e2p(idbos().put(this.files[0],'bgimg')).then(()=>(localStorage.sky_bgi==1&&bgiset())).catch(errfx);">
-					</button><button class="btn" style="--bp:-400% -300%;" onclick="delete localStorage.sky_bgialt;e2p(idbos().delete('bgimg')).then(()=>(localStorage.sky_bgi==1&&bgiset())).catch(errfx);"></button>
+				<label><input type="radio" name="bgir" value="0"><p class="btn" style="--bp:0 -100%;"></p>${texts.bgil[0]}</label>
+				<div><input type="radio" name="bgir" value="1" id="bgir1"><label for="bgir1" class="btn" style="--bp:0 -100%;"></label><div>${texts.bgil[1]}<br>
+					<button class="btn" style="--bp:-600% -500%;" onclick="this.childNodes[0].click();"><input tabindex="-1" type="file" style="width:100%;height:100%;opacity:0;" accept="image/*" onclick="event.stopPropagation();" onchange="altimggen(this.files[0]).then(x=>localStorage.sky_bgialt=x);e2p(idbos().put(this.files[0],'bgimg')).then(()=>(localStorage.sky_bgi==1&&bgiset())).catch(errfx);">
+					</button><button class="btn" style="--bp:-400% -400%;" onclick="delete localStorage.sky_bgialt;e2p(idbos().delete('bgimg')).then(()=>(localStorage.sky_bgi==1&&bgiset())).catch(errfx);"></button>
 				</div></div>
-				<div><input type="radio" name="bgir" value="2" id="bgir2"><label for="bgir2" class="btn" style="--bp:-400% 0;"></label><div>${texts.bgil[2]}<br>
-					<button class="btn bgicode" style="--bp:-400% -400%;"></button>
+				<div><input type="radio" name="bgir" value="2" id="bgir2"><label for="bgir2" class="btn" style="--bp:0 -100%;"></label><div>${texts.bgil[2]}<br>
+					<button class="btn bgicode" style="--bp:-400% -500%;"></button>
 				</div></div>
 			</div>
 			<h3>${texts.bga}</h3>
 			<div class="items" style="--items:150px;">
-				${texts.bgal.map((x,i)=>'<label><input type="radio" name="bgar" value="'+i+'"><p class="btn" style="--bp:-400% 0;"></p>'+x+'</label>').join('')}
-				<div><input type="radio" name="bgar" value="-1" id="bgar-1"><label for="bgar-1" class="btn" style="--bp:-400% 0;"></label><div>${texts.custom}<br>
-					<button class="btn" style="--bp:-600% -400%;" onclick="this.childNodes[0].click();"><input tabindex="-1" type="file" style="width:100%;height:100%;opacity:0;" accept="audio/aac,audio/flac,audio/mpeg,audio/ogg,audio/opus,audio/wav,audio/webm" onclick="event.stopPropagation();" onchange="e2p(idbos().put(this.files[0],'bga')).then(()=>(~localStorage.sky_bga||bgaset())).catch(errfx);">
-					</button><button class="btn" style="--bp:-500% 0;" onclick="e2p(idbos().delete('bga')).then(()=>(~localStorage.sky_bga||bgaset())).catch(errfx);"></button>
+				${texts.bgal.map((x,i)=>'<label><input type="radio" name="bgar" value="'+i+'"><p class="btn" style="--bp:0 -100%;"></p>'+x+'</label>').join('')}
+				<div><input type="radio" name="bgar" value="-1" id="bgar-1"><label for="bgar-1" class="btn" style="--bp:0 -100%;"></label><div>${texts.custom}<br>
+					<button class="btn" style="--bp:-600% -500%;" onclick="this.childNodes[0].click();"><input tabindex="-1" type="file" style="width:100%;height:100%;opacity:0;" accept="audio/aac,audio/flac,audio/mpeg,audio/ogg,audio/opus,audio/wav,audio/webm" onclick="event.stopPropagation();" onchange="e2p(idbos().put(this.files[0],'bga')).then(()=>(~localStorage.sky_bga||bgaset())).catch(errfx);">
+					</button><button class="btn" style="--bp:-100% -100%;" onclick="e2p(idbos().delete('bga')).then(()=>(~localStorage.sky_bga||bgaset())).catch(errfx);"></button>
 				</div></div>
 				<label><div>${texts.gain}<br><input type="range" step="any" max="1" value="${localStorage.sky_bgagain}" oninput="localStorage.sky_bgagain=bga.g.gain.value=+this.value;"></div></label>
 				<label><div>${texts.xfade}<br><input type="number" min="0" class="input" value="${localStorage.sky_bgafade}" oninput="this.checkValidity()&&(localStorage.sky_bgafade=+this.value);" onchange="this.checkValidity()&&bgaset();"></div></label>
@@ -97,7 +97,7 @@ Object.assign(new Image(),{onerror:()=>document.body.classList.add('nowebp'),src
 document.body.insertAdjacentHTML('afterbegin',`<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@300&family=M+PLUS+Rounded+1c&display=swap" media="print" onload="this.media='all'"><style>
 @keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
 :root,.input,.btn{
-	--bc:#222;--fc:#fff;--l:#fea;--b0:#48f;--b1:#8af;--b2:#aef;--p0:#84f;--p1:#a8f;--p2:#eaf;--r0:#f44;
+	--bc:#222;--fc:#fff;--l:#fea;--b0:#48f;--b1:#8af;--b2:#aef;--p0:#84f;--p1:#a8f;--p2:#eaf;--r0:#f00;--r1:#f44;
 	--g:#3338;--btn:64px;--bp:0 0;--items:200px;
 	background-color:var(--bc);color:var(--fc);font-family:"M PLUS Rounded 1c",sans-serif;text-shadow:0 0 4px var(--bc);
 }
@@ -109,7 +109,7 @@ hr{border:1px solid #fff8;border-radius:1px;backdrop-filter:blur(2px);-webkit-ba
 
 .input{appearance:none;-webkit-appearance:none;background-color:var(--g);margin:8px 0;padding:8px;border:0;border-radius:8px;outline:0;box-sizing:border-box;max-width:100%;resize:none;transition:.5s;}
 .input:focus{box-shadow:0 0 0 2px var(--l);}
-.input:invalid{box-shadow:0 0 0 2px var(--r0);}
+.input:invalid{box-shadow:0 0 0 2px var(--r1);}
 
 .alert{position:fixed;top:0;left:0;width:100%;height:100%;z-index:16;transition:.2s;}.alert *{transition:.2s;}
 .alert>.bg{width:100%;height:100%;margin:0;background-color:#0004;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);}
@@ -166,4 +166,6 @@ tex.onload=()=>{
 };tex.src=root+'img/atlas0.svg';
 {const bg_=()=>localStorage.sky_bgi==0&&bgiset();setTimeout(()=>{bg_();setInterval(bg_,36e5);},36e5-(Date.now()%36e5));bgiset();}
 ['touchstart','mousedown'].forEach(x=>addEventListener(x,()=>actx.resume(),{once:true}));bgaset();
+if('pwa'in urlq&&history.length>1)addEventListener('DOMContentLoaded',()=>document.body.insertAdjacentHTML('beforeend','<button class="btn" style="--bp:-400% -100%;--btn:48px;position:fixed;bottom:0;left:0;" onclick="history.back();"></button>'));
 onbeforeunload=()=>ourls.forEach(URL.revokeObjectURL);
+
