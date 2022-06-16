@@ -18,7 +18,8 @@ let idb=indexedDB.open('sky_idb',4),
 			}
 		}[navigator.language.slice(0,2)]
 	};
-const root=document.querySelector('script[src$="util.js"]').outerHTML.match(/"(.*)util.js"/)[1],
+const urlq=Object.fromEntries(location.search.slice(1).split('&').filter(y=>y).map(x=>x.split('=',2))),
+	root=document.querySelector('script[src$="util.js"]').outerHTML.match(/"(.*)util.js"/)[1],
 	bgiset=(x=-1)=>{
 		const bgcol=['#dca,#ac8','#bde,#ac8','#f80,#fb7','#112,#126','#bbc,#ac8'],//morn day dusk night cloud
 		url=root+'img/photo/performance.jpg',
