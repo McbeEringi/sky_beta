@@ -42,13 +42,8 @@
 	<img hidden id="pwab" width="7" height="3" alt="pwa_banner">
 	<button class="btn a1" style="--bp:-100% 0;" onclick="gcfg();">general config</button>
 	<script>
-		if('pwa'in urlq){
-			document.querySelectorAll('.stuff>a[href]').forEach(e=>e.href+='?pwa');
-			document.querySelectorAll('.nopwa').forEach(e=>e.hidden=true);
-		}else{
-			pwab.hidden=false;
-			pwab.src='img/pwab.png';
-		}
+		if('pwa'in urlq)document.querySelectorAll('.stuff>a').forEach(e=>(e.ontouchstart=_=>_,e.href&&(e.href+='?pwa')));
+		else{pwab.hidden=false;pwab.src='img/pwab.png';}
 	</script>
 	<!--<button class="btn a1" style="--bp:-200% 0;" onclick="alert(`<p class='btn a1 spin'></p>`);"></button>-->
 </body>
