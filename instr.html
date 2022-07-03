@@ -54,30 +54,49 @@
 				}
 			}[navigator.language.slice(0,2)]
 		};
-		const bp=i=>`${i%8*-100}% ${Math.floor(i*.125+1)*-100}%`,
+		const n2nn=x=>({c:12,d:14,e:16,f:17,g:19,a:21,b:23})[x[0].toLowerCase()]+(({'#':1,s:1})[x[1]]?x.slice(2)*12+1:x.slice(1)*12),
+			nn2n=x=>['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'][x%12]+Math.floor(x/12-1),
+			bp=i=>`${i%8*-100}% ${Math.floor(i*.125+1)*-100}%`,
 			stdli=(a,b=a+1,s={})=>{for(let i=a;i<=b;i++){s['ds'+i]=`ds${i}.mp3`;s['a'+i]=`a${i}.mp3`;}return s;},
+			irgen=(fi=.1,d=2.5,cut=10000,ch=2,rate=actx.sampleRate)=>new Promise(f=>{
+				const fr=d*rate,
+					oac=new(window.OfflineAudioContext||webkitOfflineAudioContext)(ch,fr,rate),
+					ab=oac.createBuffer(ch,fr,rate),lpf=oac.createBiquadFilter(),g0=oac.createGain(),
+					g1=oac.createGain(),bs=oac.createBufferSource();
+				for(let i=0,view;i<ch;i++){view=ab.getChannelData(i);for(let j=0;j<fr;j++)view[j]=Math.random()*2-1;}
+				lpf.type='lowpass';lpf.frequency.value=cut;lpf.Q.value=0;
+				g0.gain.setTargetAtTime(0,0,d*.2);
+				g1.gain.setValueAtTime(0,0);g1.gain.linearRampToValueAtTime(1,fi);g1.gain.setValueAtTime(1,d*.9);g1.gain.linearRampToValueAtTime(0,d);
+				bs.buffer=ab;[bs,lpf,g0,g1,oac.destination].reduce((a,x)=>a.connect(x));bs.start();
+				oac.startRendering();oac.oncomplete=e=>f(e.renderedBuffer);
+			}),
+			trigger=(n=69,abi=0,t)=>{
+				const abs=actx.createBufferSource(),s=q._instr[2][abi].reduce((a,x)=>{const d=Math.abs(n-x[0]);return a[0]<d?a:[d,x];},[Infinity])[1];
+				abs.playbackRate.value=Math.pow(2,(n-s[0])/12);abs.buffer=s[1];abs.connect(deln);abs.start(t);
+			},
+			revn=actx.createConvolver(),gn0=actx.createGain(),gn1=actx.createGain(),deln=actx.createDelay(1),
 			d={
 				instr:[
-					['audio/instr/musicbox/',1,[stdli(4,6,{a3:'a3.mp3',ds7:'ds7.mp3'})],0],
-					['audio/instr/harp/',-1,[stdli(3,5)],0],//210503
-					['audio/instr/percussion/',0,[{a4:'0.mp3',as4:'1.mp3',b4:'2.mp3',c5:'3.mp3',a5:'4.mp3',as5:'5.mp3',b5:'6.mp3',c6:'7.mp3'}],1],
-					['audio/instr/contrabass/',-2,[stdli(2,4)],0],//211009
-					['audio/instr/horn/',-1,[stdli(3,5)],0],//211009
-					['audio/instr/piano/',0,[stdli(4,6)],0],//220127 +10db
-						['',0,[{ds5:'audio/instr/musicbox/ds6.mp3',a5:'audio/instr/musicbox/a6.mp3'},{ds5:'audio/instr/glock/ds5.mp3',a5:'audio/instr/glock/a5.mp3'}],2],
-						['audio/instr/bell2/',1,[{c4:'c4.mp3',d4:'d4.mp3',g4:'g4.mp3',a4:'a4.mp3'},{c4:'c4_.mp3',d4:'d4_.mp3',g4:'g4_.mp3',a4:'a4_.mp3'}],2],
-					['audio/instr/flute/',0,[stdli(4,6)],0],//211009
-					['audio/instr/quena/',0,[stdli(4,6)],0],//211009
-					['audio/instr/guitar/',-1,[stdli(3,5)],0,4],//main:210503 fret:211009
-					['audio/instr/ukulele/',-1,[stdli(3,5)],0],//211009
-					['audio/instr/piano/',1,[stdli(5,7)],0],//220127 +10db
-					['audio/instr/glock/',0,[stdli(4,6)],0],//210529
-					['audio/instr/handpan/',-1,[stdli(3)],3],
-					['audio/instr/dundun/',0,[{a4:'0.mp3',as4:'1.mp3',b4:'2.mp3',c5:'3.mp3',a5:'4.mp3',as5:'5.mp3',b5:'6.mp3',c6:'7.mp3'}],1],
-					['audio/instr/pipa/',-1,[stdli(3,5)],0],//210529
-					['audio/instr/bugle/',0,[stdli(4,6)],0],//210529
-						['audio/instr/ocarina/',0,[stdli(4,6)],0],
-					['audio/instr/kalimba/',0,[stdli(4,6)],0]//211025
+					['musicbox/',1,[stdli(4,6,{a3:'a3.mp3',ds7:'ds7.mp3'})],0],
+					['harp/',-1,[stdli(3,5)],0],//210503
+					['percussion/',0,[{a4:'0.mp3',as4:'1.mp3',b4:'2.mp3',c5:'3.mp3',a5:'4.mp3',as5:'5.mp3',b5:'6.mp3',c6:'7.mp3'}],1],
+					['contrabass/',-2,[stdli(2,4)],0],//211009
+					['horn/',-1,[stdli(3,5)],0],//211009
+					['piano/',0,[stdli(4,6)],0],//220127 +10db
+						['',0,[{ds5:'musicbox/ds6.mp3',a5:'musicbox/a6.mp3'},{ds5:'glock/ds5.mp3',a5:'glock/a5.mp3'}],2],
+						['bell2/',1,[{c4:'c4.mp3',d4:'d4.mp3',g4:'g4.mp3',a4:'a4.mp3'},{c4:'c4_.mp3',d4:'d4_.mp3',g4:'g4_.mp3',a4:'a4_.mp3'}],2],
+					['flute/',0,[stdli(4,6)],0],//211009
+					['quena/',0,[stdli(4,6)],0],//211009
+					['guitar/',-1,[stdli(3,5)],0,4],//main:210503 fret:211009
+					['ukulele/',-1,[stdli(3,5)],0],//211009
+					['piano/',1,[stdli(5,7)],0],//220127 +10db
+					['glock/',0,[stdli(4,6)],0],//210529
+					['handpan/',-1,[stdli(3)],3],
+					['dundun/',0,[{a4:'0.mp3',as4:'1.mp3',b4:'2.mp3',c5:'3.mp3',a5:'4.mp3',as5:'5.mp3',b5:'6.mp3',c6:'7.mp3'}],1],
+					['pipa/',-1,[stdli(3,5)],0],//210529
+					['bugle/',0,[stdli(4,6)],0],//210529
+						['ocarina/',0,[stdli(4,6)],0],
+					['kalimba/',0,[stdli(4,6)],0]//211025
 				],
 				i2n:[
 					[-9,-7,-5,-4,-2,0,2,3,5,7,8,10,12,14,15],
@@ -86,24 +105,44 @@
 					[-7,0,3,5,8,10,12,15],//handpan
 					[2,5,12,-10,-7,0,-22,-19,-12]//nov
 				],
-				g:[0,1,1,1,2],
-				k2g:[
+				i2g:[0,1,1,1,2].map(x=>[
 					[5,3],
 					[4,2],
 					[3,3]
-				],
-				p:[0,0,1,0,0],
-				i2p:[[],
+				][x]),
+				i2p:[0,0,1,0,0].map(x=>[
+					[],//undefined => 0
 					[0,0,0,0,1,1,1,1]
-				]
-			};
+				][x])
+			},
+			q={
+				set instr(w){
+					setRadio('isel',w=w||0,isel);w=[...d.instr[w]];delete q._instr;
+					Promise.all(w[2].map(x=>Promise.all(Object.entries(x).map(async y=>{
+						y[1]=await(await fetch('audio/instr/'+w[0]+y[1])).arrayBuffer();
+						y[1]=await new Promise((f,r)=>actx.decodeAudioData(y[1],f,r));
+						y[0]=n2nn(y[0]);
+						return y;
+					})))).then(x=>{w[2]=x;q._instr=w;}).catch(errfx);
+				},get instr(){return +getRadio('isel',isel).value;},
+				set rev(w){q._rev=w=w||0;gn0.gain.value=w;gn1.gain.value=1-w;},get rev(){return q._rev;},
+				set del(w){q._del=w=w||0;deln.delayTime.value=w;},get del(){return q._del;},
+				k2i:Object.fromEntries(Array.from('QWERTASDFGZXCVB',(x,i)=>[`Key${x}`,[i%5,Math.floor(i/5)]]))
+			},
+			load=()=>({instr:q.instr=0,sc:q.sc=0,rev:q.rev=0,del:q.del=.1}=JSON.parse(localStorage.instr_stat||'{}')),
+			save=()=>localStorage.instr_stat=JSON.stringify({instr:q.instr,sc:q.sc,rev:q.rev,del:q.del});
 
 		(drwcb.onchange=()=>drwbtn.classList[drwcb.checked?'remove':'add']('a1'))();
+		isel.insertAdjacentHTML('beforeend',d.instr.map((_,i)=>`<input type="radio" name="isel" value="${i}" ${[7,18].includes(i)?'disabled':''} id="isel${i}"><label class="btn a1" style="--bp:${bp(i)};" for="isel${i}"></label>`).join(''));
+		forRadio('isel',x=>x.onchange=()=>(x.checked&&(q.instr=+x.value,save())),isel);
 		cfgbtn.onclick=gcfg;
 		infobtn.onclick=()=>alert(texts.info);
 
-		isel.insertAdjacentHTML('beforeend',d.instr.map((_,i)=>`<input type="radio" name="isel" value="${i}" ${[7,18].includes(i)?'disabled':''} ${i==0?'checked':''} id="isel${i}"><label class="btn a1" style="--bp:${bp(i)};" for="isel${i}"></label>`).join(''));
-		document.querySelector('.drawer').insertAdjacentHTML('beforeend',('<br>'+texts.nyan).repeat(32));
+		deln.connect(revn).connect(gn0).connect(actx.destination);
+		deln.connect(gn1).connect(actx.destination);
+		irgen().then(x=>revn.buffer=x);
+
+		load();
 </script>
 </body>
 </html>

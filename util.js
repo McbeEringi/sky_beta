@@ -90,6 +90,7 @@ const urlq=Object.fromEntries(location.search.slice(1).split('&').filter(y=>y).m
 	getAlert=()=>[...document.querySelectorAll('.alert:not(.fade)>.cont')],
 	rmAlert=(e=getAlert().pop())=>e.parentNode.querySelector('.bg').onclick('rm'),
 	setRadio=(x,y,e=document)=>e.querySelector(`input[type=radio][name=${x}][value="${y}"]`).checked=true,
+	getRadio=(x,e=document)=>e.querySelector(`input[type=radio][name=${x}]:checked`),
 	forRadio=(x,y,e=document)=>e.querySelectorAll(`input[type=radio][name=${x}]`).forEach(y),
 	idbos=(x='stuff')=>idb.transaction(x,'readwrite').objectStore(x),
 	e2p=x=>new Promise((f,r)=>Object.assign(x,{onsuccess:f,onerror:r}));
