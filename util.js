@@ -109,6 +109,7 @@ document.body.insertAdjacentHTML('afterbegin',`<link rel="stylesheet" href="http
 hr{border:1px solid #fff8;border-radius:1px;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);}
 #bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-16;transition:background 1s;background:center/cover;pointer-events:none;user-select:none;-webkit-user-select:none;}
 #bgi{width:100vmin;height:auto;float:right;transform:translateX(25%);filter:drop-shadow(0 0 16px var(--l))blur(4px)opacity(.2);}
+.tac{text-align:center;}
 
 .input{appearance:none;-webkit-appearance:none;background-color:var(--g);margin:8px 0;padding:8px;border:0;border-radius:8px;outline:0;box-sizing:border-box;max-width:100%;resize:none;transition:.5s;}
 .input:focus{box-shadow:0 0 0 2px var(--l);}.input:invalid{box-shadow:0 0 0 2px var(--r1);}

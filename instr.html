@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head prefix="og:http://ogp.me/ns#">
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>sky_instruments</title>
+	<meta name="Description" content="McbeEringi Sky Stuff sky_instruments">
+	<link rel="icon" type="image/jpeg" href="img/icon/instr.jpg">
+	<link rel="icon" type="image/svg+xml" href="img/icon/instr.svg">
+	<meta property="og:type" content="website">
+	<meta property="og:title" content="sky_instruments">
+	<meta property="og:description" content="A web app for Sky:CotL">
+	<meta property="og:url" content="https://mcbeeringi.github.io/sky_beta/instr.html">
+	<meta property="og:image" content="https://mcbeeringi.github.io/sky_beta/img/icon/instr.jpg">
+	<!--iOS-->
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="default">
+	<meta name="apple-mobile-web-app-title" content="Sky Stuff">
+	<link rel="apple-touch-icon" href="img/icon.png">
+	<!--PWA-->
+	<link rel="manifest" href="mf.json">
+	<meta name="theme-color" content="#214">
+</head>
+<body>
+	<script src="util.js"></script>
+	<style>
+		html,body{height:100%;margin:0;overflow:hidden;position:relative;}
+		input[type=checkbox],input[type=radio]{opacity:0;position:absolute;top:0;left:0;pointer-events:none;}
+
+		label[for=drwcb]{position:absolute;right:0;bottom:0;--btn:48px;transition:transform .5s;--bp:-300% 0;z-index:1;}label[for=drwcb]::after{opacity:0;}:checked+label[for=drwcb]::before{--bp_:-100% -100%;}
+		.drawer{width:calc(var(--btn)*4.3);max-width:100%;height:100%;padding-bottom:56px;box-sizing:border-box;position:absolute;top:0;right:0;overflow-y:auto;background-color:var(--g);transform:translateX(5%);visibility:hidden;opacity:0;transition:.2s;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);}
+		.drawer hr{border:0;backdrop-filter:none;-webkit-backdrop-filter:none;}.drawer hr::before{content:"";display:block;margin:0 auto;width:4px;height:4px;background:#8888;border-radius:50%;}
+		#drwcb:checked~.drawer{transform:translateX(0);visibility:inherit;opacity:1;}
+	</style>
+
+	<input type="checkbox" id="drwcb">
+	<label for="drwcb" class="btn" id="drwbtn"></label>
+	<div class="drawer tac">
+		<div id="isel"></div>
+		<hr>
+		<button class="btn a1" style="--bp:-100% 0;" id="cfgbtn">config</button>
+		<button class="btn a1" style="--bp:0 0;" id="infobtn">info</button>
+		
+	</div>
+
+	<script>
+		texts={
+			...texts,
+			info:'<h1>sky_instruments</h1><hr>In game sounds<br><small>recorded by @McbeEringi</small><hr><p>[sky_instr] v6 build:2207030<br><a href="https://twitter.com/mcbeeringi">@McbeEringi</a> MITLicense</p>',
+			nyan:'nyan',
+			...{
+				ja:{
+						nyan:'ﾆｬｰﾝ'
+				}
+			}[navigator.language.slice(0,2)]
+		};
+		const bp=i=>`${i%8*-100}% ${Math.floor(i*.125+1)*-100}%`,
+			stdli=(a,b=a+1,s={})=>{for(let i=a;i<=b;i++){s['ds'+i]=`ds${i}.mp3`;s['a'+i]=`a${i}.mp3`;}return s;},
+			d={
+				instr:[
+					['audio/instr/musicbox/',1,[stdli(4,6,{a3:'a3.mp3',ds7:'ds7.mp3'})],0],
+					['audio/instr/harp/',-1,[stdli(3,5)],0],//210503
+					['audio/instr/percussion/',0,[{a4:'0.mp3',as4:'1.mp3',b4:'2.mp3',c5:'3.mp3',a5:'4.mp3',as5:'5.mp3',b5:'6.mp3',c6:'7.mp3'}],1],
+					['audio/instr/contrabass/',-2,[stdli(2,4)],0],//211009
+					['audio/instr/horn/',-1,[stdli(3,5)],0],//211009
+					['audio/instr/piano/',0,[stdli(4,6)],0],//220127 +10db
+						['',0,[{ds5:'audio/instr/musicbox/ds6.mp3',a5:'audio/instr/musicbox/a6.mp3'},{ds5:'audio/instr/glock/ds5.mp3',a5:'audio/instr/glock/a5.mp3'}],2],
+						['audio/instr/bell2/',1,[{c4:'c4.mp3',d4:'d4.mp3',g4:'g4.mp3',a4:'a4.mp3'},{c4:'c4_.mp3',d4:'d4_.mp3',g4:'g4_.mp3',a4:'a4_.mp3'}],2],
+					['audio/instr/flute/',0,[stdli(4,6)],0],//211009
+					['audio/instr/quena/',0,[stdli(4,6)],0],//211009
+					['audio/instr/guitar/',-1,[stdli(3,5)],0,4],//main:210503 fret:211009
+					['audio/instr/ukulele/',-1,[stdli(3,5)],0],//211009
+					['audio/instr/piano/',1,[stdli(5,7)],0],//220127 +10db
+					['audio/instr/glock/',0,[stdli(4,6)],0],//210529
+					['audio/instr/handpan/',-1,[stdli(3)],3],
+					['audio/instr/dundun/',0,[{a4:'0.mp3',as4:'1.mp3',b4:'2.mp3',c5:'3.mp3',a5:'4.mp3',as5:'5.mp3',b5:'6.mp3',c6:'7.mp3'}],1],
+					['audio/instr/pipa/',-1,[stdli(3,5)],0],//210529
+					['audio/instr/bugle/',0,[stdli(4,6)],0],//210529
+						['audio/instr/ocarina/',0,[stdli(4,6)],0],
+					['audio/instr/kalimba/',0,[stdli(4,6)],0]//211025
+				],
+				i2n:[
+					[-9,-7,-5,-4,-2,0,2,3,5,7,8,10,12,14,15],
+					[0,1,2,3,12,13,14,15],//percussion
+					[-9,-7,-2,0,-9,-7,-2,0],//bell
+					[-7,0,3,5,8,10,12,15],//handpan
+					[2,5,12,-10,-7,0,-22,-19,-12]//nov
+				],
+				g:[0,1,1,1,2],
+				k2g:[
+					[5,3],
+					[4,2],
+					[3,3]
+				],
+				p:[0,0,1,0,0],
+				i2p:[[],
+					[0,0,0,0,1,1,1,1]
+				]
+			};
+
+		(drwcb.onchange=()=>drwbtn.classList[drwcb.checked?'remove':'add']('a1'))();
+		cfgbtn.onclick=gcfg;
+		infobtn.onclick=()=>alert(texts.info);
+
+		isel.insertAdjacentHTML('beforeend',d.instr.map((_,i)=>`<input type="radio" name="isel" value="${i}" ${[7,18].includes(i)?'disabled':''} ${i==0?'checked':''} id="isel${i}"><label class="btn a1" style="--bp:${bp(i)};" for="isel${i}"></label>`).join(''));
+		document.querySelector('.drawer').insertAdjacentHTML('beforeend',('<br>'+texts.nyan).repeat(32));
+</script>
+</body>
+</html>
