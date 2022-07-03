@@ -37,7 +37,7 @@ const urlq=Object.fromEntries(location.search.slice(1).split('&').filter(y=>y).m
 		.then(async w=>{
 			w=await w.arrayBuffer();if(!w.byteLength&&!~localStorage.sky_bga)return;
 			w=await new Promise((f,r)=>actx.decodeAudioData(w,f,r));
-			w=await new Promise(f=>{
+			if(fade)w=await new Promise(f=>{
 				const d=w.duration-fade,r=w.sampleRate,
 					oac=new(window.OfflineAudioContext||webkitOfflineAudioContext)(w.numberOfChannels,d*r,r),
 					abs0=oac.createBufferSource(),g0=oac.createGain(),abs1=oac.createBufferSource(),g1=oac.createGain();g1.gain.setValueAtTime(0,0);

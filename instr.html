@@ -33,6 +33,8 @@
 		#drwcb:checked~.drawer{transform:translateX(0);visibility:inherit;opacity:1;}
 	</style>
 
+	<button class="btn" onpointerdown="trigger(72);">trg</button>
+
 	<input type="checkbox" id="drwcb">
 	<label for="drwcb" class="btn" id="drwbtn"></label>
 	<div class="drawer tac">
@@ -46,7 +48,7 @@
 	<script>
 		texts={
 			...texts,
-			info:'<h1>sky_instruments</h1><hr>In game sounds<br><small>recorded by @McbeEringi</small><hr><p>[sky_instr] v6 build:2207030<br><a href="https://twitter.com/mcbeeringi">@McbeEringi</a> MITLicense</p>',
+			info:'<h1>sky_instruments</h1><hr>In game sounds<br><small>recorded by @McbeEringi</small><hr><p>[sky_instr] v6 build:2207040<br><a href="https://twitter.com/mcbeeringi">@McbeEringi</a> MITLicense</p>',
 			nyan:'nyan',
 			...{
 				ja:{
@@ -117,10 +119,10 @@
 			},
 			q={
 				set instr(w){
-					setRadio('isel',w=w||0,isel);w=[...d.instr[w]];delete q._instr;
+					setRadio('isel',w=w||0,isel);drwbtn.setAttribute('style',`--bp:${bp(w)};`);w=[...d.instr[w]];delete q._instr;
 					Promise.all(w[2].map(x=>Promise.all(Object.entries(x).map(async y=>{
 						y[1]=await(await fetch('audio/instr/'+w[0]+y[1])).arrayBuffer();
-						y[1]=await new Promise((f,r)=>actx.decodeAudioData(y[1],f,r));
+						y[1]=await new Promise((f,r)=>actx.decodeAudioData(y[1],f,r));console.log(y[0]);
 						y[0]=n2nn(y[0]);
 						return y;
 					})))).then(x=>{w[2]=x;q._instr=w;}).catch(errfx);
@@ -138,9 +140,7 @@
 		cfgbtn.onclick=gcfg;
 		infobtn.onclick=()=>alert(texts.info);
 
-		deln.connect(revn).connect(gn0).connect(actx.destination);
-		deln.connect(gn1).connect(actx.destination);
-		irgen().then(x=>revn.buffer=x);
+		deln.connect(revn).connect(gn0).connect(actx.destination);deln.connect(gn1).connect(actx.destination);irgen().then(x=>revn.buffer=x);
 
 		load();
 </script>
