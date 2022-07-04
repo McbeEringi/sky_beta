@@ -161,7 +161,7 @@
 		navigator.requestMIDIAccess&&addEventListener('midiready',()=>midi.inputs.forEach(x=>x.onmidimessage=e=>({
 			0:()=>console.log('noteOn',e,trigger(72+q.octave+q.sc)),
 			1:()=>console.log('noteOff',e,trigger(79+q.octave+q.sc)),
-		}[e.data[0]|0x7f]||Array)()),{once:true});
+		}[(e.data[0]&0x70)>>>4]||Array)()),{once:true});
 
 		load();
 </script>
