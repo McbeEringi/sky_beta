@@ -33,15 +33,23 @@
 		#drwcb:checked~.drawer{transform:translateX(0);visibility:inherit;opacity:1;}
 	</style>
 
-	<button class="btn" onpointerdown="trigger(72);">trg</button>
+	<button class="btn" onpointerdown="trigger(72+q.octave+q.sc);">trg</button>
 
 	<input type="checkbox" id="drwcb">
 	<label for="drwcb" class="btn" id="drwbtn"></label>
 	<div class="drawer tac">
 		<div id="isel"></div>
 		<hr>
-		<button class="btn a1" style="--bp:-100% 0;" id="cfgbtn">config</button>
-		<button class="btn a1" style="--bp:0 0;" id="infobtn">info</button>
+		<div id="scd">
+			<button class="btn" style="--bp:-300% -100%;">-
+			</button><button class="btn clock" style="--bp:-100% 0;">0
+			</button><button class="btn" style="--bp:-200% -100%;">+
+			</button>
+		</div>
+		<hr>
+		<button class="btn a1" style="--bp:-100% 0;" id="cfgbtn">config
+		</button><button class="btn a1" style="--bp:0 0;" id="infobtn">info
+		</button>
 		
 	</div>
 
@@ -120,6 +128,7 @@
 			q={
 				set instr(w){
 					setRadio('isel',w=w||0,isel);drwbtn.setAttribute('style',`--bp:${bp(w)};`);w=[...d.instr[w]];delete q._instr;
+					scd.classList[w[3]==1?'add':'remove']('d');
 					Promise.all(w[2].map(x=>Promise.all(Object.entries(x).map(async y=>{
 						y[1]=await(await fetch('audio/instr/'+w[0]+y[1])).arrayBuffer();
 						y[1]=await new Promise((f,r)=>actx.decodeAudioData(y[1],f,r));console.log(y[0]);
@@ -127,20 +136,32 @@
 						return y;
 					})))).then(x=>{w[2]=x;q._instr=w;}).catch(errfx);
 				},get instr(){return +getRadio('isel',isel).value;},
+				set sc (w){q._sc =w=w||0;scd.children[1].setAttribute('style',`--rot:${q.sc*30+45}deg;`);},get sc (){return q._instr&&q._instr[3]==1?0:q._sc;},
 				set rev(w){q._rev=w=w||0;gn0.gain.value=w;gn1.gain.value=1-w;},get rev(){return q._rev;},
 				set del(w){q._del=w=w||0;deln.delayTime.value=w;},get del(){return q._del;},
+				get octave(){return  q._instr?q._instr[1]*12:0;},
 				k2i:Object.fromEntries(Array.from('QWERTASDFGZXCVB',(x,i)=>[`Key${x}`,[i%5,Math.floor(i/5)]]))
 			},
-			load=()=>({instr:q.instr=0,sc:q.sc=0,rev:q.rev=0,del:q.del=.1}=JSON.parse(localStorage.instr_stat||'{}')),
+			load=()=>({instr:q.instr,sc:q.sc,rev:q.rev,del:q.del=.1}=JSON.parse(localStorage.instr_stat||'{}')),
 			save=()=>localStorage.instr_stat=JSON.stringify({instr:q.instr,sc:q.sc,rev:q.rev,del:q.del});
 
 		(drwcb.onchange=()=>drwbtn.classList[drwcb.checked?'remove':'add']('a1'))();
 		isel.insertAdjacentHTML('beforeend',d.instr.map((_,i)=>`<input type="radio" name="isel" value="${i}" ${[7,18].includes(i)?'disabled':''} id="isel${i}"><label class="btn a1" style="--bp:${bp(i)};" for="isel${i}"></label>`).join(''));
 		forRadio('isel',x=>x.onchange=()=>(x.checked&&(q.instr=+x.value,save())),isel);
+		{
+			const fb=(t=actx.currentTime+.05)=>([72,76,79].forEach((y,i)=>trigger(y+q.octave+q.sc,0,t+i*.05)),save());
+			scd.children[0].onclick=()=>{q.sc--;fb();};
+			scd.children[1].onclick=()=>{q.sc=0;fb();};
+			scd.children[2].onclick=()=>{q.sc++;fb();};
+		}
 		cfgbtn.onclick=gcfg;
 		infobtn.onclick=()=>alert(texts.info);
 
 		deln.connect(revn).connect(gn0).connect(actx.destination);deln.connect(gn1).connect(actx.destination);irgen().then(x=>revn.buffer=x);
+		navigator.requestMIDIAccess&&addEventListener('midiready',()=>midi.inputs.forEach(x=>x.onmidimessage=e=>({
+			0:()=>console.log('noteOn',e,trigger(72+q.octave+q.sc)),
+			1:()=>console.log('noteOff',e,trigger(79+q.octave+q.sc)),
+		}[e.data[0]|0x7f]||Array)()),{once:true});
 
 		load();
 </script>

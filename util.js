@@ -7,6 +7,7 @@ localStorage.sky_bgagain||(localStorage.sky_bgagain=1);
 localStorage.sky_bgafade||(localStorage.sky_bgafade=10);
 localStorage.sky_bga||(localStorage.sky_bga=-1);
 let idb=indexedDB.open('sky_idb',4),
+	midi=null,
 	tex=new Image(),
 	texts={
 		idberr:'Failed to access indexedDB.<br>The app may not work properly.<br>Make sure your browser is not in private mode.',nodata:'Data not found',caches:'Caches',
@@ -97,6 +98,7 @@ const urlq=Object.fromEntries(location.search.slice(1).split('&').filter(y=>y).m
 idb.onupgradeneeded=e=>{console.log('IDB UPG',e=idb.result);[['stuff'],['seq',{keyPath:'name'}],['instr',{keyPath:'name'}]].forEach(x=>e.objectStoreNames.contains(x[0])||e.createObjectStore(...x));};
 idb.onsuccess=e=>{console.log('IDB OK',idb=idb.result);e=()=>dispatchEvent(new Event('idbready'));if(document.readyState=='loading')addEventListener('DOMContentLoaded',e,{once:true});else e();bgiset();bgaset();};
 idb.onerror=e=>{console.log('IDB ERR',idb,e);idb={};alert(texts.idberr);};
+navigator.requestMIDIAccess&&navigator.requestMIDIAccess().then(x=>(midi=x,dispatchEvent(new Event('midiready')))).catch(errfx);
 Object.assign(new Image(),{onerror:()=>document.body.classList.add('nowebp'),src:root+'img/atlas1.webp'});
 document.body.insertAdjacentHTML('afterbegin',`<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@300&family=M+PLUS+Rounded+1c&display=swap" media="print" onload="this.media='all'"><style>
 @keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
@@ -133,8 +135,8 @@ hr{border:1px solid #fff8;border-radius:1px;backdrop-filter:blur(2px);-webkit-ba
 :disabled:not(.btn)+.btn,.btn.d,.d .btn{filter:grayscale(1)opacity(.5);pointer-events:none;}
 .btn:active::before,.btn:active::after{transform:scale(.85);}.btn:not(:active)::before,.btn:not(:active)::after{transition:transform .2s;}
 .spin{--bp:-200% 0;--g:#0000;animation:2s linear spin infinite;pointer-events:none;}
-.clock::before{--bp:-200% -0%;filter:saturate(.3);}.clock::after{content:"";transition:.2s;transform:rotate(var(--rot,45deg));filter:drop-shadow(0 0 2px #aef);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'%3E%3Cpath d='M6 6h1v1h-1z' fill='%23caf0f6'/%3E%3C/svg%3E");}
-.clock.d::after,.d .clock::after{--rot:initial;}
+.clock::before{--bp:-200% -0%;filter:saturate(.3);}.clock::after{content:"";transform:rotate(var(--rot,45deg));filter:drop-shadow(0 0 2px #aef);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'%3E%3Cpath d='M6 6h1v1h-1z' fill='%23caf0f6'/%3E%3C/svg%3E");}
+.clock.d::after,.d .clock::after{--rot:initial;}.clock:active::after{transform:rotate(var(--rot,45deg))scale(.85);}
 
 .items{display:grid;max-width:100%;width:100vw;grid-template-columns:repeat(auto-fill,minmax(min(var(--items),100%),1fr));grid-auto-rows:1fr;grid-gap:8px;}
 .items::after{content:"";grid-column:1/-1;}
