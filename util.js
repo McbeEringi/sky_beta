@@ -132,7 +132,7 @@ hr{border:1px solid #fff8;border-radius:1px;backdrop-filter:blur(2px);-webkit-ba
 :focus:not(.btn)+.btn::before,.btn:focus::before{box-shadow:0 0 0 calc(var(--btn)*.01) var(--l) inset;}
 :checked:not(.btn)+.btn::after,.btn.a::after{content:"";border:calc(var(--btn)*.2) solid #00000001;border-image:url(${root}img/sel.svg) 32%;}:checked+.btn,.btn.a{transform:rotateY(360deg);transition:transform .5s;}
 :disabled:not(.btn)+.btn,.btn:disabled,.btn.d,.d .btn{filter:grayscale(1)opacity(.5);pointer-events:none;}
-.btn:not(:disabled):active::before,.btn:not(:disabled):active::after{transform:scale(.85);}.btn:not(:active)::before,.btn:not(:active)::after{transition:transform .2s;}
+.btn:active::before,.btn:active::after{transform:scale(.85);}.btn:not(:active)::before,.btn:not(:active)::after{transition:transform .2s;}
 .spin{--bp:-200% 0;--g:#0000;animation:2s linear spin infinite;pointer-events:none;}
 .clock::before{--bp:-200% -0%;filter:saturate(.3);}.clock::after{content:"";transform:rotate(var(--rot,45deg));filter:drop-shadow(0 0 2px #aef);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'%3E%3Cpath d='M6 6h1v1h-1z' fill='%23caf0f6'/%3E%3C/svg%3E");}
 .clock.d::after,.d .clock::after{--rot:initial;}.clock:active::after{transform:rotate(var(--rot,45deg))scale(.85);}
