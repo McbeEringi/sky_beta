@@ -124,15 +124,15 @@ hr{border:1px solid #fff8;border-radius:1px;backdrop-filter:blur(2px);-webkit-ba
 .alert:nth-last-of-type(n+2)>.cont{opacity:.5;top:100%;visibility:hidden;transform:translate(-50%,0)scale(.8);}
 .alert:nth-last-of-type(n+3)>.bg{opacity:0;}
 
-.btn{position:relative;vertical-align:middle;display:inline-block;width:var(--btn);height:var(--btn);margin:0;padding:0;border:0;outline:0;background:none;overflow:hidden;user-select:none;-webkit-user-select:none;color:#0000;text-shadow:none;}
+.btn{position:relative;vertical-align:middle;display:inline-block;width:var(--btn);height:var(--btn);margin:0;padding:0;border:0;outline:0;background:none;overflow:hidden;user-select:none;-webkit-user-select:none;color:#0000 !important;text-shadow:none !important;}
 .btn,.btn *{touch-action:manipulation;cursor:pointer;}
 .btn::before,.btn::after{content:"";position:absolute;top:0;left:0;display:block;width:80%;height:80%;margin:10%;border-radius:25%;box-sizing:border-box;}
 .btn::before{background:var(--bp_,var(--bp))/800% var(--g);}.btn::after{content:none;}
 .btn::before{background-image:url(${root}img/atlas0.svg);}.btn.a1::before{background-image:url(${root}img/atlas1.webp);}.nowebp .btn.a1::before{background-image:url(${root}img/atlas1.png);}
 :focus:not(.btn)+.btn::before,.btn:focus::before{box-shadow:0 0 0 calc(var(--btn)*.01) var(--l) inset;}
 :checked:not(.btn)+.btn::after,.btn.a::after{content:"";border:calc(var(--btn)*.2) solid #00000001;border-image:url(${root}img/sel.svg) 32%;}:checked+.btn,.btn.a{transform:rotateY(360deg);transition:transform .5s;}
-:disabled:not(.btn)+.btn,.btn.d,.d .btn{filter:grayscale(1)opacity(.5);pointer-events:none;}
-.btn:active::before,.btn:active::after{transform:scale(.85);}.btn:not(:active)::before,.btn:not(:active)::after{transition:transform .2s;}
+:disabled:not(.btn)+.btn,.btn:disabled,.btn.d,.d .btn{filter:grayscale(1)opacity(.5);pointer-events:none;}
+.btn:not(:disabled):active::before,.btn:not(:disabled):active::after{transform:scale(.85);}.btn:not(:active)::before,.btn:not(:active)::after{transition:transform .2s;}
 .spin{--bp:-200% 0;--g:#0000;animation:2s linear spin infinite;pointer-events:none;}
 .clock::before{--bp:-200% -0%;filter:saturate(.3);}.clock::after{content:"";transform:rotate(var(--rot,45deg));filter:drop-shadow(0 0 2px #aef);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'%3E%3Cpath d='M6 6h1v1h-1z' fill='%23caf0f6'/%3E%3C/svg%3E");}
 .clock.d::after,.d .clock::after{--rot:initial;}.clock:active::after{transform:rotate(var(--rot,45deg))scale(.85);}
