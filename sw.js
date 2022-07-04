@@ -1,10 +1,23 @@
 //https://developer.mozilla.org/ja/docs/Web/Progressive_web_apps/Offline_Service_workers
 //https://developers.google.com/web/fundamentals/primers/service-workers?hl=ja
-const cname='2206162',
+const cname='2207040',
 cstore=[
 	'util.js',
 	'img/icon.svg','img/icon_.svg','img/icon.png','img/icon192.png',
-	'index.html'
+	'img/icon/instr.svg','img/icon/info.svg','img/icon/seq.svg','img/icon/manual.svg',
+	'https://mcbeeringi.github.io/src/toggle.css',
+	'img/atlas0.svg','img/atlas1.webp','img/sel.svg',
+	'index.html',
+
+	'instr.html',
+	'audio/instr/musicbox/a3.mp3',
+	'audio/instr/musicbox/a4.mp3',
+	'audio/instr/musicbox/a5.mp3',
+	'audio/instr/musicbox/a6.mp3',
+	'audio/instr/musicbox/ds4.mp3',
+	'audio/instr/musicbox/ds5.mp3',
+	'audio/instr/musicbox/ds6.mp3',
+	'audio/instr/musicbox/ds7.mp3'
 ],
 cprev=[
 	'_.html'

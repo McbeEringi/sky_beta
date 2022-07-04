@@ -48,8 +48,7 @@ const urlq=Object.fromEntries(location.search.slice(1).split('&').filter(y=>y).m
 			});
 			bga.abs&&(bga.abs.stop(),bga.abs=null);
 			(bga.abs=Object.assign(actx.createBufferSource(),{buffer:w,loop:true})).start();
-			bga.g.gain.value=localStorage.sky_bgagain;
-			[bga.abs,bga.g,actx.destination].reduce((a,x)=>(a.connect(x),x));
+			bga.g.gain.value=localStorage.sky_bgagain;bga.abs.connect(bga.g);
 		}).catch(errfx);
 	},
 	gcfg=()=>{
@@ -84,7 +83,7 @@ const urlq=Object.fromEntries(location.search.slice(1).split('&').filter(y=>y).m
 		setRadio('bgar',localStorage.sky_bga,e);forRadio('bgar',x=>x.onchange=()=>(localStorage.sky_bga=x.value,bgaset()));
 	},
 	actx=new(window.AudioContext||webkitAudioContext)(),
-	bga={abs:null,g:actx.createGain()},
+	bga={abs:null,g:actx.createGain(),out:actx.destination},
 	ourls=[],
 	altimggen=w=>new Promise(f=>{const c=Object.assign(document.createElement('canvas'),{width:4,height:4}),ctx=c.getContext('2d'),img=new Image();img.onload=()=>{ctx.drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(img.src);f(c.toDataURL());};img.src=URL.createObjectURL(w);}),
 	errfx=(e={})=>{e.target&&(e=e.target.error);alert(`⚠️${e.name||'Error'}<br>${e.message||'Something went wrong :('}`);console.error(e);},
@@ -119,7 +118,7 @@ hr{border:1px solid #fff8;border-radius:1px;backdrop-filter:blur(2px);-webkit-ba
 
 .alert{position:fixed;top:0;left:0;width:100%;height:100%;z-index:16;transition:.2s;}.alert *{transition:.2s;}
 .alert>.bg{width:100%;height:100%;margin:0;background-color:#0004;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);}
-.alert>.cont{position:absolute;background-color:#000c;top:50%;left:50%;max-width:calc(100% - 64px);max-height:calc(100% - 64px);margin:0;padding:16px;border-radius:16px;box-sizing:border-box;transform-origin:top center;transform:translate(-50%,-50%);overflow:auto;overflow-wrap:break-word;}
+.alert>.cont{position:absolute;background-color:#000c;top:50%;left:50%;max-width:calc(100% - 96px);max-height:calc(100% - 96px);margin:0;padding:16px;border-radius:16px;box-sizing:border-box;transform-origin:top center;transform:translate(-50%,-50%);overflow:auto;overflow-wrap:break-word;}
 .alert.fade{opacity:0;pointer-events:none;}
 .alert.fade>.cont{transform:translate(-50%,calc(-50% - 32px));}
 .alert:nth-last-of-type(n+2)>.cont{opacity:.5;top:100%;visibility:hidden;transform:translate(-50%,0)scale(.8);}
@@ -171,7 +170,7 @@ tex.onload=()=>{
 	document.body.insertAdjacentHTML('beforeend',`<style>.btn::before{background-image:url(${c.toDataURL()});}</style>`);
 };tex.src=root+'img/atlas0.svg';
 {const bg_=()=>localStorage.sky_bgi==0&&bgiset();setTimeout(()=>{bg_();setInterval(bg_,36e5);},36e5-(Date.now()%36e5));bgiset();}
-['touchstart','mousedown'].forEach(x=>addEventListener(x,()=>actx.resume(),{once:true}));bgaset();
+['touchstart','mousedown'].forEach(x=>addEventListener(x,()=>actx.resume(),{once:true}));bga.g.connect(bga.out);bgaset();
 if('pwa'in urlq&&document.referrer)addEventListener('DOMContentLoaded',()=>document.body.insertAdjacentHTML('beforeend','<button class="btn" style="--bp:-400% -100%;--btn:48px;position:fixed;bottom:0;left:0;" onclick="history.back();">back</button>'),{once:true});
 onbeforeunload=()=>ourls.forEach(URL.revokeObjectURL);
 

@@ -20,12 +20,14 @@
 	<!--PWA-->
 	<link rel="manifest" href="mf.json">
 	<meta name="theme-color" content="#214">
+
+	<link rel="stylesheet" href="https://mcbeeringi.github.io/src/toggle.css">
 </head>
 <body>
 	<script src="util.js"></script>
 	<style>
 		html,body{height:100%;margin:0;overflow:hidden;position:relative;}
-		input[type=checkbox],input[type=radio]{opacity:0;position:absolute;top:0;left:0;pointer-events:none;}
+		body>input[type=checkbox],input[type=radio]{opacity:0;position:absolute;top:0;left:0;pointer-events:none;}
 
 		label[for=drwcb]{position:absolute;right:0;bottom:0;--btn:48px;transition:transform .5s;--bp:-300% 0;z-index:1;}label[for=drwcb]::after{opacity:0;}:checked+label[for=drwcb]::before{--bp_:-100% -100%;}
 		.drawer{width:calc(var(--btn)*4.3);max-width:100%;height:100%;padding-bottom:56px;box-sizing:border-box;position:absolute;top:0;right:0;overflow-y:auto;background-color:var(--g);transform:translateX(5%);visibility:hidden;opacity:0;transition:.2s;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);}
@@ -54,13 +56,16 @@
 	</div>
 
 	<script>
+		'use strict';
 		texts={
 			...texts,
 			info:'<h1>sky_instruments</h1><hr>In game sounds<br><small>recorded by @McbeEringi</small><hr><p>[sky_instr] v6 build:2207040<br><a href="https://twitter.com/mcbeeringi">@McbeEringi</a> MITLicense</p>',
-			nyan:'nyan',
+			cfg:'Config',kbs:'Key Size',rev:'Reverb',del:'Delay',rcv:'Use video recorder<br>(experimental)',fbs:'Feedback Sound',
+			nyan:'Nyan',
 			...{
 				ja:{
-						nyan:'ﾆｬｰﾝ'
+					cfg:'設定',kbs:'キーのサイズ',rev:'リバーブ',del:'遅延',rcv:'録画機能の使用(試験的)',fbs:'操作音',
+					nyan:'ﾆｬｰﾝ'
 				}
 			}[navigator.language.slice(0,2)]
 		};
@@ -84,7 +89,17 @@
 				const abs=actx.createBufferSource(),s=q._instr[2][abi].reduce((a,x)=>{const d=Math.abs(n-x[0]);return a[0]<d?a:[d,x];},[Infinity])[1];
 				abs.playbackRate.value=Math.pow(2,(n-s[0])/12);abs.buffer=s[1];abs.connect(deln);abs.start(t);
 			},
-			revn=actx.createConvolver(),gn0=actx.createGain(),gn1=actx.createGain(),deln=actx.createDelay(1),
+			cfg=()=>{
+				alert(`<h2>${texts.cfg}</h2><hr><div class="items">
+					<label><button class="btn a1" style="--bp:-100% 0;" onclick="gcfg();"></button>${texts.gcfg}</label>
+					<label><div>${texts.kbs}<br><input type="range" class="style" min="64" max="128" step="4" value="${q.kbs}"></div></label>
+					<label><div>${texts.rev}<br><input type="range" class="style" min="0" max="1" step="0.0625" value="${q.rev}" oninput="q.rev=this.value;save();"></div></label>
+					<label><div>${texts.del}<br><input type="range" class="style" min="0" max=".2" step="0.0125" value="${q.del}" oninput="q.del=this.value;save();"></div></label>
+					<label><div>${texts.rcv}<br><input type="checkbox" class="toggle"${q.rcv?' checked':''}></div></label>
+					<label><div>${texts.fbs}<br><input type="checkbox" class="toggle"${q.fbs?' checked':''}></div></label>
+				</div>`);
+			},
+			deln=actx.createDelay(.5),revn=actx.createConvolver(),gn0=actx.createGain(),gn1=actx.createGain(),
 			d={
 				instr:[
 					['musicbox/',1,[stdli(4,6,{a3:'a3.mp3',ds7:'ds7.mp3'})],0],
@@ -131,7 +146,7 @@
 					scd.classList[w[3]==1?'add':'remove']('d');
 					Promise.all(w[2].map(x=>Promise.all(Object.entries(x).map(async y=>{
 						y[1]=await(await fetch('audio/instr/'+w[0]+y[1])).arrayBuffer();
-						y[1]=await new Promise((f,r)=>actx.decodeAudioData(y[1],f,r));console.log(y[0]);
+						y[1]=await new Promise((f,r)=>actx.decodeAudioData(y[1],f,r));
 						y[0]=n2nn(y[0]);
 						return y;
 					})))).then(x=>{w[2]=x;q._instr=w;}).catch(errfx);
@@ -154,16 +169,18 @@
 			scd.children[1].onclick=()=>{q.sc=0;fb();};
 			scd.children[2].onclick=()=>{q.sc++;fb();};
 		}
-		cfgbtn.onclick=gcfg;
+		cfgbtn.onclick=cfg;
 		infobtn.onclick=()=>alert(texts.info);
 
-		deln.connect(revn).connect(gn0).connect(actx.destination);deln.connect(gn1).connect(actx.destination);irgen().then(x=>revn.buffer=x);
+		[[deln,revn,gn0,actx.destination],[deln,gn1,actx.destination]].forEach(x=>x.reduce((a,y)=>(a.connect(y),y)));
+		irgen().then(x=>revn.buffer=x);bga.g.disconnect(bga.out);bga.g.connect(bga.out=deln);
 		navigator.requestMIDIAccess&&addEventListener('midiready',()=>midi.inputs.forEach(x=>x.onmidimessage=e=>({
 			0:()=>console.log('noteOn',e,trigger(72+q.octave+q.sc)),
 			1:()=>console.log('noteOff',e,trigger(79+q.octave+q.sc)),
 		}[(e.data[0]&0x70)>>>4]||Array)()),{once:true});
 
 		load();
+		q.ci&&addEventListener('idbready',()=>q.instr=q.instr);
 </script>
 </body>
 </html>
