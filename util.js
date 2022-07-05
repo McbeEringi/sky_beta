@@ -6,10 +6,11 @@ localStorage.sky_bgi||(localStorage.sky_bgi=0);
 localStorage.sky_bgagain||(localStorage.sky_bgagain=1);
 localStorage.sky_bgafade||(localStorage.sky_bgafade=10);
 localStorage.sky_bga||(localStorage.sky_bga=-1);
-let idb=indexedDB.open('sky_idb',4),
+let idb=indexedDB.open('sky_idb',4),idbi='stuff',
 	midi=null,
 	tex=new Image(),
 	texts={
+		loading:'<p class="btn a1 spin">loading</p>',
 		idberr:'Failed to access indexedDB.<br>The app may not work properly.<br>Make sure your browser is not in private mode.',nodata:'Data not found',caches:'Caches',
 		back2top:'Back to Top',gcfg:'General Config',bgi:'Background Image',bgil:['Dynamic','Photo','CSS Code'],bga:'Background Audio',bgal:['Hotspring','Home','Forest','Vault'],custom:'Custom',gain:'Volume',xfade:'Crossfade(sec)',
 		...{
@@ -27,14 +28,14 @@ const urlq=Object.fromEntries(location.search.slice(1).split('&').filter(y=>y).m
 		set=(y=`url(${url})`)=>bg.style.backgroundImage=y;
 		({
 			0:()=>{bgi.hidden=false;set(`linear-gradient(${bgcol[~x?x:[3,3,3,3,3,0,0,0,0,4,1,1,1,1,1,1,4,2,2,2,2,3,3,3][new Date().getHours()]]})`);},
-			1:()=>{bgi.hidden=true;idb.name?e2p(idbos().get('bgimg')).then(e=>set(`url(${e.target.result?(x=>(ourls.push(x),x))(URL.createObjectURL(e.target.result)):url})`)).catch(e=>set()):set(`url(${localStorage.sky_bgialt||url})`);},
+			1:()=>{bgi.hidden=true;idb.name?e2p(os().get('bgimg')).then(e=>set(`url(${e.target.result?(x=>(ourls.push(x),x))(URL.createObjectURL(e.target.result)):url})`)).catch(e=>set()):set(`url(${localStorage.sky_bgialt||url})`);},
 			2:()=>{bgi.hidden=true;set(localStorage.sky_bgicode);}
 		})[~x?0:localStorage.sky_bgi]();
 	},
 	bgaset=(fade=+localStorage.sky_bgafade)=>{
 		bga.abs&&(bga.abs.stop(),bga.abs=null);
 		if(!idb.name&&!~localStorage.sky_bga)return;
-		(~localStorage.sky_bga?fetch(`${root}audio/bga/${['onsen','home','forest','vault'][localStorage.sky_bga]}.mp3`):e2p(idbos().get('bga')).then(w=>new Response(w.target.result)))
+		(~localStorage.sky_bga?fetch(`${root}audio/bga/${['onsen','home','forest','vault'][localStorage.sky_bga]}.mp3`):e2p(os().get('bga')).then(w=>new Response(w.target.result)))
 		.then(async w=>{
 			w=await w.arrayBuffer();if(!w.byteLength&&!~localStorage.sky_bga)return;
 			w=await new Promise((f,r)=>actx.decodeAudioData(w,f,r));
@@ -57,8 +58,8 @@ const urlq=Object.fromEntries(location.search.slice(1).split('&').filter(y=>y).m
 			<div class="items" style="--items:170px;">
 				<label><input type="radio" name="bgir" value="0"><p class="btn" style="--bp:0 -100%;"></p>${texts.bgil[0]}</label>
 				<div><input type="radio" name="bgir" value="1" id="bgir1"><label for="bgir1" class="btn" style="--bp:0 -100%;"></label><div>${texts.bgil[1]}<br>
-					<button class="btn" style="--bp:-600% -500%;" onclick="this.childNodes[0].click();"><input tabindex="-1" type="file" style="width:100%;height:100%;opacity:0;" accept="image/*" onclick="event.stopPropagation();" onchange="altimggen(this.files[0]).then(x=>localStorage.sky_bgialt=x);e2p(idbos().put(this.files[0],'bgimg')).then(()=>(localStorage.sky_bgi==1&&bgiset())).catch(errfx);">
-					</button><button class="btn" style="--bp:-400% -400%;" onclick="delete localStorage.sky_bgialt;e2p(idbos().delete('bgimg')).then(()=>(localStorage.sky_bgi==1&&bgiset())).catch(errfx);"></button>
+					<button class="btn" style="--bp:-600% -500%;" onclick="this.childNodes[0].click();"><input tabindex="-1" type="file" style="width:100%;height:100%;opacity:0;" accept="image/*" onclick="event.stopPropagation();" onchange="altimggen(this.files[0]).then(x=>localStorage.sky_bgialt=x);e2p(os().put(this.files[0],'bgimg')).then(()=>(localStorage.sky_bgi==1&&bgiset())).catch(errfx);">
+					</button><button class="btn" style="--bp:-400% -400%;" onclick="delete localStorage.sky_bgialt;e2p(os().delete('bgimg')).then(()=>(localStorage.sky_bgi==1&&bgiset())).catch(errfx);"></button>
 				</div></div>
 				<div><input type="radio" name="bgir" value="2" id="bgir2"><label for="bgir2" class="btn" style="--bp:0 -100%;"></label><div>${texts.bgil[2]}<br>
 					<button class="btn bgicode" style="--bp:-400% -500%;"></button>
@@ -66,10 +67,10 @@ const urlq=Object.fromEntries(location.search.slice(1).split('&').filter(y=>y).m
 			</div>
 			<h3>${texts.bga}</h3>
 			<div class="items" style="--items:150px;">
-				${texts.bgal.map((x,i)=>'<label><input type="radio" name="bgar" value="'+i+'"><p class="btn" style="--bp:0 -100%;"></p>'+x+'</label>').join('')}
-				<div><input type="radio" name="bgar" value="-1" id="bgar-1"><label for="bgar-1" class="btn" style="--bp:0 -100%;"></label><div>${texts.custom}<br>
-					<button class="btn" style="--bp:-600% -500%;" onclick="this.childNodes[0].click();"><input tabindex="-1" type="file" style="width:100%;height:100%;opacity:0;" accept="audio/aac,audio/flac,audio/mpeg,audio/ogg,audio/opus,audio/wav,audio/webm" onclick="event.stopPropagation();" onchange="e2p(idbos().put(this.files[0],'bga')).then(()=>(~localStorage.sky_bga||bgaset())).catch(errfx);">
-					</button><button class="btn" style="--bp:-100% -100%;" onclick="e2p(idbos().delete('bga')).then(()=>(~localStorage.sky_bga||bgaset())).catch(errfx);"></button>
+				${texts.bgal.map((x,i)=>'<label><input type="radio" name="bgar" value="'+i+'"><p class="btn" style="--bp:0 -300%;"></p>'+x+'</label>').join('')}
+				<div><input type="radio" name="bgar" value="-1" id="bgar-1"><label for="bgar-1" class="btn" style="--bp:0 -300%;"></label><div>${texts.custom}<br>
+					<button class="btn" style="--bp:-600% -500%;" onclick="this.childNodes[0].click();"><input tabindex="-1" type="file" style="width:100%;height:100%;opacity:0;" accept="audio/aac,audio/flac,audio/mpeg,audio/ogg,audio/opus,audio/wav,audio/webm" onclick="event.stopPropagation();" onchange="e2p(os().put(this.files[0],'bga')).then(()=>(~localStorage.sky_bga||bgaset())).catch(errfx);">
+					</button><button class="btn" style="--bp:-100% -100%;" onclick="e2p(os().delete('bga')).then(()=>(~localStorage.sky_bga||bgaset())).catch(errfx);"></button>
 				</div></div>
 				<label><div>${texts.gain}<br><input type="range" step="any" max="1" value="${localStorage.sky_bgagain}" oninput="localStorage.sky_bgagain=bga.g.gain.value=+this.value;"></div></label>
 				<label><div>${texts.xfade}<br><input type="number" min="0" class="input" value="${localStorage.sky_bgafade}" oninput="this.checkValidity()&&(localStorage.sky_bgafade=+this.value);" onchange="this.checkValidity()&&bgaset();"></div></label>
@@ -88,11 +89,11 @@ const urlq=Object.fromEntries(location.search.slice(1).split('&').filter(y=>y).m
 	altimggen=w=>new Promise(f=>{const c=Object.assign(document.createElement('canvas'),{width:4,height:4}),ctx=c.getContext('2d'),img=new Image();img.onload=()=>{ctx.drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(img.src);f(c.toDataURL());};img.src=URL.createObjectURL(w);}),
 	errfx=(e={})=>{e.target&&(e=e.target.error);alert(`⚠️${e.name||'Error'}<br>${e.message||'Something went wrong :('}`);console.error(e);},
 	getAlert=()=>[...document.querySelectorAll('.alert:not(.fade)>.cont')],
-	rmAlert=(e=getAlert().pop())=>e.parentNode.querySelector('.bg').onclick('rm'),
+	rmAlert=(m,e=getAlert().pop())=>e.parentNode.querySelector('.bg').onclick(m),
 	setRadio=(x,y,e=document)=>e.querySelector(`input[type=radio][name=${x}][value="${y}"]`).checked=true,
 	getRadio=(x,e=document)=>e.querySelector(`input[type=radio][name=${x}]:checked`),
 	forRadio=(x,y,e=document)=>e.querySelectorAll(`input[type=radio][name=${x}]`).forEach(y),
-	idbos=(x='stuff')=>idb.transaction(x,'readwrite').objectStore(x),
+	os=(x=idbi)=>idb.transaction(x,'readwrite').objectStore(x),
 	e2p=x=>new Promise((f,r)=>Object.assign(x,{onsuccess:f,onerror:r}));
 idb.onupgradeneeded=e=>{console.log('IDB UPG',e=idb.result);[['stuff'],['seq',{keyPath:'name'}],['instr',{keyPath:'name'}]].forEach(x=>e.objectStoreNames.contains(x[0])||e.createObjectStore(...x));};
 idb.onsuccess=e=>{console.log('IDB OK',idb=idb.result);e=()=>dispatchEvent(new Event('idbready'));if(document.readyState=='loading')addEventListener('DOMContentLoaded',e,{once:true});else e();bgiset();bgaset();};
@@ -150,9 +151,12 @@ hr{border:1px solid #fff8;border-radius:1px;backdrop-filter:blur(2px);-webkit-ba
 alert=x=>{
 	const wrap=document.createElement('div'),bg=document.createElement('p'),e=document.createElement('p'),p=new Promise(f=>{
 		wrap.classList.add('alert','fade');bg.classList.add('bg');e.classList.add('cont');
-		bg.onclick=y=>{wrap.ontransitionend=()=>wrap.remove();wrap.classList.add('fade');f(y);};
+		bg.onclick=y=>{
+			wrap.ontransitionend=()=>wrap.remove();wrap.classList.add('fade');f(y);
+			const e_=getAlert().pop();e_&&(e_.ontransitionend=()=>{(e_.querySelector('input,button,textarea,a')||{focus(){}}).focus();e_.ontransitionend=null;});
+		};
 		e.insertAdjacentHTML('beforeend',x);
-		wrap.append(bg,e);document.body.append(wrap);
+		wrap.append(bg,e);document.body.append(wrap);(e.querySelector('input,button,textarea,a')||{focus(){}}).focus();
 		wrap.offsetWidth;wrap.classList.remove('fade');
 	});
 	return{e,p};

@@ -59,21 +59,9 @@
 
 	<script>
 		'use strict';
-		texts={
-			...texts,
-			info:'<h1>sky_instruments</h1><hr>In game sounds<br><small>recorded by @McbeEringi</small><hr><p>[sky_instr] v6 build:2207040<br><a href="https://twitter.com/mcbeeringi">@McbeEringi</a> MITLicense</p>',
-			cfg:'Config',kbs:'Key Size',kbp:'Key Position',rev:'Reverb',del:'Delay',rcv:'Use video recorder<br>(experimental)',fbs:'Feedback Sound',
-			ci:'Custom Instruments',default:'Default',cnew:'Create New…',cin:'Instrument Name',fsel:'Choose File',
-			nyan:'Nyan',
-			...{
-				ja:{
-					cfg:'設定',kbs:'鍵盤サイズ',kbp:'鍵盤位置',rev:'リバーブ',del:'遅延',rcv:'録画機能の使用(試験的)',fbs:'操作音',
-					ci:'カスタム楽器',default:'デフォルト',cnew:'新規作成…',cin:'楽器名',fsel:'ファイルを選択',
-					nyan:'ﾆｬｰﾝ'
-				}
-			}[navigator.language.slice(0,2)]
-		};
-		const n2nn=x=>({c:12,d:14,e:16,f:17,g:19,a:21,b:23})[x[0].toLowerCase()]+(({'#':1,s:1})[x[1]]?x.slice(2)*12+1:x.slice(1)*12),
+		const esc=x=>x.replace(/[<>"'&]/g,y=>({'<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;','&':'&amp;'})[y]),
+			yn=w=>{w=alert(`<div class="tac">${w}</div><div class="tac"><button class="btn" style="--bp:-100% -100%;">no</button><button class="btn" style="--bp:0 -100%;">yes</button></div>`);Array.from(w.e.lastElementChild.children,(x,i)=>x.onclick=()=>rmAlert(i,x.closest('.cont')));return w;},
+			n2nn=x=>({c:12,d:14,e:16,f:17,g:19,a:21,b:23})[x[0].toLowerCase()]+(({'#':1,s:1})[x[1]]?x.slice(2)*12+1:x.slice(1)*12),
 			nn2n=x=>['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'][x%12]+Math.floor(x/12-1),
 			bp=i=>`${i%8*-100}% ${Math.floor(i*.125+1)*-100}%`,
 			stdli=(a,b=a+1,s={})=>{for(let i=a;i<=b;i++){s['ds'+i]=`ds${i}.mp3`;s['a'+i]=`a${i}.mp3`;}return s;},
@@ -89,25 +77,45 @@
 				bs.buffer=ab;[bs,lpf,g0,g1,oac.destination].reduce((a,x)=>a.connect(x));bs.start();
 				oac.startRendering();oac.oncomplete=e=>f(e.renderedBuffer);
 			}),
-			trigger=(n=69,abi=0,t)=>{
+			trigger=(n=69,{abi=0,t,out=deln}={})=>{
 				const abs=actx.createBufferSource(),s=q._instr[2][abi].reduce((a,x)=>{const d=Math.abs(n-x[0]);return a[0]<d?a:[d,x];},[Infinity])[1];
-				abs.playbackRate.value=Math.pow(2,(n-s[0])/12);abs.buffer=s[1];abs.connect(deln);abs.start(t);
+				abs.playbackRate.value=Math.pow(2,(n-s[0])/12);abs.buffer=s[1];abs.connect(out);abs.start(t);
 			},
 			cfg=()=>{
-				alert(`<h2>${texts.cfg}</h2><hr>
-				<h3>${texts.cfg}</h3>
-				<div class="items">
-					<label><div>${texts.rev}<br><input type="range" class="style" min="0" max="1" step="0.0625" value="${q.rev}" oninput="q.rev=this.value;save();"></div></label>
-					<label><div>${texts.del}<br><input type="range" class="style" min="0" max=".2" step="0.0125" value="${q.del}" oninput="q.del=this.value;save();"></div></label>
-					<label><div>${texts.kbs}<br><input type="range" class="style" min="64" max="128" step="4" value="${q.kbs}"></div></label>
-					<label><div>${texts.kbp}<br><input type="range" class="style" min="0" max="1" step="0.0625" value="${q.kbp}"></div></label>
-					<label><div>${texts.rcv}<br><input type="checkbox" class="toggle"${q.rcv?' checked':''}></div></label>
-					<label><div>${texts.fbs}<br><input type="checkbox" class="toggle"${q.fbs?' checked':''}></div></label>
-					<label><button class="btn a1" style="--bp:-100% 0;" onclick="gcfg();"></button>${texts.gcfg}</label>
-				</div>
-				<h3>${texts.ci}</h3>
-				<div class="items">
-				</div>`);
+				const e=alert(`<h2>${texts.cfg}</h2><hr>
+					<h3>${texts.cfg}</h3>
+					<div class="items">
+						<label><div>${texts.rev}<br><input type="range" class="style" min="0" max="1" step="0.0625" value="${q.rev}" oninput="q.rev=this.value;save();"></div></label>
+						<label><div>${texts.del}<br><input type="range" class="style" min="0" max=".2" step="0.0125" value="${q.del}" oninput="[72,79].forEach((x,i)=>trigger(x+q.octave+q.sc,{abi:0,t:actx.currentTime+.05+this.value*i,out:actx.destination}));q.del=this.value;save();"></div></label>
+						<label><div>${texts.kbs}<br><input type="range" class="style" min="64" max="128" step="4" value="${q.kbs}"></div></label>
+						<label><div>${texts.kbp}<br><input type="range" class="style" min="0" max="1" step="0.0625" value="${q.kbp}"></div></label>
+						<label><div>${texts.rcv}<br><input type="checkbox" class="toggle"${q.rcv?' checked':''}></div></label>
+						<label><div>${texts.fbs}<br><input type="checkbox" class="toggle"${q.fbs?' checked':''}></div></label>
+						<label><button class="btn a1" style="--bp:-100% 0;" onclick="gcfg();"></button>${texts.gcfg}</label>
+					</div>
+					<h3>${texts.ci}</h3>
+					<div class="items">
+					</div>`).e.lastElementChild,
+				cicell=(x,i)=>`<div><input type="radio" name="cisel" value="${i}" id="cisel${i}"><label for="cisel${i}" class="btn" style="--bp:0 -300%;"></label><div>${x}<br>
+					<button class="btn a1 ciedt" style="--bp:-100% 0;">config</button><button class="btn cidel" style="--bp:-100% -100%;">delete</button>
+				</div></div>`,
+				showci=()=>{
+					e.textContent='';e.insertAdjacentHTML('beforeend',texts.loading);
+					e2p(os().getAllKeys())
+						.then(w=>{w=w.target.result;e.textContent='';
+							e.insertAdjacentHTML('beforeend',w.map(cicell).join('')+`
+							<label><input type="radio" name="cisel" value="-1"><p class="btn" style="--bp:0 -300%;"></p>${texts.default}</label>
+							<label><button class="btn ciedt" style="--bp:-200% -100%;"></button>${texts.cnew}</label>
+							`);e.offsetWidth;
+							setRadio('cisel',Object.fromEntries([...w.map(Array),['',-1]])[q.ci||''],e);
+							forRadio('cisel',x=>x.onchange=()=>(x.checked&&(q.ci=~x.value?w[+x.value]:'')),e);
+							e.querySelectorAll('.ciedt').forEach((x,i)=>x.onclick=async()=>{
+								alert(w.length==i?-1:i);
+							});
+							e.querySelectorAll('.cidel').forEach((x,i)=>x.onclick=async()=>(await yn(texts.delask(w[i])).p==1&&(await e2p(os().delete(w[i])),q.ci==w[i]&&(q.ci='',save()),showci())));
+						}).catch(errfx);
+				};
+				showci();
 			},
 			deln=actx.createDelay(.5),revn=actx.createConvolver(),gn0=actx.createGain(),gn1=actx.createGain(),
 			d={
@@ -164,17 +172,34 @@
 				set sc (w){q._sc =w=w||0;scd.children[1].setAttribute('style',`--rot:${q.sc*30+45}deg;`);},get sc (){return q._instr&&q._instr[3]==1?0:q._sc;},
 				set rev(w){q._rev=w=w||0;gn0.gain.value=w;gn1.gain.value=1-w;},get rev(){return q._rev;},
 				set del(w){q._del=w=w||0;deln.delayTime.value=w;},get del(){return q._del;},
-				get octave(){return  q._instr?q._instr[1]*12:0;},
+				get octave(){return q._instr?q._instr[1]*12:0;},
 				k2i:Object.fromEntries(Array.from('QWERTASDFGZXCVB',(x,i)=>[`Key${x}`,[i%5,Math.floor(i/5)]]))
 			},
 			load=()=>({instr:q.instr,sc:q.sc,rev:q.rev,del:q.del=.1}=JSON.parse(localStorage.instr_stat||'{}')),
 			save=()=>localStorage.instr_stat=JSON.stringify({instr:q.instr,sc:q.sc,rev:q.rev,del:q.del});
 
+		texts={
+			...texts,
+			info:'<h1>sky_instruments</h1><hr>In game sounds<br><small>recorded by @McbeEringi</small><hr><p>[sky_instr] v6 build:2207040<br><a href="https://twitter.com/mcbeeringi">@McbeEringi</a> MITLicense</p>',
+			cfg:'Config',kbs:'Key Size',kbp:'Key Position',rev:'Reverb',del:'Delay',rcv:'Captures Keyboard<br>(experimental)',fbs:'Feedback Sound',
+			ci:'Custom Instruments',default:'Default',cnew:'Create New…',cin:'Instrument Name',fsel:'Choose File',
+			delask:x=>`Are you sure you want to delete<br>"${x}" ?`,
+			nyan:'Nyan',
+			...{
+				ja:{
+					cfg:'設定',kbs:'鍵盤サイズ',kbp:'鍵盤位置',rev:'リバーブ',del:'遅延',rcv:'鍵盤録画の使用(試験的)',fbs:'操作音',
+					ci:'カスタム楽器',default:'デフォルト',cnew:'新規作成…',cin:'楽器名',fsel:'ファイルを選択',
+					delask:x=>`本当に<br>「${x}」<br>を削除してよろしいですか?`,
+					nyan:'ﾆｬｰﾝ'
+				}
+			}[navigator.language.slice(0,2)]
+		};
+		idbi='instr';
 		(drwcb.onchange=()=>drwbtn.classList[drwcb.checked?'remove':'add']('a1'))();
 		isel.insertAdjacentHTML('beforeend',d.instr.map((_,i)=>`<input type="radio" name="isel" value="${i}" ${[7,18].includes(i)?'disabled':''} id="isel${i}"><label class="btn a1" style="--bp:${bp(i)};" for="isel${i}"></label>`).join(''));
 		forRadio('isel',x=>x.onchange=()=>(x.checked&&(q.instr=+x.value,save())),isel);
 		{
-			const fb=(t=actx.currentTime+.05)=>([72,76,79].forEach((y,i)=>trigger(y+q.octave+q.sc,0,t+i*.05)),save());
+			const fb=(t=actx.currentTime+.05)=>([72,76,79].forEach((x,i)=>trigger(x+q.octave+q.sc,{abi:0,t:t+i*.05,out:actx.destination})),save());
 			scd.children[0].onclick=()=>{q.sc--;fb();};
 			scd.children[1].onclick=()=>{q.sc=0;fb();};
 			scd.children[2].onclick=()=>{q.sc++;fb();};
