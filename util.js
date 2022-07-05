@@ -90,6 +90,7 @@ const urlq=Object.fromEntries(location.search.slice(1).split('&').filter(y=>y).m
 	errfx=(e={})=>{e.target&&(e=e.target.error);alert(`⚠️${e.name||'Error'}<br>${e.message||'Something went wrong :('}`);console.error(e);},
 	getAlert=()=>[...document.querySelectorAll('.alert:not(.fade)>.cont')],
 	rmAlert=(m,e=getAlert().pop())=>e.parentNode.querySelector('.bg').onclick(m),
+	yn=w=>{w=alert(`<div class="tac">${w}</div><div class="tac"><button class="btn" style="--bp:-100% -100%;">no</button><button class="btn" style="--bp:0 -100%;">yes</button></div>`);Array.from(w.e.lastElementChild.children,(x,i)=>x.onclick=()=>rmAlert(i,x.closest('.cont')));return w;},
 	setRadio=(x,y,e=document)=>e.querySelector(`input[type=radio][name=${x}][value="${y}"]`).checked=true,
 	getRadio=(x,e=document)=>e.querySelector(`input[type=radio][name=${x}]:checked`),
 	forRadio=(x,y,e=document)=>e.querySelectorAll(`input[type=radio][name=${x}]`).forEach(y),
