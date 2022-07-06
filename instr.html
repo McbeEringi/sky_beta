@@ -92,10 +92,8 @@
 						<label><div>${texts.fbs}<br><input type="checkbox" class="toggle"${q.fbs?' checked':''}></div></label>
 						<label><button class="btn a1" style="--bp:-100% 0;" onclick="gcfg();"></button>${texts.gcfg}</label>
 					</div>
-					<h3>${texts.ci}</h3>
-					<div class="items">
-					</div>`).e.lastElementChild,
-				cicell=(x,i)=>`<div><input type="radio" name="cisel" value="${i}" id="cisel${i}"><label for="cisel${i}" class="btn" style="--bp:0 -300%;"></label><div>${x}<br>
+					<h3>${texts.ci}</h3><div class="items"></div>`).e.lastElementChild,
+				cicell=(x,i)=>`<div><input type="radio" name="cisel" value="${i}" id="cisel${i}"><label for="cisel${i}" class="btn" style="--bp:0 -300%;"></label><div>${esc(x)}<br>
 					<button class="btn a1 ciedt" style="--bp:-100% 0;">config</button><button class="btn cidel" style="--bp:-100% -100%;">delete</button>
 				</div></div>`,
 				showci=()=>{
@@ -111,7 +109,7 @@
 							e.querySelectorAll('.ciedt').forEach((x,i)=>x.onclick=async()=>{
 								alert(w.length==i?-1:i);
 							});
-							e.querySelectorAll('.cidel').forEach((x,i)=>x.onclick=async()=>(await yn(texts.delask(w[i])).p==1&&(await e2p(os('instr').delete(w[i])),q.ci==w[i]&&(q.ci='',save()),showci())));
+							e.querySelectorAll('.cidel').forEach((x,i)=>x.onclick=async()=>(await yn(texts.delask(esc(w[i]))).p==1&&(await e2p(os('instr').delete(w[i])),q.ci==w[i]&&(q.ci='',save()),showci())));
 						}).catch(errfx);
 				};
 				showci();
@@ -179,7 +177,7 @@
 
 		texts={
 			...texts,
-			info:'<h1>sky_instruments</h1><hr>In game sounds<br><small>recorded by @McbeEringi</small><hr><p>[sky_instr] v6 build:2207060<br><a href="https://twitter.com/mcbeeringi">@McbeEringi</a> MITLicense</p>',
+			info:'<h1>sky_instruments</h1><hr>In game sounds<br><small>recorded by @McbeEringi</small><hr><p>[sky_instr] v6 build:2207061<br><a href="https://twitter.com/mcbeeringi">@McbeEringi</a> MITLicense</p>',
 			cfg:'Config',kbs:'Key Size',kbp:'Key Position',rev:'Reverb',del:'Delay',rcv:'Captures Keyboard<br>(experimental)',fbs:'Feedback Sound',
 			ci:'Custom Instruments',default:'Default',cnew:'Create New…',cin:'Instrument Name',fsel:'Choose File',
 			delask:x=>`Are you sure you want to delete<br>"${x}" ?`,

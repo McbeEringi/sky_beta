@@ -105,7 +105,7 @@ document.body.insertAdjacentHTML('afterbegin',`<link rel="stylesheet" href="http
 @keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
 :root,.input,.btn{
 	--bc:#222;--fc:#fff;--l:#fea;--b0:#48f;--b1:#8af;--b2:#aef;--p0:#84f;--p1:#a8f;--p2:#eaf;--r0:#f00;--r1:#f44;
-	--g:#3338;--btn:64px;--bp:0 0;--items:200px;
+	--g:#2228;--btn:64px;--bp:0 0;--items:200px;
 	background-color:var(--bc);color:var(--fc);font-family:"M PLUS Rounded 1c",sans-serif;text-shadow:0 0 4px var(--bc);
 }
 *{-webkit-tap-highlight-color:#0000;}
