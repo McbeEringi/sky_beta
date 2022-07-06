@@ -93,23 +93,29 @@
 						<label><button class="btn a1" style="--bp:-100% 0;" onclick="gcfg();"></button>${texts.gcfg}</label>
 					</div>
 					<h3>${texts.ci}</h3><div class="items"></div>`).e.lastElementChild,
-				cicell=(x,i)=>`<div><input type="radio" name="cisel" value="${i}" id="cisel${i}"><label for="cisel${i}" class="btn" style="--bp:0 -300%;"></label><div>${esc(x)}<br>
-					<button class="btn a1 ciedt" style="--bp:-100% 0;">config</button><button class="btn cidel" style="--bp:-100% -100%;">delete</button>
-				</div></div>`,
 				showci=()=>{
 					e.textContent='';e.insertAdjacentHTML('beforeend',texts.loading);
 					e2p(os('instr').getAllKeys())
 						.then(w=>{w=w.target.result;e.textContent='';
-							e.insertAdjacentHTML('beforeend',w.map(cicell).join('')+`
+							e.insertAdjacentHTML('beforeend',w.map((x,i)=>`<div><input type="radio" name="cisel" value="${i}" id="cisel${i}"><label for="cisel${i}" class="btn" style="--bp:0 -300%;"></label><div>${esc(x)}<br>
+								<button class="btn a1 ciedt" style="--bp:-100% 0;">config</button><button class="btn cidel" style="--bp:-100% -100%;">delete</button>
+							</div></div>`).join('')+`
 							<label><input type="radio" name="cisel" value="-1"><p class="btn" style="--bp:0 -300%;"></p>${texts.default}</label>
 							<label><button class="btn ciedt" style="--bp:-200% -100%;"></button>${texts.cnew}</label>
 							`);e.offsetWidth;
 							setRadio('cisel',Object.fromEntries([...w.map(Array),['',-1]])[q.ci||''],e);
 							forRadio('cisel',x=>x.onchange=()=>(x.checked&&(q.ci=~x.value?w[+x.value]:'')),e);
 							e.querySelectorAll('.ciedt').forEach((x,i)=>x.onclick=async()=>{
-								alert(w.length==i?-1:i);
+								const e_=yn(`<input class="input" placeholder="${texts.cin}"><hr><div class="cils">${texts.loading}</div><button class="btn" style="--btn:40px;--bp:-200% -100%;">add</button><hr>`),
+									ls=e_.e.querySelector('.cils'),
+									opt=y=>new Array(60).fill().map((_,j)=>`<option value="${j=nn2n(j+=36)}"${y==j?' selected':''}>${j}</option>`).join(''),
+									cell=(y=['A4',null],i=Math.random())=>`<div><input type="file" id="${i='file'+i}" style="position:absolute;pointer-events:none;opacity:0;"><label for="${i}" class="btn" style="--btn:40px;--bp:0 -500%;">file</label><select class="input">${opt(y[0])}</select><button class="btn" style="--btn:40px;--bp:-100% -100%;" onclick="this.parentElement.remove();">delete</button></div>`,
+									a=w.length==i?{name:'',dat:[void 0]}:(await e2p(os('instr').get(w[i]))).target.result;
+								e_.e.querySelector('button').onclick=()=>ls.insertAdjacentHTML('beforeend',cell());
+								e_.e.firstElementChild.value=a.name;ls.textContent='';
+								ls.insertAdjacentHTML('beforeend',a.dat.map(cell).join(''));
 							});
-							e.querySelectorAll('.cidel').forEach((x,i)=>x.onclick=async()=>(await yn(texts.delask(esc(w[i]))).p==1&&(await e2p(os('instr').delete(w[i])),q.ci==w[i]&&(q.ci='',save()),showci())));
+							e.querySelectorAll('.cidel').forEach((x,i)=>x.onclick=async()=>(await yn(`<div class="tac">${texts.delask(esc(w[i]))}</div>`).p==1&&(await e2p(os('instr').delete(w[i])),q.ci==w[i]&&(q.ci='',save()),showci())));
 						}).catch(errfx);
 				};
 				showci();
