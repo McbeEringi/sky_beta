@@ -6,7 +6,7 @@ localStorage.sky_bgi||(localStorage.sky_bgi=0);
 localStorage.sky_bgagain||(localStorage.sky_bgagain=1);
 localStorage.sky_bgafade||(localStorage.sky_bgafade=10);
 localStorage.sky_bga||(localStorage.sky_bga=-1);
-let idb=indexedDB.open('sky_idb',4),idbi='stuff',
+let idb=indexedDB.open('sky_idb',4),
 	midi=null,
 	tex=new Image(),
 	texts={
@@ -94,7 +94,7 @@ const urlq=Object.fromEntries(location.search.slice(1).split('&').filter(y=>y).m
 	setRadio=(x,y,e=document)=>e.querySelector(`input[type=radio][name=${x}][value="${y}"]`).checked=true,
 	getRadio=(x,e=document)=>e.querySelector(`input[type=radio][name=${x}]:checked`),
 	forRadio=(x,y,e=document)=>e.querySelectorAll(`input[type=radio][name=${x}]`).forEach(y),
-	os=(x=idbi)=>idb.transaction(x,'readwrite').objectStore(x),
+	os=(x='stuff')=>idb.transaction(x,'readwrite').objectStore(x),
 	e2p=x=>new Promise((f,r)=>Object.assign(x,{onsuccess:f,onerror:r}));
 idb.onupgradeneeded=e=>{console.log('IDB UPG',e=idb.result);[['stuff'],['seq',{keyPath:'name'}],['instr',{keyPath:'name'}]].forEach(x=>e.objectStoreNames.contains(x[0])||e.createObjectStore(...x));};
 idb.onsuccess=e=>{console.log('IDB OK',idb=idb.result);e=()=>dispatchEvent(new Event('idbready'));if(document.readyState=='loading')addEventListener('DOMContentLoaded',e,{once:true});else e();bgiset();bgaset();};

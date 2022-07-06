@@ -100,7 +100,7 @@
 				</div></div>`,
 				showci=()=>{
 					e.textContent='';e.insertAdjacentHTML('beforeend',texts.loading);
-					e2p(os().getAllKeys())
+					e2p(os('instr').getAllKeys())
 						.then(w=>{w=w.target.result;e.textContent='';
 							e.insertAdjacentHTML('beforeend',w.map(cicell).join('')+`
 							<label><input type="radio" name="cisel" value="-1"><p class="btn" style="--bp:0 -300%;"></p>${texts.default}</label>
@@ -111,7 +111,7 @@
 							e.querySelectorAll('.ciedt').forEach((x,i)=>x.onclick=async()=>{
 								alert(w.length==i?-1:i);
 							});
-							e.querySelectorAll('.cidel').forEach((x,i)=>x.onclick=async()=>(await yn(texts.delask(w[i])).p==1&&(await e2p(os().delete(w[i])),q.ci==w[i]&&(q.ci='',save()),showci())));
+							e.querySelectorAll('.cidel').forEach((x,i)=>x.onclick=async()=>(await yn(texts.delask(w[i])).p==1&&(await e2p(os('instr').delete(w[i])),q.ci==w[i]&&(q.ci='',save()),showci())));
 						}).catch(errfx);
 				};
 				showci();
@@ -193,7 +193,6 @@
 				}
 			}[navigator.language.slice(0,2)]
 		};
-		idbi='instr';
 		(drwcb.onchange=()=>drwbtn.classList[drwcb.checked?'remove':'add']('a1'))();
 		isel.insertAdjacentHTML('beforeend',d.instr.map((_,i)=>`<input type="radio" name="isel" value="${i}" ${[7,18].includes(i)?'disabled':''} id="isel${i}"><label class="btn a1" style="--bp:${bp(i)};" for="isel${i}"></label>`).join(''));
 		forRadio('isel',x=>x.onchange=()=>(x.checked&&(q.instr=+x.value,save())),isel);
