@@ -178,7 +178,7 @@
 					setRadio('isel',w=w||0,isel);drwbtn.setAttribute('style',`--bp:${bp(w)};`);w=[...d.instr[w]];delete q._instr;scd.classList[w[3]==1?'add':'remove']('d');
 					Promise.all(w[2].map(x=>Promise.all(Object.entries(x).map(async y=>[n2nn(y[0]),await new Promise(async(f,r)=>actx.decodeAudioData(await(await fetch('audio/instr/'+w[0]+y[1])).arrayBuffer(),f,r))])))).then(x=>{w[2]=x;q._instr=w;}).catch(errfx);
 				},get instr(){return +getRadio('isel',isel).value;},
-				set sc (w){q._sc =w=w||0;scd.children[1].setAttribute('style',`--rot:${q.sc*30+45}deg;`);},get sc (){return q._instr&&q._instr[3]==1?0:q._sc;},
+				set sc (w){q._sc =w=w||0;scd.children[1].setAttribute('style',`--rot:${w*30+45}deg;`);},get sc (){return q._instr&&q._instr[3]==1?0:q._sc;},
 				set rev(w){q._rev=w=w||0;gn0.gain.value=w;gn1.gain.value=1-w;},get rev(){return q._rev;},
 				set del(w){q._del=w=w||0;deln.delayTime.value=w;},get del(){return q._del;},
 				get octave(){return q._instr?q._instr[1]*12:0;},
