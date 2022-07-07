@@ -54,7 +54,6 @@
 		</button><a class="btn" style="--bp:-400% -200%;" href="manual/index.html?m=instr" target="_blank">manual
 		</a><button class="btn a1" style="--bp:0 0;" id="infobtn">info
 		</button>
-		
 	</div>
 
 	<script>
@@ -104,16 +103,29 @@
 							<label><button class="btn ciedt" style="--bp:-200% -100%;"></button>${texts.cnew}</label>
 							`);e.offsetWidth;
 							setRadio('cisel',Object.fromEntries([...w.map(Array),['',-1]])[q.ci||''],e);
-							forRadio('cisel',x=>x.onchange=()=>(x.checked&&(q.ci=~x.value?w[+x.value]:'')),e);
+							forRadio('cisel',x=>x.onchange=()=>(x.checked&&(q.ci=~x.value?w[+x.value]:'',save())),e);
 							e.querySelectorAll('.ciedt').forEach((x,i)=>x.onclick=async()=>{
-								const e_=yn(`<input class="input" placeholder="${texts.cin}"><hr><div class="cils">${texts.loading}</div><button class="btn" style="--btn:40px;--bp:-200% -100%;">add</button><hr>`),
+								const e_=alert(`<input class="input" placeholder="${texts.cin}"><hr><div class="cils">${texts.loading}</div><button class="btn" style="--btn:48px;--bp:-200% -100%;">add</button>`),
 									ls=e_.e.querySelector('.cils'),
-									opt=y=>new Array(60).fill().map((_,j)=>`<option value="${j=nn2n(j+=36)}"${y==j?' selected':''}>${j}</option>`).join(''),
-									cell=(y=['A4',null],i=Math.random())=>`<div><input type="file" id="${i='file'+i}" style="position:absolute;pointer-events:none;opacity:0;"><label for="${i}" class="btn" style="--btn:40px;--bp:0 -500%;">file</label><select class="input">${opt(y[0])}</select><button class="btn" style="--btn:40px;--bp:-100% -100%;" onclick="this.parentElement.remove();">delete</button></div>`,
-									a=w.length==i?{name:'',dat:[void 0]}:(await e2p(os('instr').get(w[i]))).target.result;
-								e_.e.querySelector('button').onclick=()=>ls.insertAdjacentHTML('beforeend',cell());
+									cell=(y,i)=>{
+										const div=document.createElement('div'),ch=['button','span','button'].map(z=>document.createElement(z));
+										ch[0].classList.add('btn');ch[0].setAttribute('style','--btn:48px;--bp:0 -300%;');ch[0].textContent='preview';ch[0].onclick=async()=>{const abs=actx.createBufferSource();abs.buffer=await new Promise(async(f,r)=>actx.decodeAudioData(await new Response(y[1]).arrayBuffer(),f,r));abs.connect(actx.destination);abs.start();};
+										ch[1].textContent=y[0]+': '+esc(y[1].name);
+										ch[2].classList.add('btn');ch[2].setAttribute('style','--btn:48px;--bp:-100% -100%;');ch[2].textContent='delete';ch[2].onclick=async()=>await yn(`<div class="tac">${texts.delask(ch[1].textContent)}</div>`).p==1&&(div.remove(),a.dat[i]=null);
+										div.append(...ch);return div;
+									},
+									a=w.length==i?{name:'',dat:[]}:(await e2p(os('instr').get(w[i]))).target.result;
+								e_.e.querySelector('button').onclick=async()=>{
+									const opt=(y='A4')=>new Array(60).fill().map((_,j)=>`<option value="${j=nn2n(j+=36)}"${y==j?' selected':''}>${j}</option>`).join(''),
+										e__=yn(`<select class="input">${opt()}</select><span> : </span><button class="btn" style="--bp:-600% -500%;--btn:48px;" onclick="this.firstElementChild.click();"><input tabindex="-1" type="file" style="width:100%;height:100%;opacity:0;" accept="audio/aac,audio/flac,audio/mpeg,audio/ogg,audio/opus,audio/wav,audio/webm" onclick="event.stopPropagation();" onchange=""></button><hr>`);
+									if(await e__.p==1){let file=e__.e.querySelector('input').files[0];file&&(file=[e__.e.querySelector('select').value,file])&&ls.append(cell(file,a.dat.push(file)-1));}
+								};
 								e_.e.firstElementChild.value=a.name;ls.textContent='';
-								ls.insertAdjacentHTML('beforeend',a.dat.map(cell).join(''));
+								ls.append(...a.dat.map(cell));
+								await e_.p;
+								const a_={name:e_.e.firstElementChild.value||a.name||new Date().toLocaleString(),dat:a.dat.filter(y=>y)};
+								a_.name==a.name?(await e2p(os('instr').put(a_)),q.ci=q.ci):(await e2p(os('instr').add(a_)),await e2p(os('instr').delete(a.name)),q.ci==a.name&&(q.ci=a_.name,save()));
+								showci();
 							});
 							e.querySelectorAll('.cidel').forEach((x,i)=>x.onclick=async()=>(await yn(`<div class="tac">${texts.delask(esc(w[i]))}</div>`).p==1&&(await e2p(os('instr').delete(w[i])),q.ci==w[i]&&(q.ci='',save()),showci())));
 						}).catch(errfx);
@@ -163,14 +175,8 @@
 			},
 			q={
 				set instr(w){
-					setRadio('isel',w=w||0,isel);drwbtn.setAttribute('style',`--bp:${bp(w)};`);w=[...d.instr[w]];delete q._instr;
-					scd.classList[w[3]==1?'add':'remove']('d');
-					Promise.all(w[2].map(x=>Promise.all(Object.entries(x).map(async y=>{
-						y[1]=await(await fetch('audio/instr/'+w[0]+y[1])).arrayBuffer();
-						y[1]=await new Promise((f,r)=>actx.decodeAudioData(y[1],f,r));
-						y[0]=n2nn(y[0]);
-						return y;
-					})))).then(x=>{w[2]=x;q._instr=w;}).catch(errfx);
+					setRadio('isel',w=w||0,isel);drwbtn.setAttribute('style',`--bp:${bp(w)};`);w=[...d.instr[w]];delete q._instr;scd.classList[w[3]==1?'add':'remove']('d');
+					Promise.all(w[2].map(x=>Promise.all(Object.entries(x).map(async y=>[n2nn(y[0]),await new Promise(async(f,r)=>actx.decodeAudioData(await(await fetch('audio/instr/'+w[0]+y[1])).arrayBuffer(),f,r))])))).then(x=>{w[2]=x;q._instr=w;}).catch(errfx);
 				},get instr(){return +getRadio('isel',isel).value;},
 				set sc (w){q._sc =w=w||0;scd.children[1].setAttribute('style',`--rot:${q.sc*30+45}deg;`);},get sc (){return q._instr&&q._instr[3]==1?0:q._sc;},
 				set rev(w){q._rev=w=w||0;gn0.gain.value=w;gn1.gain.value=1-w;},get rev(){return q._rev;},
@@ -178,12 +184,12 @@
 				get octave(){return q._instr?q._instr[1]*12:0;},
 				k2i:Object.fromEntries(Array.from('QWERTASDFGZXCVB',(x,i)=>[`Key${x}`,[i%5,Math.floor(i/5)]]))
 			},
-			load=()=>({instr:q.instr,sc:q.sc,rev:q.rev,del:q.del=.1}=JSON.parse(localStorage.instr_stat||'{}')),
-			save=()=>localStorage.instr_stat=JSON.stringify({instr:q.instr,sc:q.sc,rev:q.rev,del:q.del});
+			load=()=>({instr:q.instr,sc:q.sc,rev:q.rev,del:q.del=.1,ci:q.ci}=JSON.parse(localStorage.instr_stat||'{}')),
+			save=()=>localStorage.instr_stat=JSON.stringify({instr:q.instr,sc:q.sc,rev:q.rev,del:q.del,ci:q.ci});
 
 		texts={
 			...texts,
-			info:'<h1>sky_instruments</h1><hr>In game sounds<br><small>recorded by @McbeEringi</small><hr><p>[sky_instr] v6 build:2207061<br><a href="https://twitter.com/mcbeeringi">@McbeEringi</a> MITLicense</p>',
+			info:'<h1>sky_instruments</h1><hr>In game sounds<br><small>recorded by @McbeEringi</small><hr><p>[sky_instr] v6 build:2207070<br><a href="https://twitter.com/mcbeeringi">@McbeEringi</a> MITLicense</p>',
 			cfg:'Config',kbs:'Key Size',kbp:'Key Position',rev:'Reverb',del:'Delay',rcv:'Captures Keyboard<br>(experimental)',fbs:'Feedback Sound',
 			ci:'Custom Instruments',default:'Default',cnew:'Create New…',cin:'Instrument Name',fsel:'Choose File',
 			delask:x=>`Are you sure you want to delete<br>"${x}" ?`,
