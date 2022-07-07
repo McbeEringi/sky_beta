@@ -142,7 +142,7 @@ hr{border:1px solid #fff8;border-radius:1px;backdrop-filter:blur(2px);-webkit-ba
 .items{display:grid;max-width:100%;width:100vw;grid-template-columns:repeat(auto-fill,minmax(min(var(--items),100%),1fr));grid-auto-rows:1fr;grid-gap:8px;}
 .items::after{content:"";grid-column:1/-1;}
 .items input[type=radio]{position:absolute;opacity:0;pointer-event:none;}
-.items *{max-width:100%;}
+.items *{max-width:100%;overflow:hidden;text-overflow:ellipsis;overflow-wrap:normal;word-break:keep-all;}
 .items>*{box-sizing:border-box;padding:4px;display:flex;align-items:center;}
 .items>* .btn{--btn:40px;}
 .items>*>.btn{--btn:56px;flex-shrink:0;align-self:start;}

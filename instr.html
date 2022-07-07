@@ -32,7 +32,7 @@
 		label[for=drwcb]{position:absolute;right:0;bottom:0;--btn:48px;transition:transform .5s;--bp:-300% 0;z-index:1;}label[for=drwcb]::after{opacity:0;}:checked+label[for=drwcb]::before{--bp_:-100% -100%;}
 		.drawer{width:calc(var(--btn)*4.3);max-width:100%;height:100%;padding-bottom:56px;box-sizing:border-box;position:absolute;top:0;right:0;overflow-y:auto;background-color:var(--g);transform:translateX(5%);visibility:hidden;opacity:0;transition:.2s;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);}
 		.drawer hr{border:0;backdrop-filter:none;-webkit-backdrop-filter:none;}.drawer hr::before{content:"";display:block;margin:0 auto;width:4px;height:4px;background:#8888;border-radius:50%;}
-		#drwcb:checked~.drawer{transform:translateX(0);visibility:inherit;opacity:1;}
+		#drwcb:checked~.drawer{transform:translateX(0);visibility:initial;opacity:1;}
 	</style>
 
 	<button class="btn" onpointerdown="trigger(72+q.octave+q.sc);">trg</button>
@@ -105,24 +105,30 @@
 							setRadio('cisel',Object.fromEntries([...w.map(Array),['',-1]])[q.ci||''],e);
 							forRadio('cisel',x=>x.onchange=()=>(x.checked&&(q.ci=~x.value?w[+x.value]:'',save())),e);
 							e.querySelectorAll('.ciedt').forEach((x,i)=>x.onclick=async()=>{
-								const e_=alert(`<input class="input" placeholder="${texts.cin}"><hr><div class="cils">${texts.loading}</div><button class="btn" style="--btn:48px;--bp:-200% -100%;">add</button>`),
-									ls=e_.e.querySelector('.cils'),
+								let abs;
+								const e_=alert(`<input class="input" placeholder="${texts.cin}"><hr><div class="items">${texts.loading}</div>`),
+									ls=e_.e.querySelector('.items'),add=document.createElement('button'),label=document.createElement('label'),
 									cell=(y,i)=>{
-										const div=document.createElement('div'),ch=['button','span','button'].map(z=>document.createElement(z));
-										ch[0].classList.add('btn');ch[0].setAttribute('style','--btn:48px;--bp:0 -300%;');ch[0].textContent='preview';ch[0].onclick=async()=>{const abs=actx.createBufferSource();abs.buffer=await new Promise(async(f,r)=>actx.decodeAudioData(await new Response(y[1]).arrayBuffer(),f,r));abs.connect(actx.destination);abs.start();};
-										ch[1].textContent=y[0]+': '+esc(y[1].name);
-										ch[2].classList.add('btn');ch[2].setAttribute('style','--btn:48px;--bp:-100% -100%;');ch[2].textContent='delete';ch[2].onclick=async()=>await yn(`<div class="tac">${texts.delask(ch[1].textContent)}</div>`).p==1&&(div.remove(),a.dat[i]=null);
+										const div=document.createElement('div'),ch=['button','div'].map(z=>document.createElement(z)),del=document.createElement('button');
+										del.classList.add('btn');del.setAttribute('style','--bp:-100% -100%;');del.textContent='delete';del.onclick=async()=>await yn(`<div class="tac">${texts.delask(y[0]+': '+esc(y[1].name))}</div>`).p==1&&(div.remove(),a.dat[i]=null);
+										ch[0].classList.add('btn');ch[0].setAttribute('style','--bp:0 -300%;');ch[0].textContent='preview';ch[0].onclick=async()=>{abs&&(abs.onended=null,abs.stop());abs=actx.createBufferSource();abs.buffer=await new Promise(async(f,r)=>actx.decodeAudioData(await new Response(y[1]).arrayBuffer(),f,r));abs.connect(actx.destination);abs.onended=()=>abs=null;abs.start();};
+										ch[1].insertAdjacentHTML('beforeend',`${y[0]}: ${esc(y[1].name)}<br>`);ch[1].append(del);
 										div.append(...ch);return div;
 									},
 									a=w.length==i?{name:'',dat:[]}:(await e2p(os('instr').get(w[i]))).target.result;
-								e_.e.querySelector('button').onclick=async()=>{
+								add.classList.add('btn');add.setAttribute('style','--bp:-200% -100%;');add.textContent='add';
+								add.onclick=async()=>{
 									const opt=(y='A4')=>new Array(60).fill().map((_,j)=>`<option value="${j=nn2n(j+=36)}"${y==j?' selected':''}>${j}</option>`).join(''),
-										e__=yn(`<select>${opt()}</select> : <input type="file"accept="audio/aac,audio/flac,audio/mpeg,audio/ogg,audio/opus,audio/wav,audio/webm"><hr>`);
-									if(await e__.p==1){let file=e__.e.querySelector('input').files[0];file&&(file=[e__.e.querySelector('select').value,file])&&ls.append(cell(file,a.dat.push(file)-1));}
+										e__=alert(`<label style="display:inline-block;box-sizing:border-box;max-width:100%;padding:16px;">${texts.keysig}: <select>${opt()}</select></label><br><label style="display:inline-block;box-sizing:border-box;max-width:100%;padding:16px;">${texts.afile}: <input type="file" accept="audio/aac,audio/flac,audio/mpeg,audio/ogg,audio/opus,audio/wav,audio/webm" style="display:inline-block;box-sizing:border-box;max-width:100%;"></label>`);
+									await e__.p;
+									let file=e__.e.querySelector('input').files[0];
+									file&&(file=[e__.e.querySelector('select').value,file])&&ls.append(cell(file,a.dat.push(file)-1));
 								};
-								e_.e.firstElementChild.value=a.name;ls.textContent='';
-								ls.append(...a.dat.map(cell));
+								label.append(add);label.insertAdjacentHTML('beforeend',texts.cnew);
+								e_.e.firstElementChild.value=a.name;
+								ls.textContent='';ls.append(...a.dat.map(cell),label);
 								await e_.p;
+								abs&&abs.stop();
 								const a_={name:e_.e.firstElementChild.value||a.name||new Date().toLocaleString(),dat:a.dat.filter(y=>y)};
 								a_.name==a.name?(await e2p(os('instr').put(a_)),q.ci=q.ci):(await e2p(os('instr').add(a_)),await e2p(os('instr').delete(a.name)),q.ci==a.name&&(q.ci=a_.name,save()));
 								showci();
@@ -191,13 +197,13 @@
 			...texts,
 			info:'<h1>sky_instruments</h1><hr>In game sounds<br><small>recorded by @McbeEringi</small><hr><p>[sky_instr] v6 build:2207070<br><a href="https://twitter.com/mcbeeringi">@McbeEringi</a> MITLicense</p>',
 			cfg:'Config',kbs:'Key Size',kbp:'Key Position',rev:'Reverb',del:'Delay',rcv:'Captures Keyboard<br>(experimental)',fbs:'Feedback Sound',
-			ci:'Custom Instruments',default:'Default',cnew:'Create New…',cin:'Instrument Name',fsel:'Choose File',
+			ci:'Custom Instruments',default:'Default',cnew:'Create New…',cin:'Instrument Name',keysig:'Key Sig Name',afile:'Audio Source',
 			delask:x=>`Are you sure you want to delete<br>"${x}" ?`,
 			nyan:'Nyan',
 			...{
 				ja:{
 					cfg:'設定',kbs:'鍵盤サイズ',kbp:'鍵盤位置',rev:'リバーブ',del:'遅延',rcv:'鍵盤録画の使用(試験的)',fbs:'操作音',
-					ci:'カスタム楽器',default:'デフォルト',cnew:'新規作成…',cin:'楽器名',fsel:'ファイルを選択',
+					ci:'カスタム楽器',default:'デフォルト',cnew:'新規作成…',cin:'楽器名',keysig:'音名',afile:'音源',
 					delask:x=>`本当に<br>「${x}」<br>を削除してよろしいですか?`,
 					nyan:'ﾆｬｰﾝ'
 				}
