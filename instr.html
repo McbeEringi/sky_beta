@@ -117,7 +117,7 @@
 									a=w.length==i?{name:'',dat:[]}:(await e2p(os('instr').get(w[i]))).target.result;
 								e_.e.querySelector('button').onclick=async()=>{
 									const opt=(y='A4')=>new Array(60).fill().map((_,j)=>`<option value="${j=nn2n(j+=36)}"${y==j?' selected':''}>${j}</option>`).join(''),
-										e__=yn(`<select class="input">${opt()}</select><span> : </span><button class="btn" style="--bp:-600% -500%;--btn:48px;" onclick="this.firstElementChild.click();"><input tabindex="-1" type="file" style="width:100%;height:100%;opacity:0;" accept="audio/aac,audio/flac,audio/mpeg,audio/ogg,audio/opus,audio/wav,audio/webm" onclick="event.stopPropagation();" onchange=""></button><hr>`);
+										e__=yn(`<select>${opt()}</select> : <input type="file"accept="audio/aac,audio/flac,audio/mpeg,audio/ogg,audio/opus,audio/wav,audio/webm"><hr>`);
 									if(await e__.p==1){let file=e__.e.querySelector('input').files[0];file&&(file=[e__.e.querySelector('select').value,file])&&ls.append(cell(file,a.dat.push(file)-1));}
 								};
 								e_.e.firstElementChild.value=a.name;ls.textContent='';
