@@ -69,7 +69,7 @@ const urlq=Object.fromEntries(location.search.slice(1).split('&').filter(y=>y).m
 			<div class="items" style="--items:150px;">
 				${texts.bgal.map((x,i)=>'<label><input type="radio" name="bgar" value="'+i+'"><p class="btn" style="--bp:0 -300%;"></p>'+x+'</label>').join('')}
 				<div><input type="radio" name="bgar" value="-1" id="bgar-1"><label for="bgar-1" class="btn" style="--bp:0 -300%;"></label><div>${texts.custom}<br>
-					<button class="btn" style="--bp:-600% -500%;" onclick="this.firstElementChild.click();"><input tabindex="-1" type="file" style="width:100%;height:100%;opacity:0;" accept="audio/aac,audio/flac,audio/mpeg,audio/ogg,audio/opus,audio/wav,audio/webm" onclick="event.stopPropagation();" onchange="e2p(os().put(this.files[0],'bga')).then(()=>(~localStorage.sky_bga||bgaset())).catch(errfx);">
+					<button class="btn" style="--bp:-600% -500%;" onclick="this.firstElementChild.click();"><input tabindex="-1" type="file" style="width:100%;height:100%;opacity:0;" accept="audio/aac,audio/flac,audio/mpeg,audio/ogg,audio/opus,audio/wav,audio/webm" onclick="event.stopPropagation();" onchange="new Promise(async(f,r)=>actx.decodeAudioData(await new Response(this.files[0]).arrayBuffer(),f,r)).then(()=>e2p(os().put(this.files[0],'bga'))).then(()=>(~localStorage.sky_bga||bgaset())).catch(errfx);">
 					</button><button class="btn" style="--bp:-100% -100%;" onclick="e2p(os().delete('bga')).then(()=>(~localStorage.sky_bga||bgaset())).catch(errfx);"></button>
 				</div></div>
 				<label><div>${texts.gain}<br><input type="range" step="any" max="1" value="${localStorage.sky_bgagain}" oninput="localStorage.sky_bgagain=bga.g.gain.value=+this.value;"></div></label>
