@@ -154,10 +154,10 @@ alert=x=>{
 		wrap.classList.add('alert','fade');bg.classList.add('bg');e.classList.add('cont');
 		bg.onclick=y=>{
 			wrap.ontransitionend=()=>wrap.remove();wrap.classList.add('fade');f(y);
-			const e_=getAlert().pop();e_&&(e_.ontransitionend=()=>{(e_.querySelector('input,button,textarea,a')||{focus(){}}).focus();e_.ontransitionend=null;});
+			const e_=getAlert().pop();e_&&(e_.ontransitionend=()=>(e_.focus(),e_.ontransitionend=null));
 		};
-		e.insertAdjacentHTML('beforeend',x);
-		wrap.append(bg,e);document.body.append(wrap);(e.querySelector('input,button,textarea,a,select')||{focus(){}}).focus();
+		e.insertAdjacentHTML('beforeend',x);e.tabIndex=0;
+		wrap.append(bg,e);document.body.append(wrap);e.focus();
 		wrap.offsetWidth;wrap.classList.remove('fade');
 	});
 	return{e,p};
