@@ -106,7 +106,7 @@
 							forRadio('cisel',x=>x.onchange=()=>(x.checked&&(q.ci=~x.value?w[+x.value]:'',save())),e);
 							e.querySelectorAll('.ciedt').forEach((x,i)=>x.onclick=async()=>{
 								let abs;
-								const play=async z=>{abs&&(abs.onended=null,abs.stop());const z_=actx.createBufferSource();z_.buffer=await new Promise(async(f,r)=>actx.decodeAudioData(await new Response(z).arrayBuffer(),f,r));z_.connect(actx.destination);z_.onended=()=>abs=null;z_.start();abs=z_;},
+								const play=async (z,p)=>{p.then(()=>p=null);abs&&(abs.onended=null,abs.stop());const z_=actx.createBufferSource();z_.buffer=await new Promise(async(f,r)=>actx.decodeAudioData(await new Response(z).arrayBuffer(),f,r));p&&(z_.connect(actx.destination),z_.onended=()=>abs=null,z_.start(),abs=z_);},
 									stop=()=>abs&&abs.stop(),
 									opt=(y='A4')=>new Array(60).fill().map((_,j)=>`<option value="${j=nn2n(j+=36)}"${y==j?' selected':''}>${j}</option>`).join(''),
 									e_=alert(`<input class="input" placeholder="${texts.cin}"><hr><div class="items">${texts.loading}</div>`),
@@ -116,15 +116,15 @@
 										const div=document.createElement('div'),ch=['button','div'].map(z=>document.createElement(z)),ch_=['div','button','button'].map(z=>document.createElement(z)),ch_0=()=>ch_[0].textContent=`${y[0]}: ${esc(y[1].name)}`;
 										ch_0();
 										ch_[1].classList.add('btn','a1');ch_[1].setAttribute('style','--bp:-100% 0;');ch_[1].textContent='config';
-										ch_[1].onclick=async z=>(z=alert(`<label class="prevfl p16">${texts.keysig}: <select>${opt(y[0])}</select></label><br><label class="prevfl p16">${texts.afile}: <button>${esc(y[1].name)}</button></label>`),z.e.querySelector('button').onclick=()=>play(y[1]),await z.p,stop(),y[0]=z.e.querySelector('select').value,ch_0());
+										ch_[1].onclick=async z=>(z=alert(`<label class="prevfl p16">${texts.keysig}: <select>${opt(y[0])}</select></label><br><label class="prevfl p16">${texts.afile}: <button>${esc(y[1].name)}</button></label>`),z.e.querySelector('button').onclick=()=>play(y[1],z.p),await z.p,stop(),y[0]=z.e.querySelector('select').value,ch_0());
 										ch_[2].classList.add('btn');ch_[2].setAttribute('style','--bp:-100% -100%;');ch_[2].textContent='delete';ch_[2].onclick=async()=>await yn(`<div class="tac">${texts.delask(y[0]+': '+esc(y[1].name))}</div>`).p==1&&(div.remove(),a.dat[i]=null);
-										ch[0].classList.add('btn');ch[0].setAttribute('style','--bp:0 -300%;');ch[0].textContent='preview';ch[0].onclick=()=>play(y[1]);
+										ch[0].classList.add('btn');ch[0].setAttribute('style','--bp:0 -300%;');ch[0].textContent='preview';ch[0].onclick=()=>play(y[1],e_.p);
 										ch[1].append(...ch_);
 										div.append(...ch);return div;
 									};
 								add.classList.add('btn');add.setAttribute('style','--bp:-200% -100%;');add.textContent='add';
-								add.onclick=async (z,e__,ret)=>(z=alert(`<label class="prevfl p16">${texts.keysig}: <select>${opt()}</select></label><br><label class="prevfl p16">${texts.afile}: <input type="file" accept="audio/aac,audio/flac,audio/mpeg,audio/ogg,audio/opus,audio/wav,audio/webm" class="prevfl"></label>`),
-									e__=z.e.querySelector('input'),e__.onchange=()=>(ret=null,play(e__.files[0]).then(()=>ret=e__.files[0]).catch(errfx)),await z.p,stop(),ret&&(ret=[z.e.querySelector('select').value,ret])&&label.before(cell(ret,a.dat.push(ret)-1)));
+								add.onclick=async (z,ret)=>(z=alert(`<label class="prevfl p16">${texts.keysig}: <select>${opt()}</select></label><br><label class="prevfl p16">${texts.afile}: <input type="file" accept="audio/aac,audio/flac,audio/mpeg,audio/ogg,audio/opus,audio/wav,audio/webm" class="prevfl"></label>`),
+									ret=z.e.querySelector('input'),ret.onchange=()=>play(ret.files[0],z.p).catch(errfx),await z.p,stop(),(ret=ret.files[0])&&(ret=[z.e.querySelector('select').value,ret])&&label.before(cell(ret,a.dat.push(ret)-1)));
 								label.append(add);label.insertAdjacentHTML('beforeend',texts.cnew);
 								e_.e.firstElementChild.value=a.name;
 								ls.textContent='';ls.append(...a.dat.map(cell),label);
