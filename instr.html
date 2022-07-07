@@ -116,9 +116,9 @@
 										const div=document.createElement('div'),ch=['button','div'].map(z=>document.createElement(z)),ch_=['div','button','button'].map(z=>document.createElement(z)),ch_0=()=>ch_[0].textContent=`${y[0]}: ${esc(y[1].name)}`;
 										ch_0();
 										ch_[1].classList.add('btn','a1');ch_[1].setAttribute('style','--bp:-100% 0;');ch_[1].textContent='config';
-										ch_[1].onclick=async z=>(z=alert(`<label class="prevfl p16">${texts.keysig}: <select>${opt(y[0])}</select></label><br><label class="prevfl p16">${texts.afile}: <button>${esc(y[1].name)}</button></label>`),z.e.querySelector('button').onclick=()=>play(y[1],z.p),await z.p,stop(),y[0]=z.e.querySelector('select').value,ch_0());
+										ch_[1].onclick=async z=>(z=alert(`<label class="prevfl p16">${texts.keysig}: <select>${opt(y[0])}</select></label><br><label class="prevfl p16">${texts.afile}: <button>${esc(y[1].name)}</button></label>`),z.e.querySelector('button').onclick=()=>play(y[1],z.p).catch(errfx),await z.p,stop(),y[0]=z.e.querySelector('select').value,ch_0());
 										ch_[2].classList.add('btn');ch_[2].setAttribute('style','--bp:-100% -100%;');ch_[2].textContent='delete';ch_[2].onclick=async()=>await yn(`<div class="tac">${texts.delask(y[0]+': '+esc(y[1].name))}</div>`).p==1&&(div.remove(),a.dat[i]=null);
-										ch[0].classList.add('btn');ch[0].setAttribute('style','--bp:0 -300%;');ch[0].textContent='preview';ch[0].onclick=()=>play(y[1],e_.p);
+										ch[0].classList.add('btn');ch[0].setAttribute('style','--bp:0 -300%;');ch[0].textContent='preview';ch[0].onclick=()=>play(y[1],e_.p).catch(errfx);
 										ch[1].append(...ch_);
 										div.append(...ch);return div;
 									};
@@ -195,7 +195,7 @@
 
 		texts={
 			...texts,
-			info:'<h1>sky_instruments</h1><hr>In game sounds<br><small>recorded by @McbeEringi</small><hr><p>[sky_instr] v6 build:2207070<br><a href="https://twitter.com/mcbeeringi">@McbeEringi</a> MITLicense</p>',
+			info:'<h1>sky_instruments</h1><hr>In game sounds<br><small>recorded by @McbeEringi</small><hr><p>[sky_instr] v6 build:2207080<br><a href="https://twitter.com/mcbeeringi">@McbeEringi</a> MITLicense</p>',
 			cfg:'Config',kbs:'Key Size',kbp:'Key Position',rev:'Reverb',del:'Delay',rcv:'Captures Keyboard<br>(experimental)',fbs:'Feedback Sound',
 			ci:'Custom Instruments',default:'Default',cnew:'Create New…',cin:'Instrument Name',keysig:'Key Sig Name',afile:'Audio Source',
 			delask:x=>`Are you sure you want to delete<br>"${x}" ?`,
