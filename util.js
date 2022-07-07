@@ -10,11 +10,12 @@ let idb=indexedDB.open('sky_idb',4),
 	midi=null,
 	tex=new Image(),
 	texts={
-		loading:'<p class="btn a1 spin">loading</p>',
+		loading:'<p class="btn a1 spin">loading</p>',ename:'Error',emsg:'Something went wrong :(',
 		idberr:'Failed to access indexedDB.<br>The app may not work properly.<br>Make sure your browser is not in private mode.',nodata:'Data not found',caches:'Caches',
 		back2top:'Back to Top',gcfg:'General Config',bgi:'Background Image',bgil:['Dynamic','Photo','CSS Code'],bga:'Background Audio',bgal:['Hotspring','Home','Forest','Vault'],custom:'Custom',gain:'Volume',xfade:'Crossfade(sec)',
 		...{
 			ja:{
+				ename:'エラー',emsg:'問題が発生しました',
 				idberr:'indexedDBのアクセスに失敗しました。<br>アプリが正常に動作しない可能性があります。<br>ブラウザがプライベートモードでないことを確認してください。',nodata:'データがありません!',caches:'キャッシュ',
 				back2top:'トップに戻る',gcfg:'一般設定',bgi:'背景画像',bgil:['ダイナミック','画像','CSSコード'],bga:'背景音',bgal:['温泉','ホーム','雨林','書庫'],custom:'カスタム',gain:'音量',xfade:'クロスフェード(秒)'
 			}
@@ -87,7 +88,7 @@ const urlq=Object.fromEntries(location.search.slice(1).split('&').filter(y=>y).m
 	bga={abs:null,g:actx.createGain(),out:actx.destination},
 	ourls=[],
 	altimggen=w=>new Promise(f=>{const c=Object.assign(document.createElement('canvas'),{width:4,height:4}),ctx=c.getContext('2d'),img=new Image();img.onload=()=>{ctx.drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(img.src);f(c.toDataURL());};img.src=URL.createObjectURL(w);}),
-	errfx=(e={})=>{e.target&&(e=e.target.error);alert(`⚠️${e.name||'Error'}<br>${e.message||'Something went wrong :('}`);console.error(e);},
+	errfx=e=>{console.error(e);e||(e={});e.target&&(e=e.target.error);alert(`⚠️${e.name||texts.ename}<br>${e.message||texts.emeg}`);},
 	getAlert=()=>[...document.querySelectorAll('.alert:not(.fade)>.cont')],
 	rmAlert=(m,e=getAlert().pop())=>e.parentNode.querySelector('.bg').onclick(m),
 	yn=w=>{w=alert(`${w}<div class="tac"><button class="btn" style="--bp:-100% -100%;">no</button><button class="btn" style="--bp:0 -100%;">yes</button></div>`);Array.from(w.e.lastElementChild.children,(x,i)=>x.onclick=()=>rmAlert(i,x.closest('.cont')));return w;},
