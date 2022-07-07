@@ -15,7 +15,7 @@ let idb=indexedDB.open('sky_idb',4),
 		back2top:'Back to Top',gcfg:'General Config',bgi:'Background Image',bgil:['Dynamic','Photo','CSS Code'],bga:'Background Audio',bgal:['Hotspring','Home','Forest','Vault'],custom:'Custom',gain:'Volume',xfade:'Crossfade(sec)',
 		...{
 			ja:{
-				ename:'エラー',emsg:'問題が発生しました(´･ω･`)',
+				ename:'エラー',emsg:'問題が発生しました Σ(・ω・ﾉ)ﾉ',
 				idberr:'indexedDBのアクセスに失敗しました。<br>アプリが正常に動作しない可能性があります。<br>ブラウザがプライベートモードでないことを確認してください。',nodata:'データがありません!',caches:'キャッシュ',
 				back2top:'トップに戻る',gcfg:'一般設定',bgi:'背景画像',bgil:['ダイナミック','画像','CSSコード'],bga:'背景音',bgal:['温泉','ホーム','雨林','書庫'],custom:'カスタム',gain:'音量',xfade:'クロスフェード(秒)'
 			}
