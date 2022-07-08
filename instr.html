@@ -197,7 +197,7 @@
 
 		texts={
 			...texts,
-			info:'<h1>sky_instruments</h1><hr>In game sounds<br><small>recorded by @McbeEringi</small><hr><p>[sky_instr] v6 build:2207081<br><a href="https://twitter.com/mcbeeringi">@McbeEringi</a> MITLicense</p>',
+			info:'<h1>sky_instruments</h1><hr>In game sounds<br><small>recorded by @McbeEringi</small><hr><p>[sky_instr] v6 build:2207082<br><a href="https://twitter.com/mcbeeringi">@McbeEringi</a> MITLicense</p>',
 			cfg:'Config',kbs:'Key Size',kbp:'Key Position',rev:'Reverb',del:'Delay',rcv:'Captures Keyboard<br>(experimental)',fbs:'Feedback Sound',
 			ci:'Custom Instruments',default:'Default',cnew:'Create New…',cin:'Instrument Name',keysig:'Key Sig Name',afile:'Audio Source',
 			delask:x=>`Are you sure you want to delete<br>"${x}" ?`,
@@ -226,8 +226,8 @@
 		[[deln,revn,gn0,actx.destination],[deln,gn1,actx.destination]].forEach(x=>x.reduce((a,y)=>(a.connect(y),y)));
 		irgen().then(x=>revn.buffer=x);bga.g.disconnect(bga.out);bga.g.connect(bga.out=deln);
 		navigator.requestMIDIAccess&&addEventListener('midiready',()=>midi.inputs.forEach(x=>x.onmidimessage=e=>({
-			0:()=>console.log('noteOn',e,trigger(72+q.octave+q.sc)),
-			1:()=>console.log('noteOff',e,trigger(79+q.octave+q.sc)),
+			0:()=>console.log('noteOff',Array.from(e.data,x=>x.toString(16).padStart(2,'0'))),
+			1:()=>console.log('noteOn',Array.from(e.data,x=>x.toString(16).padStart(2,'0')),trigger(e.data[1])),
 		}[(e.data[0]&0x70)>>>4]||Array)()),{once:true});
 
 		load();
