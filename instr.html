@@ -104,7 +104,7 @@
 							`);e.offsetWidth;
 							setRadio('cisel',Object.fromEntries([...w.map(Array),['',-1]])[q.ci||''],e);
 							forRadio('cisel',x=>x.onchange=()=>(x.checked&&(q.ci=~x.value?w[+x.value]:'',save())),e);
-							e.querySelectorAll('.ciedt').forEach((x,i)=>x.onclick=async()=>{
+							const edtfx=async i=>{
 								let abs;
 								const play=async (z,p)=>{p.then(()=>p=null);abs&&(abs.onended=null,abs.stop());const z_=actx.createBufferSource();z_.buffer=await new Promise(async(f,r)=>actx.decodeAudioData(await new Response(z).arrayBuffer(),f,r));p&&(z_.connect(actx.destination),z_.onended=()=>abs=null,z_.start(),abs=z_);},
 									stop=()=>abs&&abs.stop(),
@@ -132,8 +132,10 @@
 								const a_={name:e_.e.firstElementChild.value||a.name||new Date().toLocaleString(),dat:a.dat.filter(y=>y)};
 								a_.name==a.name?(await e2p(os('instr').put(a_)),q.ci=q.ci):(await e2p(os('instr').add(a_)),await e2p(os('instr').delete(a.name)),q.ci==a.name&&(q.ci=a_.name,save()));
 								showci();
-							});
-							e.querySelectorAll('.cidel').forEach((x,i)=>x.onclick=async()=>(await yn(`<div class="tac">${texts.delask(esc(w[i]))}</div>`).p==1&&(await e2p(os('instr').delete(w[i])),q.ci==w[i]&&(q.ci='',save()),showci())));
+							},
+							delfx=async i=>(await yn(`<div class="tac">${texts.delask(esc(w[i]))}</div>`).p==1&&(await e2p(os('instr').delete(w[i])),q.ci==w[i]&&(q.ci='',save()),showci()));
+							e.querySelectorAll('.ciedt').forEach((x,i)=>x.onclick=()=>edtfx(i).catch(errfx));
+							e.querySelectorAll('.cidel').forEach((x,i)=>x.onclick=()=>delfx(i).catch(errfx));
 						}).catch(errfx);
 				};
 				showci();
@@ -195,7 +197,7 @@
 
 		texts={
 			...texts,
-			info:'<h1>sky_instruments</h1><hr>In game sounds<br><small>recorded by @McbeEringi</small><hr><p>[sky_instr] v6 build:2207080<br><a href="https://twitter.com/mcbeeringi">@McbeEringi</a> MITLicense</p>',
+			info:'<h1>sky_instruments</h1><hr>In game sounds<br><small>recorded by @McbeEringi</small><hr><p>[sky_instr] v6 build:2207081<br><a href="https://twitter.com/mcbeeringi">@McbeEringi</a> MITLicense</p>',
 			cfg:'Config',kbs:'Key Size',kbp:'Key Position',rev:'Reverb',del:'Delay',rcv:'Captures Keyboard<br>(experimental)',fbs:'Feedback Sound',
 			ci:'Custom Instruments',default:'Default',cnew:'Create New…',cin:'Instrument Name',keysig:'Key Sig Name',afile:'Audio Source',
 			delask:x=>`Are you sure you want to delete<br>"${x}" ?`,
