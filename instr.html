@@ -183,9 +183,10 @@
 			},
 			q={
 				set instr(w){(async()=>{
+					const id=q._instr_=Symbol();
 					setRadio('isel',w=+w||0,isel);drwbtn.setAttribute('style',`--bp:${bp(w)};`);w=(idb.name&&!w&&q._ci)?(w=(await e2p(os('instr').get(q._ci))).target.result,[w.name,0,[w.dat],0]):[...d.instr[w]];delete q._instr;scd.classList[w[3]==1?'add':'remove']('d');
 					w[2]=await Promise.all(w[2].map(x=>Promise.all((Array.isArray(x)?x:Object.entries(x)).map(async y=>(y[1]=await(typeof y[1]=='string'?await fetch('audio/instr/'+w[0]+y[1]):y[1]).arrayBuffer(),[n2nn(y[0]),await new Promise((f,r)=>actx.decodeAudioData(y[1],f,r))])))));
-					q._instr=w;console.log(w);
+					q._instr_==id&&(q._instr=w,console.log(w));
 				})().catch(errfx);},get instr(){return +(getRadio('isel',isel)||{value:0}).value;},
 				set ci(w){q._ci=w;q.instr=q.instr;},get ci(){return q._ci;},
 				set sc (w){q._sc =w=+w||0;scd.children[1].setAttribute('style',`--rot:${w*30+45}deg;`);},get sc (){return q._instr&&q._instr[3]==1?0:q._sc;},
@@ -199,7 +200,7 @@
 
 		texts={
 			...texts,
-			info:'<h1>sky_instruments</h1><hr>In game sounds<br><small>recorded by @McbeEringi</small><hr><p>[sky_instr] v6 build:2207090<br><a href="https://twitter.com/mcbeeringi">@McbeEringi</a> MITLicense</p>',
+			info:'<h1>sky_instruments</h1><hr>In game sounds<br><small>recorded by @McbeEringi</small><hr><p>[sky_instr] v6 build:2207091<br><a href="https://twitter.com/mcbeeringi">@McbeEringi</a> MITLicense</p>',
 			cfg:'Config',kbs:'Key Size',kbp:'Key Position',rev:'Reverb',del:'Delay',rcv:'Captures Keyboard<br>(experimental)',fbs:'Feedback Sound',
 			ci:'Custom Instruments',default:'Default',cnew:'Create New…',cin:'Instrument Name',keysig:'Key Sig Name',afile:'Audio Source',
 			delask:x=>`Are you sure you want to delete<br>"${x}" ?`,
@@ -232,7 +233,7 @@
 			1:()=>console.log('noteOn',Array.from(e.data,x=>x.toString(16).padStart(2,'0')),e.data[2]&&trigger(e.data[1])),
 		}[(e.data[0]&0x70)>>>4]||Array)()),{once:true});
 
-		idb.name?load():addEventListener('idbready',load,{once:true});//load();idb.name?(q.ci=q.ci):addEventListener('idbready',()=>q.ci=q.ci);
+		load();idb.name?(q.ci=q.ci):addEventListener('idbready',()=>q.ci=q.ci,{once:true});
 </script>
 </body>
 </html>
