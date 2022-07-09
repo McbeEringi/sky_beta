@@ -229,7 +229,7 @@
 		irgen().then(x=>revn.buffer=x);bga.g.disconnect(bga.out);bga.g.connect(bga.out=deln);
 		navigator.requestMIDIAccess&&addEventListener('midiready',()=>midi.inputs.forEach(x=>x.onmidimessage=e=>({
 			0:()=>console.log('noteOff',Array.from(e.data,x=>x.toString(16).padStart(2,'0'))),
-			1:()=>console.log('noteOn',Array.from(e.data,x=>x.toString(16).padStart(2,'0')),trigger(e.data[1])),
+			1:()=>console.log('noteOn',Array.from(e.data,x=>x.toString(16).padStart(2,'0')),e.data[2]&&trigger(e.data[1])),
 		}[(e.data[0]&0x70)>>>4]||Array)()),{once:true});
 
 		idb.name?load():addEventListener('idbready',load,{once:true});//load();idb.name?(q.ci=q.ci):addEventListener('idbready',()=>q.ci=q.ci);
