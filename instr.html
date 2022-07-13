@@ -189,14 +189,14 @@
 					q._instr_==id&&(q._instr=w,console.log(w));
 				})().catch(errfx);},get instr(){return +(getRadio('isel',isel)||{value:0}).value;},
 				set ci(w){q._ci=w;q.instr=q.instr;},get ci(){return q._ci;},
-				set sc (w){q._sc =w=+w||0;scd.children[1].setAttribute('style',`--rot:${w*30+45}deg;`);},get sc (){return q._instr&&q._instr[3]==1?0:q._sc;},
+				set sc (w){q._sc =w=+w||0;scd.children[1].setAttribute('style',`--rot:${w*30+45}deg;`);},get sc(){return q._instr&&q._instr[3]==1?0:q._sc;},
 				set rev(w){q._rev=w=+w||0;gn0.gain.value=w;gn1.gain.value=1-w;},get rev(){return q._rev;},
 				set del(w){q._del=w=+w||0;deln.delayTime.value=w;},get del(){return q._del;},
 				get octave(){return q._instr?q._instr[1]*12:0;},
 				k2i:Object.fromEntries(Array.from('QWERTASDFGZXCVB',(x,i)=>[`Key${x}`,[i%5,Math.floor(i/5)]]))
 			},
-			load=()=>({ci:q._ci,instr:q.instr,sc:q.sc,rev:q.rev,del:q.del=.1}=JSON.parse(localStorage.instr_stat||'{}')),
-			save=()=>localStorage.instr_stat=JSON.stringify({ci:q.ci,instr:q.instr,sc:q.sc,rev:q.rev,del:q.del});
+			load=()=>({ci:q._ci,instr:q.instr,sc:q.sc,rev:q.rev,del:q.del=.1}=JSON.parse(localStorage.sky_instr||localStorage.instr_stat||'{}')),
+			save=()=>localStorage.sky_instr=JSON.stringify({ci:q.ci,instr:q.instr,sc:q.sc,rev:q.rev,del:q.del});
 
 		texts={
 			...texts,

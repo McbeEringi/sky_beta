@@ -1,11 +1,5 @@
 'use strict';
 if('serviceWorker'in navigator&&location.protocol.includes('https'))addEventListener('load',()=>navigator.serviceWorker.register('sw.js').then(x=>{console.log('sw Registered',x);}),{once:true});
-localStorage.sky_bgicode||(localStorage.sky_bgicode='linear-gradient(60deg,#214,#415)');
-localStorage.sky_bgialt;
-localStorage.sky_bgi||(localStorage.sky_bgi=0);
-localStorage.sky_bgagain||(localStorage.sky_bgagain=1);
-localStorage.sky_bgafade||(localStorage.sky_bgafade=10);
-localStorage.sky_bga||(localStorage.sky_bga=-1);
 let idb=indexedDB.open('sky_idb',4),
 	midi=null,
 	tex=new Image(),
@@ -23,44 +17,47 @@ let idb=indexedDB.open('sky_idb',4),
 	};
 const urlq=Object.fromEntries(location.search.slice(1).split('&').filter(y=>y).map(x=>x.split('=',2))),
 	root=document.querySelector('script[src$="util.js"]').outerHTML.match(/"(.*)util.js"/)[1],
+	gq={},
+	gload=()=>({bgicode:gq.bgicode='linear-gradient(60deg,#214,#415)',bgialt:gq.bgialt,bgi:gq.bgi=0,bgagain:gq.bgagain=1,bgafade:gq.bgafade=10,bga:gq.bga=-1}=JSON.parse(localStorage.sky_gcfg||'{}')),
+	gsave=()=>localStorage.sky_gcfg=JSON.stringify({bgicode:gq.bgicode,bgialt:gq.bgialt,bgi:gq.bgi,bgagain:gq.bgagain,bgafade:gq.bgafade,bga:gq.bga}),
 	bgiset=(x=-1)=>{
 		const bgcol=['#dca,#ac8','#bde,#ac8','#f80,#fb7','#112,#126','#bbc,#ac8'],//morn day dusk night cloud
 		url=root+'img/photo/performance.jpg',
 		set=(y=`url(${url})`)=>bg.style.backgroundImage=y;
 		({
 			0:()=>{bgi.hidden=false;set(`linear-gradient(${bgcol[~x?x:[3,3,3,3,3,0,0,0,0,4,1,1,1,1,1,1,4,2,2,2,2,3,3,3][new Date().getHours()]]})`);},
-			1:()=>{bgi.hidden=true;idb.name?e2p(os().get('bgimg')).then(e=>set(`url(${e.target.result?(x=>(ourls.push(x),x))(URL.createObjectURL(e.target.result)):url})`)).catch(e=>set()):set(`url(${localStorage.sky_bgialt||url})`);},
-			2:()=>{bgi.hidden=true;set(localStorage.sky_bgicode);}
-		})[~x?0:localStorage.sky_bgi]();
+			1:()=>{bgi.hidden=true;idb.name?e2p(os().get('bgimg')).then(e=>set(`url(${e.target.result?(x=>(ourls.push(x),x))(URL.createObjectURL(e.target.result)):url})`)).catch(e=>set()):set(`url(${gq.bgialt||url})`);},
+			2:()=>{bgi.hidden=true;set(gq.bgicode);}
+		})[~x?0:gq.bgi]();
 	},
-	bgaset=(fade=+localStorage.sky_bgafade)=>{
+	bgaset=(fade=gq.bgafade)=>(async w=>{
+		const id=bga.id=Symbol();
 		bga.abs&&(bga.abs.stop(),bga.abs=null);
-		if(!idb.name&&!~localStorage.sky_bga)return;
-		(~localStorage.sky_bga?fetch(`${root}audio/bga/${['onsen','home','forest','vault'][localStorage.sky_bga]}.mp3`):e2p(os().get('bga')).then(w=>new Response(w.target.result)))
-		.then(async w=>{
-			w=await w.arrayBuffer();if(!w.byteLength&&!~localStorage.sky_bga)return;
-			w=await new Promise((f,r)=>actx.decodeAudioData(w,f,r));
-			if(fade)w=await new Promise(f=>{
-				const d=w.duration-fade,r=w.sampleRate,
-					oac=new(window.OfflineAudioContext||webkitOfflineAudioContext)(w.numberOfChannels,d*r,r),
-					abs0=oac.createBufferSource(),g0=oac.createGain(),abs1=oac.createBufferSource(),g1=oac.createGain();g1.gain.setValueAtTime(0,0);
-				g0.gain.setValueAtTime(1,d-fade);g0.gain.linearRampToValueAtTime(0,d);g1.gain.setValueAtTime(0,d-fade);g1.gain.linearRampToValueAtTime(1,d);
-				abs1.buffer=abs0.buffer=w;[[abs0,g0,oac.destination],[abs1,g1,oac.destination]].forEach(x=>x.reduce((a,y)=>(a.connect(y),y)));
-				abs0.start(0,fade);abs1.start(d-fade);oac.startRendering();oac.oncomplete=e=>f(e.renderedBuffer);
-			});
-			bga.abs&&(bga.abs.stop(),bga.abs=null);
-			(bga.abs=Object.assign(actx.createBufferSource(),{buffer:w,loop:true})).start();
-			bga.g.gain.value=localStorage.sky_bgagain;bga.abs.connect(bga.g);
-		}).catch(errfx);
-	},
+		if(!idb.name&&!~gq.bga)return;
+		w=(~gq.bga?{n:texts.bgal[gq.bga],d:await(await fetch(`${root}audio/bga/${['onsen','home','forest','vault'][gq.bga]}.mp3`)).arrayBuffer()}:(await e2p(os().get('bga'))).target.result)
+		if(!w||!w.d)return;
+		w=await new Promise((f,r)=>actx.decodeAudioData(w.d,f,r));
+		if(fade)w=await new Promise(f=>{
+			const d=w.duration-fade,r=w.sampleRate,
+				oac=new(window.OfflineAudioContext||webkitOfflineAudioContext)(w.numberOfChannels,d*r,r),
+				abs0=oac.createBufferSource(),g0=oac.createGain(),abs1=oac.createBufferSource(),g1=oac.createGain();g1.gain.setValueAtTime(0,0);
+			g0.gain.setValueAtTime(1,d-fade);g0.gain.linearRampToValueAtTime(0,d);g1.gain.setValueAtTime(0,d-fade);g1.gain.linearRampToValueAtTime(1,d);
+			abs1.buffer=abs0.buffer=w;[[abs0,g0,oac.destination],[abs1,g1,oac.destination]].forEach(x=>x.reduce((a,y)=>(a.connect(y),y)));
+			abs0.start(0,fade);abs1.start(d-fade);oac.startRendering();oac.oncomplete=e=>f(e.renderedBuffer);
+		});
+		if(bga.id!=id)return;
+		bga.abs&&(bga.abs.stop(),bga.abs=null);
+		(bga.abs=Object.assign(actx.createBufferSource(),{buffer:w,loop:true})).start();
+		bga.g.gain.value=gq.bgagain;bga.abs.connect(bga.g);
+	})().catch(errfx),
 	gcfg=()=>{
 		const e=alert(`<h2>${texts.gcfg}</h2><hr>
 			<h3>${texts.bgi}</h3>
 			<div class="items" style="--items:170px;">
 				<label><input type="radio" name="bgir" value="0"><p class="btn" style="--bp:0 -100%;"></p>${texts.bgil[0]}</label>
 				<div><input type="radio" name="bgir" value="1" id="bgir1"><label for="bgir1" class="btn" style="--bp:0 -100%;"></label><div>${texts.bgil[1]}<br>
-					<button class="btn" style="--bp:-600% -500%;" onclick="this.firstElementChild.click();"><input tabindex="-1" type="file" style="width:100%;height:100%;opacity:0;" accept="image/*" onclick="event.stopPropagation();" onchange="altimggen(this.files[0]).then(x=>localStorage.sky_bgialt=x);e2p(os().put(this.files[0],'bgimg')).then(()=>(localStorage.sky_bgi==1&&bgiset())).catch(errfx);">
-					</button><button class="btn" style="--bp:-400% -400%;" onclick="delete localStorage.sky_bgialt;e2p(os().delete('bgimg')).then(()=>(localStorage.sky_bgi==1&&bgiset())).catch(errfx);"></button>
+					<button class="btn" style="--bp:-600% -500%;" onclick="this.firstElementChild.click();"><input tabindex="-1" type="file" style="width:100%;height:100%;opacity:0;" accept="image/*" onclick="event.stopPropagation();" onchange="altimggen(this.files[0]).then(x=>gsave(gq.bgialt=x));e2p(os().put(this.files[0],'bgimg')).then(()=>(gq.bgi==1&&bgiset())).catch(errfx);">
+					</button><button class="btn" style="--bp:-400% -400%;" onclick="delete gq.bgialt;e2p(os().delete('bgimg')).then(()=>(gq.bgi==1&&bgiset())).catch(errfx);"></button>
 				</div></div>
 				<div><input type="radio" name="bgir" value="2" id="bgir2"><label for="bgir2" class="btn" style="--bp:0 -100%;"></label><div>${texts.bgil[2]}<br>
 					<button class="btn bgicode" style="--bp:-400% -500%;"></button>
@@ -70,19 +67,19 @@ const urlq=Object.fromEntries(location.search.slice(1).split('&').filter(y=>y).m
 			<div class="items" style="--items:150px;">
 				${texts.bgal.map((x,i)=>'<label><input type="radio" name="bgar" value="'+i+'"><p class="btn" style="--bp:0 -300%;"></p>'+x+'</label>').join('')}
 				<div><input type="radio" name="bgar" value="-1" id="bgar-1"><label for="bgar-1" class="btn" style="--bp:0 -300%;"></label><div>${texts.custom}<br>
-					<button class="btn" style="--bp:-600% -500%;" onclick="this.firstElementChild.click();"><input tabindex="-1" type="file" style="width:100%;height:100%;opacity:0;" accept="audio/aac,audio/flac,audio/mpeg,audio/ogg,audio/opus,audio/wav,audio/webm" onclick="event.stopPropagation();" onchange="e2p(os().put(this.files[0],'bga')).then(()=>(~localStorage.sky_bga||bgaset())).catch(errfx);">
-					</button><button class="btn" style="--bp:-100% -100%;" onclick="e2p(os().delete('bga')).then(()=>(~localStorage.sky_bga||bgaset())).catch(errfx);"></button>
+					<button class="btn" style="--bp:-600% -500%;" onclick="this.firstElementChild.click();"><input tabindex="-1" type="file" style="width:100%;height:100%;opacity:0;" accept="audio/aac,audio/flac,audio/mpeg,audio/ogg,audio/opus,audio/wav,audio/webm" onclick="event.stopPropagation();" onchange="(async w=>{w=this.files[0];w={n:w.name,d:await w.arrayBuffer()};await e2p(os().put(w,'bga'));~gq.bga||bgaset();})().catch(errfx);">
+					</button><button class="btn" style="--bp:-100% -100%;" onclick="e2p(os().delete('bga')).then(()=>(~gq.bga||bgaset())).catch(errfx);"></button>
 				</div></div>
-				<label><div>${texts.gain}<br><input type="range" step="any" max="1" value="${localStorage.sky_bgagain}" oninput="localStorage.sky_bgagain=bga.g.gain.value=+this.value;"></div></label>
-				<label><div>${texts.xfade}<br><input type="number" min="0" class="input" value="${localStorage.sky_bgafade}" oninput="this.checkValidity()&&(localStorage.sky_bgafade=+this.value);" onchange="this.checkValidity()&&bgaset();"></div></label>
+				<label><div>${texts.gain}<br><input type="range" step="any" max="1" value="${gq.bgagain}" oninput="gsave(gq.bgagain=bga.g.gain.value=+this.value);"></div></label>
+				<label><div>${texts.xfade}<br><input type="number" min="0" class="input" value="${gq.bgafade}" oninput="this.checkValidity()&&gsave(gq.bgafade=+this.value);" onchange="this.checkValidity()&&bgaset();"></div></label>
 			</div>
 			<h3>${texts.caches}</h3>
 			<button class="btn" style="--bp:0 -500%;" onclick="caches.keys().then(alert);">
 			</button><button class="btn" style="--bp:-200% -500%;" onclick="caches.keys().then(x=>Promise.all(x.map(y=>caches.delete(y)))).then(x=>(x.every(y=>y)&&location.reload(true)));"></button>
 		`).e;
-		setRadio('bgir',localStorage.sky_bgi,e);forRadio('bgir',x=>x.onchange=()=>(localStorage.sky_bgi=x.value,bgiset()));
-		e.querySelector('.bgicode').onclick=()=>alert(`<a href="https://developer.mozilla.org/docs/Web/CSS/gradient">background-image</a>:<br><textarea class="input" rows="8" cols="40" oninput="(localStorage.sky_bgicode=this.value,localStorage.sky_bgi==2&&bgiset());">${localStorage.sky_bgicode}</textarea>`).e.querySelector('textarea').focus();
-		setRadio('bgar',localStorage.sky_bga,e);forRadio('bgar',x=>x.onchange=()=>(localStorage.sky_bga=x.value,bgaset()));
+		setRadio('bgir',gq.bgi,e);forRadio('bgir',x=>x.onchange=()=>(gsave(gq.bgi=+x.value),bgiset()));
+		e.querySelector('.bgicode').onclick=()=>alert(`<a href="https://developer.mozilla.org/docs/Web/CSS/gradient">background-image</a>:<br><textarea class="input" rows="8" cols="40" oninput="(gsave(gq.bgicode=this.value),gq.bgi==2&&bgiset());">${gq.bgicode}</textarea>`).e.querySelector('textarea').focus();
+		setRadio('bgar',gq.bga,e);forRadio('bgar',x=>x.onchange=()=>(gsave(gq.bga=+x.value),bgaset()));
 	},
 	actx=new(window.AudioContext||webkitAudioContext)(),
 	bga={abs:null,g:actx.createGain(),out:actx.destination},
@@ -97,6 +94,7 @@ const urlq=Object.fromEntries(location.search.slice(1).split('&').filter(y=>y).m
 	forRadio=(x,y,e=document)=>e.querySelectorAll(`input[type=radio][name=${x}]`).forEach(y),
 	os=(x='stuff')=>idb.transaction(x,'readwrite').objectStore(x),
 	e2p=x=>new Promise((f,r)=>Object.assign(x,{onsuccess:f,onerror:r}));
+gload();
 idb.onupgradeneeded=e=>{console.log('IDB UPG',e=idb.result);[['stuff'],['seq',{keyPath:'name'}],['instr',{keyPath:'name'}]].forEach(x=>e.objectStoreNames.contains(x[0])||e.createObjectStore(...x));};
 idb.onsuccess=e=>{console.log('IDB OK',idb=idb.result);e=()=>dispatchEvent(new Event('idbready'));if(document.readyState=='loading')addEventListener('DOMContentLoaded',e,{once:true});else e();bgiset();bgaset();};
 idb.onerror=e=>{console.log('IDB ERR',idb,e);idb={};alert(texts.idberr);};
@@ -175,7 +173,7 @@ tex.onload=()=>{
 	c.getContext('2d').drawImage(tex,0,0,c.width,c.height);tex=c;dispatchEvent(new Event('texready'));
 	document.body.insertAdjacentHTML('beforeend',`<style>.btn::before{background-image:url(${c.toDataURL()});}</style>`);
 };tex.src=root+'img/atlas0.svg';
-{const bg_=()=>localStorage.sky_bgi==0&&bgiset();setTimeout(()=>{bg_();setInterval(bg_,36e5);},36e5-(Date.now()%36e5));bgiset();}
+{const bg_=()=>gq.bgi==0&&bgiset();setTimeout(()=>{bg_();setInterval(bg_,36e5);},36e5-(Date.now()%36e5));bgiset();}
 ['touchstart','mousedown'].forEach(x=>addEventListener(x,()=>actx.resume(),{once:true}));bga.g.connect(bga.out);bgaset();
 if('pwa'in urlq&&document.referrer)addEventListener('DOMContentLoaded',()=>document.body.insertAdjacentHTML('beforeend','<button class="btn" style="--bp:-400% -100%;--btn:48px;position:fixed;bottom:0;left:0;" onclick="history.back();">back</button>'),{once:true});
 onbeforeunload=()=>ourls.forEach(URL.revokeObjectURL);
