@@ -34,9 +34,9 @@ const urlq=Object.fromEntries(location.search.slice(1).split('&').filter(y=>y).m
 		const id=bga.id=Symbol();
 		bga.abs&&(bga.abs.stop(),bga.abs=null);
 		if(!idb.name&&!~gq.bga)return;
-		w=(~gq.bga?{n:texts.bgal[gq.bga],d:await(await fetch(`${root}audio/bga/${['onsen','home','forest','vault'][gq.bga]}.mp3`)).arrayBuffer()}:(await e2p(os().get('bga'))).target.result)
-		if(!w||!w.d)return;
-		w=await new Promise((f,r)=>actx.decodeAudioData(w.d,f,r));
+		w=(~gq.bga?{name:texts.bgal[gq.bga],data:await(await fetch(`${root}audio/bga/${['onsen','home','forest','vault'][gq.bga]}.mp3`)).arrayBuffer()}:(await e2p(os().get('bga'))).target.result)
+		if(!w||!w.data)return;
+		w=await new Promise((f,r)=>actx.decodeAudioData(w.data,f,r));
 		if(fade)w=await new Promise(f=>{
 			const d=w.duration-fade,r=w.sampleRate,
 				oac=new(window.OfflineAudioContext||webkitOfflineAudioContext)(w.numberOfChannels,d*r,r),
@@ -67,7 +67,7 @@ const urlq=Object.fromEntries(location.search.slice(1).split('&').filter(y=>y).m
 			<div class="items" style="--items:150px;">
 				${texts.bgal.map((x,i)=>'<label><input type="radio" name="bgar" value="'+i+'"><p class="btn" style="--bp:0 -300%;"></p>'+x+'</label>').join('')}
 				<div><input type="radio" name="bgar" value="-1" id="bgar-1"><label for="bgar-1" class="btn" style="--bp:0 -300%;"></label><div>${texts.custom}<br>
-					<button class="btn" style="--bp:-600% -500%;" onclick="this.firstElementChild.click();"><input tabindex="-1" type="file" style="width:100%;height:100%;opacity:0;" accept="audio/aac,audio/flac,audio/mpeg,audio/ogg,audio/opus,audio/wav,audio/webm" onclick="event.stopPropagation();" onchange="(async w=>{w=this.files[0];w={n:w.name,d:await w.arrayBuffer()};await e2p(os().put(w,'bga'));~gq.bga||bgaset();})().catch(errfx);">
+					<button class="btn" style="--bp:-600% -500%;" onclick="this.firstElementChild.click();"><input tabindex="-1" type="file" style="width:100%;height:100%;opacity:0;" accept="audio/aac,audio/flac,audio/mpeg,audio/ogg,audio/opus,audio/wav,audio/webm" onclick="event.stopPropagation();" onchange="(async w=>{w=this.files[0];w={name:w.name,data:await w.arrayBuffer()};await e2p(os().put(w,'bga'));~gq.bga||bgaset();})().catch(errfx);">
 					</button><button class="btn" style="--bp:-100% -100%;" onclick="e2p(os().delete('bga')).then(()=>(~gq.bga||bgaset())).catch(errfx);"></button>
 				</div></div>
 				<label><div>${texts.gain}<br><input type="range" step="any" max="1" value="${gq.bgagain}" oninput="gsave(gq.bgagain=bga.g.gain.value=+this.value);"></div></label>
@@ -145,6 +145,8 @@ hr{border:1px solid #fff8;border-radius:1px;backdrop-filter:blur(2px);-webkit-ba
 .items>*{box-sizing:border-box;padding:4px;display:flex;align-items:center;}
 .items>* .btn{--btn:40px;}
 .items>*>.btn{--btn:56px;flex-shrink:0;align-self:start;}
+
+.flex{display:flex;justify-content:space-between;flex-wrap:wrap;align-items:center;}.flex>*{flex:0 0 auto;}
 </style>
 <div id="bg"><img id="bgi" src="${root}img/icon_.svg" width="1" height="1" alt="background image"></div>
 `);
@@ -176,5 +178,6 @@ tex.onload=()=>{
 {const bg_=()=>gq.bgi==0&&bgiset();setTimeout(()=>{bg_();setInterval(bg_,36e5);},36e5-(Date.now()%36e5));bgiset();}
 ['touchstart','mousedown'].forEach(x=>addEventListener(x,()=>actx.resume(),{once:true}));bga.g.connect(bga.out);bgaset();
 if('pwa'in urlq&&document.referrer)addEventListener('DOMContentLoaded',()=>document.body.insertAdjacentHTML('beforeend','<button class="btn" style="--bp:-400% -100%;--btn:48px;position:fixed;bottom:0;left:0;" onclick="history.back();">back</button>'),{once:true});
+if('pwa'in urlq)addEventListener('DOMContentLoaded',()=>document.querySelectorAll('a[href]').forEach(e=>(e.ontouchstart||(e.ontouchstart=_=>_),e.href+='?pwa')),{once:true});
 onbeforeunload=()=>ourls.forEach(URL.revokeObjectURL);
 
