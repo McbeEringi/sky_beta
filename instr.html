@@ -34,8 +34,10 @@
 		.drawer hr{border:0;backdrop-filter:none;-webkit-backdrop-filter:none;}.drawer hr::before{content:"";display:block;margin:0 auto;width:4px;height:4px;background:#8888;border-radius:50%;}
 		#drwcb:checked~.drawer{transform:translateX(0);visibility:initial;opacity:1;}
 		.prevfl{display:inline-block;box-sizing:border-box;max-width:100%;}.p16{padding:16px;}
+		#kc{display:block;margin:0 auto;max-width:100%;max-height:100%;touch-action:none;cursor:pointer;}
 	</style>
 
+	<canvas id="kc"></canvas>
 	<button class="btn" onpointerdown="trigger(72+q.octave+q.sc);">trg</button>
 
 	<input type="checkbox" id="drwcb">
@@ -84,10 +86,10 @@
 				const e=alert(`<h2>${texts.cfg}</h2><hr>
 					<h3>${texts.cfg}</h3>
 					<div class="items">
-						<label><div>${texts.rev}<br><input type="range" class="style" min="0" max="1" step="0.0625" value="${q.rev}" oninput="q.rev=this.value;save();"></div></label>
-						<label><div>${texts.del}<br><input type="range" class="style" min="0" max=".2" step="0.0125" value="${q.del}" oninput="[72,79].forEach((x,i)=>trigger(x+q.octave+q.sc,{abi:0,t:actx.currentTime+.05+this.value*i,out:actx.destination}));q.del=this.value;save();"></div></label>
-						<label><div>${texts.kbs}<br><input type="range" class="style" min="64" max="128" step="4" value="${q.kbs}"></div></label>
-						<label><div>${texts.kbp}<br><input type="range" class="style" min="0" max="1" step="0.0625" value="${q.kbp}"></div></label>
+						<label><div>${texts.rev}<br><input type="range" class="style" min="0" max="1" step="0.0625" value="${q.rev}" oninput="save(q.rev=this.value);"></div></label>
+						<label><div>${texts.del}<br><input type="range" class="style" min="0" max=".2" step="0.0125" value="${q.del}" oninput="[72,79].forEach((x,i)=>trigger(x+q.octave+q.sc,{abi:0,t:actx.currentTime+.05+this.value*i,out:actx.destination}));save(q.del=this.value);"></div></label>
+						<label><div>${texts.kbs}<br><input type="range" class="style" min="64" max="128" step="4" value="${q.kbs}" oninput="save(q.kbs=this.value);"></div></label>
+						<label><div>${texts.kbp}<br><input type="range" class="style" min="0" max="1" step="0.0625" value="${q.kbp}" oninput="save(q.kbp=this.value);"></div></label>
 						<label><div>${texts.rcv}<br><input type="checkbox" class="toggle"${q.rcv?' checked':''}></div></label>
 						<label><button class="btn a1" style="--bp:-100% 0;" onclick="gcfg();"></button>${texts.gcfg}</label>
 					</div>
@@ -140,6 +142,7 @@
 				};
 				showci();
 			},
+			kctx=kc.getContext('2d'),
 			deln=actx.createDelay(.5),revn=actx.createConvolver(),gn0=actx.createGain(),gn1=actx.createGain(),
 			d={
 				instr:[
@@ -182,6 +185,7 @@
 				][x])
 			},
 			q={
+				set ci(w){q._ci=w;q.instr=q.instr;},get ci(){return q._ci;},
 				set instr(w){(async()=>{
 					const id=q._instr_=Symbol();
 					setRadio('isel',w=+w||0,isel);drwbtn.setAttribute('style',`--bp:${bp(w)};`);w=(idb.name&&!w&&q._ci)?(w=(await e2p(os('instr').get(q._ci))).target.result,[w.name,0,[w.dat],0]):[...d.instr[w]];delete q._instr;scd.classList[w[3]==1?'add':'remove']('d');
@@ -191,15 +195,14 @@
 					)))));
 					q._instr_==id&&(q._instr=w,console.log(w));
 				})().catch(errfx);},get instr(){return +(getRadio('isel',isel)||{value:0}).value;},
-				set ci(w){q._ci=w;q.instr=q.instr;},get ci(){return q._ci;},
 				set sc (w){q._sc =w=+w||0;scd.children[1].setAttribute('style',`--rot:${w*30+45}deg;`);},get sc(){return q._instr&&q._instr[3]==1?0:q._sc;},
 				set rev(w){q._rev=w=+w||0;gn0.gain.value=w;gn1.gain.value=1-w;},get rev(){return q._rev;},
 				set del(w){q._del=w=+w||0;deln.delayTime.value=w;},get del(){return q._del;},
 				get octave(){return q._instr?q._instr[1]*12:0;},
 				k2i:Object.fromEntries(Array.from('QWERTASDFGZXCVB',(x,i)=>[`Key${x}`,[i%5,Math.floor(i/5)]]))
 			},
-			load=()=>({ci:q._ci,instr:q.instr,sc:q.sc,rev:q.rev,del:q.del=.1}=JSON.parse(localStorage.sky_instr||localStorage.instr_stat||'{}')),
-			save=()=>localStorage.sky_instr=JSON.stringify({ci:q.ci,instr:q.instr,sc:q.sc,rev:q.rev,del:q.del});
+			load=()=>({ci:q._ci,instr:q.instr,sc:q.sc,rev:q.rev,del:q.del=.1,kbs:q.kbs=88,kbp:q.kbp=.5}=JSON.parse(localStorage.sky_instr||localStorage.instr_stat||'{}')),
+			save=()=>localStorage.sky_instr=JSON.stringify({ci:q.ci,instr:q.instr,sc:q.sc,rev:q.rev,del:q.del,kbs:q.kbs,kbp:q.kbp});
 
 		texts={
 			...texts,
