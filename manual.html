@@ -23,11 +23,51 @@
 </head>
 <body>
 	<script src="util.js"></script>
+	<style>
+		.wrap .btn{--btn:48px;}strong{color:var(--l);text-shadow:0 0 .5ex var(--r0);}.play{--bp:0 -300%;}
+	</style>
 	<div class="flex">
 		<h1>sky_manual</h1>
 		<button class="btn a1" style="--bp:-100% 0;" onclick="gcfg();">general config</button>
 	</div>
 	<hr>
-	<h2>sky_instruments</h2>
+	<div class="wrap">
+		<h2>sky_instruments</h2>
+		<div class="items">
+			<label><button class="btn play" onclick="alert(texts.instr_instr);"></button><h3>楽器の変更</h3></label>
+			<label><button class="btn play" onclick="alert(texts.instr_sc);"></button><h3>調の変更</h3></label>
+			<label><button class="btn play" onclick="alert(texts.instr_cfg);"></button><h3>各種設定</h3></label>
+			<label><button class="btn play" onclick="alert(texts.instr_ci);"></button><h3>カスタム楽器</h3></label>
+			</div>
+		</div>
+		<script>
+			texts={
+				...texts,
+				...{
+					ja:{
+						instr_instr:`画面右下のボタンを推すことでメニューが開き、そこから楽器を変更することができます`,
+						instr_sc:`メニューにある<br>
+							<p class="btn" style="--bp:-300% -100%;">-</p><p class="btn clock" style="--bp:-100% 0;">0</p><p class="btn" style="--bp:-200% -100%;">+</p><br>
+							を操作して調を変更することができます <br>
+							左から「♭」「♮」「♯」です`,
+						instr_cfg:`メニュー→ <p class="btn a1" style="--bp:-100% 0;"></p><br>
+							の設定画面から各種設定が可能です <br>
+							<p class="btn a1" style="--bp:-100% 0;"></p>一般設定 <br>
+							からその他背景等サイト共通の設定も可能です`,
+						instr_ci:`メニュー→ <p class="btn a1" style="--bp:-100% 0;"></p>→　(カスタム楽器)<p class="btn" style="--bp:-200% -100%;"></p>新規作成… <br>
+							楽器名と新規作成が表示されたダイアログが開いたらさらに <br>
+							<p class="btn" style="--bp:-200% -100%;"></p>新規作成… <br>
+							を押して音源ファイルとその音名を定義します <br>
+							音源ファイルは音名で指定した音名<strong>として</strong>再生されます <br>
+							音名と指定したファイルが再生されたことを確認したらダイアログを閉じれば、新たにリストに追加されたうえで元のダイアログに戻ります <br>
+							すべての音源の作成が完了したらダイアログを閉じてください <br>
+							この<strong>ダイアログを閉じることで初めて楽器の設定が保存されます</strong><br>
+							<br>
+							⚠️がついている音源は古いフォーマットです <br>
+							正常に動作しないことがありますのでその場合は音源を一度削除してもう一度作成してください`
+					}
+				}[navigator.language.slice(0,2)]
+			}
+		</script>
 </body>
 </html>

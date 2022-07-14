@@ -178,6 +178,6 @@ tex.onload=()=>{
 {const bg_=()=>gq.bgi==0&&bgiset();setTimeout(()=>{bg_();setInterval(bg_,36e5);},36e5-(Date.now()%36e5));bgiset();}
 ['touchstart','mousedown'].forEach(x=>addEventListener(x,()=>actx.resume(),{once:true}));bga.g.connect(bga.out);bgaset();
 if('pwa'in urlq&&document.referrer)addEventListener('DOMContentLoaded',()=>document.body.insertAdjacentHTML('beforeend','<button class="btn" style="--bp:-400% -100%;--btn:48px;position:fixed;bottom:0;left:0;" onclick="history.back();">back</button>'),{once:true});
-if('pwa'in urlq)addEventListener('DOMContentLoaded',()=>document.querySelectorAll('a[href]').forEach(e=>(e.ontouchstart||(e.ontouchstart=_=>_),e.href+='?pwa')),{once:true});
+if('pwa'in urlq)addEventListener('DOMContentLoaded',()=>document.querySelectorAll('a[href]').forEach(e=>(e.ontouchstart||(e.ontouchstart=_=>_),e.href+='?pwa',e.removeAttribute('target'))),{once:true});
 onbeforeunload=()=>ourls.forEach(URL.revokeObjectURL);
 
