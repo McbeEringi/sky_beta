@@ -38,7 +38,6 @@
 	</style>
 
 	<canvas id="kc"></canvas>
-	<button class="btn" onpointerdown="trigger(72+q.octave+q.sc);">trg</button>
 
 	<input type="checkbox" id="drwcb">
 	<label for="drwcb" class="btn" id="drwbtn"></label>
@@ -79,7 +78,7 @@
 				oac.startRendering();oac.oncomplete=e=>f(e.renderedBuffer);
 			}),
 			progress=(r,f)=>new Response(new ReadableStream({start:async(c,l=0,x,a=+r.headers.get('content-length'))=>{r=r.body.getReader();while((x=(await r.read()).value)&&!x.done){c.enqueue(x);f(l+=x.byteLength,a);}c.close();}})),
-			trigger=(n=69,{abi=0,t,out=deln}={})=>{
+			trigger=(n=69,{abi=0,t,out=deln}={})=>{if(!q._instr)return;
 				const abs=actx.createBufferSource(),s=q._instr[2][abi].reduce((a,x)=>{const d=Math.abs(n-x[0]);return a[0]<d?a:[d,x];},[Infinity])[1];
 				abs.playbackRate.value=Math.pow(2,(n-s[0])/12);abs.buffer=s[1];abs.connect(out);abs.start(t);
 			},
@@ -143,15 +142,24 @@
 				};
 				showci();
 			},
-			draw=()=>{
+			draw=pt=>{
+				const now=performance.now();
+				if(pt){if(!q.draw)return;else pt=now-pt;}
+				else{if(!q.draw){requestAnimationFrame(()=>draw(performance.now()));q.draw=true;}return;}
 				const w=d.i2g[q._instr[3]][0],pat=d.i2t[q._instr[3]];
-				q.kb.forEach((x,i)=>{
+				let re=false;
+				q.kb=q.kb.map((x,i)=>{
+					let ret=x;
 					i={i,p:[i%w,i/w|0,1,1].map(y=>y*q.kbs)};
 					kctx.clearRect(...i.p);
-					[i.p[0],i.p[2]]=(y=>[i.p[0]+i.p[2]*(1-y)*.5,i.p[2]*y])(Math.abs(Math.cos(x*2*Math.PI)));
+					x>0&&1>=x&&(re=true,ret=Math.max(0,ret-pt/q.flip));
+					x=Math.min(x,1);
+					[[i.p[0],i.p[2]],[i.p[1],i.p[3]]]=[Math.abs(Math.cos(x*2*Math.PI))*(1-x*.2),(1-x*.2)].map((y,j)=>[i.p[j]+i.p[j+2]*(1-y)*.5,i.p[j+2]*y]);
 					x=kbtex.height;
 					kctx.drawImage(kbtex,pat[i.i]*x,0,x,x,i.p[0],i.p[1],i.p[2],i.p[3]);
+					return ret;
 				});
+				if(re)requestAnimationFrame(()=>draw(now));else q.draw=false;
 			},
 			kbtex=document.createElement('canvas'),ktctx=kbtex.getContext('2d'),
 			kctx=kc.getContext('2d'),
@@ -205,10 +213,13 @@
 			q={
 				set ci(w){q._ci=w;q.instr=q.instr;},get ci(){return q._ci;},
 				set instr(w){(async()=>{
-					const id=q._instr_=Symbol();
+					const id=q._instr_=Symbol(),p={};
 					setRadio('isel',w=+w||0,isel);drwbtn.setAttribute('style',`--bp:${bp(w)};`);w=(idb.name&&!w&&q._ci)?(w=(await e2p(os('instr').get(q._ci))).target.result,[w.name,0,[w.dat],0]):[...d.instr[w]];delete q._instr;scd.classList[w[3]==1?'add':'remove']('d');
+					p._l=w[2].reduce((a,x)=>a+Object.keys(x).length,0);
 					w[2]=await Promise.all(w[2].map(x=>Promise.all((Array.isArray(x)?x:Object.entries(x)).map(async y=>(
-						y[1]=typeof y[1]=='string'?await(await fetch('audio/instr/'+w[0]+y[1])).arrayBuffer():(y[1].data||await new Response(y[1]).arrayBuffer()),
+						y[1]=typeof y[1]=='string'?await(progress(await fetch('audio/instr/'+w[0]+y[1]),(...z)=>(p[y[1]]=z,kctx.clearRect(0,0,kc.width,kc.height),kctx.strokeStyle='#aef',kctx.lineWidth=8,
+							kctx.beginPath(),kctx.arc(32,32,16,-.25*2*Math.PI,(Object.values(p).reduce((a,_)=>_[1]?a+(_[0]/_[1])/p._l:a,0)-.25)*2*Math.PI),kctx.stroke()
+						))).arrayBuffer():(y[1].data||await new Response(y[1]).arrayBuffer()),
 						[n2nn(y[0]),await new Promise((f,r)=>actx.decodeAudioData(y[1],f,r))]
 					)))));
 					q._instr_==id&&(q._instr=w,q.kbs=q.kbs,q.kbp=q.kbp,console.log(w));
@@ -227,6 +238,7 @@
 					draw();
 				},get kbs(){return q._kbs;},
 				set kbp(w){q._kbp=w=+w||0;if(!q._instr)return;kc.style.marginTop=`min(${100/d.i2g[q._instr[3]][0]}%,${q._kbs*w}px)`;},get kbp(){return q._kbp;},
+				flip:400,
 				k2i:Object.fromEntries(Array.from('QWERTASDFGZXCVB',(x,i)=>[`Key${x}`,[i%5,Math.floor(i/5)]]))
 			},
 			load=()=>({ci:q._ci,instr:q.instr,sc:q.sc,rev:q.rev,del:q.del=.1,kbs:q.kbs=88,kbp:q.kbp=.5}=JSON.parse(localStorage.sky_instr||localStorage.instr_stat||'{}')),
@@ -234,7 +246,7 @@
 
 		texts={
 			...texts,
-			info:'<h1>sky_instruments</h1><hr>In game sounds<br><small>recorded by @McbeEringi</small><hr><p>[sky_instr] v6 build:2207150<br><a href="https://twitter.com/mcbeeringi">@McbeEringi</a> MITLicense</p>',
+			info:'<h1>sky_instruments</h1><hr>In game sounds<br><small>recorded by @McbeEringi</small><hr><p>[sky_instr] v6 build:2207170<br><a href="https://twitter.com/mcbeeringi">@McbeEringi</a> MITLicense</p>',
 			cfg:'Config',kbs:'Key Size',kbp:'Key Position',rev:'Reverb',del:'Delay',rcv:'Captures Keyboard<br>(experimental)',fbs:'Feedback Sound',
 			ci:'Custom Instruments',default:'Default',cnew:'Create New…',cin:'Instrument Name',keysig:'Key Sig Name',afile:'Audio Source',
 			delask:x=>`Are you sure you want to delete<br>"${x}" ?`,
@@ -248,6 +260,28 @@
 				}
 			}[navigator.language.slice(0,2)]
 		};
+		{
+			const ps={},
+			onstart=e=>{if(!q._instr)return;
+				e.preventDefault&&e.preventDefault();
+				const bcr=kc.getBoundingClientRect();
+				(e.changedTouches?[...e.changedTouches]:[e]).forEach(x=>{
+					const g=d.i2g[q._instr[3]],
+						p=x.p||[(x.clientX-bcr.x)/bcr.width*g[0],(x.clientY-bcr.y)/bcr.height*g[1]],
+						i=Math.floor(p[0])+Math.floor(p[1])*g[0];
+					trigger(69+d.i2n[q._instr[3]][i]+q.octave+q.sc,{abi:d.i2p[q._instr[3]][i]});
+					ps[x.identifier||'mouse']={i,x:x.clientX,y:x.clientY};q.kb[i]=2;draw();
+				});
+			},
+			onmove=e=>(e.changedTouches?[...e.changedTouches]:[e]).forEach(x=>(x.tmp=ps[x.identifier||'mouse'])&&(Math.hypot(x.tmp.x-x.clientX,x.tmp.y-x.clientY)>16)&&(q.kb[x.tmp.i]=1,draw(),delete ps[x.identifier||'mouse'])),
+			onend=e=>(e.changedTouches?[...e.changedTouches]:[e]).map(x=>(x.tmp=ps[x.identifier||'mouse'])&&(q.kb[x.tmp.i]=1,draw(),delete ps[x.identifier||'mouse'])).some(y=>y)&&e.preventDefault&&e.preventDefault();
+			['touchstart','mousedown'].forEach(x=>kc.addEventListener(x,onstart));
+			['touchmove','mousemove'].forEach(x=>addEventListener(x,onmove));
+			['touchend','touchcanceled','mouseup'].forEach(x=>addEventListener(x,onend));
+			document.addEventListener('keydown',e=>(!e.repeat&&(e.tmp=q.k2i[e.code])&&q._instr&&e.tmp.every((x,i)=>x<d.i2g[q._instr[3]][i])&&onstart({p:e.tmp,identifier:e.code})));
+			document.addEventListener('keyup',e=>((e.tmp=q.k2i[e.code])&&q._instr&&e.tmp.every((x,i)=>x<d.i2g[q._instr[3]][i])&&onend({p:e.tmp,identifier:e.code})));
+
+		}
 		(drwcb.onchange=()=>drwbtn.classList[drwcb.checked?'remove':'add']('a1'))();
 		isel.insertAdjacentHTML('beforeend',d.instr.map((_,i)=>`<input type="radio" name="isel" value="${i}" ${[7,18].includes(i)?'disabled':''} id="isel${i}"><label class="btn a1" style="--bp:${bp(i)};" for="isel${i}"></label>`).join(''));
 		forRadio('isel',x=>x.onchange=()=>(x.checked&&(q.instr=+x.value,save())),isel);
