@@ -26,7 +26,7 @@
 <body>
 	<script src="util.js"></script>
 	<style>
-		html,body{height:100%;margin:0;overflow:hidden;position:relative;}
+		html,body{height:100%;margin:0;overflow:hidden;position:relative;user-select:none;-webkit-user-select:none;}
 		body>input[type=checkbox],input[type=radio]{opacity:0;position:absolute;top:0;left:0;pointer-events:none;}
 
 		label[for=drwcb]{position:absolute;right:0;bottom:0;--btn:48px;transition:transform .5s;--bp:-300% 0;z-index:1;}label[for=drwcb]::after{opacity:0;}:checked+label[for=drwcb]::before{--bp_:-100% -100%;}
@@ -37,7 +37,7 @@
 		#kc{display:block;margin:0 auto;width:100%;touch-action:none;cursor:pointer;}
 	</style>
 
-	<canvas id="kc"></canvas>
+	<canvas id="kc" width="512" height="512"></canvas>
 
 	<input type="checkbox" id="drwcb">
 	<label for="drwcb" class="btn" id="drwbtn"></label>
@@ -66,21 +66,15 @@
 			bp=i=>`${i%8*-100}% ${Math.floor(i*.125+1)*-100}%`,
 			stdli=(a,b=a+1,s={})=>{for(let i=a;i<=b;i++){s['ds'+i]=`ds${i}.mp3`;s['a'+i]=`a${i}.mp3`;}return s;},
 			irgen=(fi=.1,d=2.5,cut=10000,ch=2,rate=actx.sampleRate)=>new Promise(f=>{
-				const fr=d*rate,
-					oac=new(window.OfflineAudioContext||webkitOfflineAudioContext)(ch,fr,rate),
-					ab=oac.createBuffer(ch,fr,rate),lpf=oac.createBiquadFilter(),g0=oac.createGain(),
-					g1=oac.createGain(),bs=oac.createBufferSource();
+				const fr=d*rate,oac=new(window.OfflineAudioContext||webkitOfflineAudioContext)(ch,fr,rate),ab=oac.createBuffer(ch,fr,rate),lpf=oac.createBiquadFilter(),g0=oac.createGain(),g1=oac.createGain(),bs=oac.createBufferSource();
 				for(let i=0,view;i<ch;i++){view=ab.getChannelData(i);for(let j=0;j<fr;j++)view[j]=Math.random()*2-1;}
-				lpf.type='lowpass';lpf.frequency.value=cut;lpf.Q.value=0;
-				g0.gain.setTargetAtTime(0,0,d*.2);
-				g1.gain.setValueAtTime(0,0);g1.gain.linearRampToValueAtTime(1,fi);g1.gain.setValueAtTime(1,d*.9);g1.gain.linearRampToValueAtTime(0,d);
-				bs.buffer=ab;[bs,lpf,g0,g1,oac.destination].reduce((a,x)=>a.connect(x));bs.start();
-				oac.startRendering();oac.oncomplete=e=>f(e.renderedBuffer);
+				lpf.type='lowpass';lpf.frequency.value=cut;lpf.Q.value=0;g0.gain.setTargetAtTime(0,0,d*.2);g1.gain.setValueAtTime(0,0);g1.gain.linearRampToValueAtTime(1,fi);g1.gain.setValueAtTime(1,d*.9);g1.gain.linearRampToValueAtTime(0,d);
+				bs.buffer=ab;[bs,lpf,g0,g1,oac.destination].reduce((a,x)=>a.connect(x));bs.start();oac.startRendering();oac.oncomplete=e=>f(e.renderedBuffer);
 			}),
 			progress=(r,f)=>new Response(new ReadableStream({start:async(c,l=0,x,a=+r.headers.get('content-length'))=>{r=r.body.getReader();while((x=(await r.read()).value)&&!x.done){c.enqueue(x);f(l+=x.byteLength,a);}c.close();}})),
 			trigger=(n=69,{abi=0,t,out=deln}={})=>{if(!q._instr)return;
-				const abs=actx.createBufferSource(),s=q._instr[2][abi].reduce((a,x)=>{const d=Math.abs(n-x[0]);return a[0]<d?a:[d,x];},[Infinity])[1];
-				abs.playbackRate.value=Math.pow(2,(n-s[0])/12);abs.buffer=s[1];abs.connect(out);abs.start(t);
+				const abs=actx.createBufferSource(),s=q._instr[2][abi].reduce((a,x)=>{const d=Math.abs(n-x[0]);return a[0]<d?a:[d,x];},[Infinity,null])[1];
+				s&&(abs.playbackRate.value=Math.pow(2,(n-s[0])/12),abs.buffer=s[1],abs.connect(out),abs.start(t));
 			},
 			cfg=()=>{
 				const e=alert(`<h2>${texts.cfg}</h2><hr>
@@ -143,23 +137,22 @@
 				showci();
 			},
 			draw=pt=>{
-				const now=performance.now();
-				if(pt){if(!q.draw)return;else pt=now-pt;}
-				else{if(!q.draw){requestAnimationFrame(()=>draw(performance.now()));q.draw=true;}return;}
-				const w=d.i2g[q._instr[3]][0],pat=d.i2t[q._instr[3]];
+				const t=performance.now();
+				if(pt){if(!q.draw)return;else pt=t-pt;}
+				else{if(!q.draw){requestAnimationFrame(()=>draw(t));q.draw=true;}return;}
 				let re=false;
 				q.kb=q.kb.map((x,i)=>{
 					let ret=x;
-					i={i,p:[i%w,i/w|0,1,1].map(y=>y*q.kbs)};
+					i={i,p:[i%q.i2g[0],i/q.i2g[0]|0,1,1].map(y=>y*q.kbs)};
 					kctx.clearRect(...i.p);
 					x>0&&1>=x&&(re=true,ret=Math.max(0,ret-pt/q.flip));
 					x=Math.min(x,1);
 					[[i.p[0],i.p[2]],[i.p[1],i.p[3]]]=[Math.abs(Math.cos(x*2*Math.PI))*(1-x*.2),(1-x*.2)].map((y,j)=>[i.p[j]+i.p[j+2]*(1-y)*.5,i.p[j+2]*y]);
 					x=kbtex.height;
-					kctx.drawImage(kbtex,pat[i.i]*x,0,x,x,i.p[0],i.p[1],i.p[2],i.p[3]);
+					kctx.drawImage(kbtex,q.i2t[i.i]*x,0,x,x,i.p[0],i.p[1],i.p[2],i.p[3]);
 					return ret;
 				});
-				if(re)requestAnimationFrame(()=>draw(now));else q.draw=false;
+				if(re)requestAnimationFrame(()=>draw(t));else q.draw=false;
 			},
 			kbtex=document.createElement('canvas'),ktctx=kbtex.getContext('2d'),
 			kctx=kc.getContext('2d'),
@@ -217,14 +210,15 @@
 					setRadio('isel',w=+w||0,isel);drwbtn.setAttribute('style',`--bp:${bp(w)};`);w=(idb.name&&!w&&q._ci)?(w=(await e2p(os('instr').get(q._ci))).target.result,[w.name,0,[w.dat],0]):[...d.instr[w]];delete q._instr;scd.classList[w[3]==1?'add':'remove']('d');
 					p._l=w[2].reduce((a,x)=>a+Object.keys(x).length,0);
 					w[2]=await Promise.all(w[2].map(x=>Promise.all((Array.isArray(x)?x:Object.entries(x)).map(async y=>(
-						y[1]=typeof y[1]=='string'?await(progress(await fetch('audio/instr/'+w[0]+y[1]),(...z)=>(p[y[1]]=z,kctx.clearRect(0,0,kc.width,kc.height),kctx.strokeStyle='#aef',kctx.lineWidth=8,
-							kctx.beginPath(),kctx.arc(32,32,16,-.25*2*Math.PI,(Object.values(p).reduce((a,_)=>_[1]?a+(_[0]/_[1])/p._l:a,0)-.25)*2*Math.PI),kctx.stroke()
+						y[1]=typeof y[1]=='string'?await(progress(await fetch('audio/instr/'+w[0]+y[1]),(...z)=>q._instr_==id&&(p[y[1]]=z,kctx.clearRect(0,0,kc.width,kc.height),kctx.strokeStyle='#aef',kctx.lineWidth=q._kbs/8,
+							kctx.beginPath(),kctx.arc(q._kbs/2,q._kbs/2,q._kbs/4,-.25*2*Math.PI,(Object.values(p).reduce((a,_)=>_[1]?a+(_[0]/_[1])/p._l:a,0)-.25)*2*Math.PI),kctx.stroke()
 						))).arrayBuffer():(y[1].data||await new Response(y[1]).arrayBuffer()),
 						[n2nn(y[0]),await new Promise((f,r)=>actx.decodeAudioData(y[1],f,r))]
 					)))));
 					q._instr_==id&&(q._instr=w,q.kbs=q.kbs,q.kbp=q.kbp,console.log(w));
 				})().catch(errfx);},get instr(){return +(getRadio('isel',isel)||{value:0}).value;},
-				set sc (w){q._sc =w=+w||0;scd.children[1].setAttribute('style',`--rot:${w*30+45}deg;`);},get sc(){return q._instr&&q._instr[3]==1?0:q._sc;},get octave(){return q._instr?q._instr[1]*12:0;},
+				get octave(){return q._instr?q._instr[1]*12:0;},get i2n(){return d.i2n[q._instr?q._instr[3]:0];},get i2g(){return d.i2g[q._instr?q._instr[3]:0];},get i2t(){return d.i2t[q._instr?q._instr[3]:0];},get i2p(){return d.i2p[q._instr?q._instr[3]:0];},
+				set sc (w){q._sc =w=+w||0;scd.children[1].setAttribute('style',`--rot:${w*30+45}deg;`);},get sc(){return q._instr&&q._instr[3]==1?0:q._sc;},
 				set rev(w){q._rev=w=+w||0;gn0.gain.value=w;gn1.gain.value=1-w;},get rev(){return q._rev;},
 				set del(w){q._del=w=+w||0;deln.delayTime.value=w;},get del(){return q._del;},
 				set kbs(w){q._kbs=w=+w||64;if(!q._instr)return;const pr=devicePixelRatio;
@@ -234,11 +228,10 @@
 					const r=16,s=.786,ws=w*s,hwis=w*(1-s)*.5,arc=`a${r} ${r} 0 0 0 `;
 					ktctx.fillStyle=getComputedStyle(kc).getPropertyValue('--g');
 					ktctx.fill(new Path2D(new Array(3).fill(`m${hwis+r} ${hwis+arc+-r} ${r}v${ws-r-r+arc+r} ${r}h${ws-r-r+arc+r} ${-r}v${-(ws-r-r)+arc+-r} ${-r}z`).map((x,i)=>`M ${w*i} 0`+x).join('')));
-					new Array(3).fill().forEach((_,i)=>ktctx.drawImage(tex,128*i,0,128,128,hwis+w*i,hwis,ws,ws));
-					draw();
+					(x=>tex.src?addEventListener('texready',()=>(x(),draw()),{once:true}):x())(()=>new Array(3).fill().forEach((_,i)=>ktctx.drawImage(tex,128*i,0,128,128,hwis+w*i,hwis,ws,ws)));draw();
 				},get kbs(){return q._kbs;},
 				set kbp(w){q._kbp=w=+w||0;if(!q._instr)return;kc.style.marginTop=`min(${100/d.i2g[q._instr[3]][0]}%,${q._kbs*w}px)`;},get kbp(){return q._kbp;},
-				flip:400,
+				flip:400,pointers:new Map(),
 				k2i:Object.fromEntries(Array.from('QWERTASDFGZXCVB',(x,i)=>[`Key${x}`,[i%5,Math.floor(i/5)]]))
 			},
 			load=()=>({ci:q._ci,instr:q.instr,sc:q.sc,rev:q.rev,del:q.del=.1,kbs:q.kbs=88,kbp:q.kbp=.5}=JSON.parse(localStorage.sky_instr||localStorage.instr_stat||'{}')),
@@ -246,7 +239,7 @@
 
 		texts={
 			...texts,
-			info:'<h1>sky_instruments</h1><hr>In game sounds<br><small>recorded by @McbeEringi</small><hr><p>[sky_instr] v6 build:2207170<br><a href="https://twitter.com/mcbeeringi">@McbeEringi</a> MITLicense</p>',
+			info:'<h1>sky_instruments</h1><hr>In game sounds<br><small>recorded by @McbeEringi</small><hr><p>[sky_instr] v6 build:2207190<br><a href="https://twitter.com/mcbeeringi">@McbeEringi</a> MITLicense</p>',
 			cfg:'Config',kbs:'Key Size',kbp:'Key Position',rev:'Reverb',del:'Delay',rcv:'Captures Keyboard<br>(experimental)',fbs:'Feedback Sound',
 			ci:'Custom Instruments',default:'Default',cnew:'Create New…',cin:'Instrument Name',keysig:'Key Sig Name',afile:'Audio Source',
 			delask:x=>`Are you sure you want to delete<br>"${x}" ?`,
@@ -261,26 +254,23 @@
 			}[navigator.language.slice(0,2)]
 		};
 		{
-			const ps={},
-			onstart=e=>{if(!q._instr)return;
+			const onsta=e=>{if(!q._instr)return;
 				e.preventDefault&&e.preventDefault();
 				const bcr=kc.getBoundingClientRect();
 				(e.changedTouches?[...e.changedTouches]:[e]).forEach(x=>{
-					const g=d.i2g[q._instr[3]],
-						p=x.p||[(x.clientX-bcr.x)/bcr.width*g[0],(x.clientY-bcr.y)/bcr.height*g[1]],
-						i=Math.floor(p[0])+Math.floor(p[1])*g[0];
-					trigger(69+d.i2n[q._instr[3]][i]+q.octave+q.sc,{abi:d.i2p[q._instr[3]][i]});
-					ps[x.identifier||'mouse']={i,x:x.clientX,y:x.clientY};q.kb[i]=2;draw();
+					const p=x.p||[(x.clientX-bcr.x)/bcr.width*q.i2g[0],(x.clientY-bcr.y)/bcr.height*q.i2g[1]],
+						i=Math.floor(p[0])+Math.floor(p[1])*q.i2g[0];
+					trigger(69+q.i2n[i]+q.octave+q.sc,{abi:q.i2p[i]});
+					q.pointers.set(x.identifier||'mouse',{i,x:x.clientX,y:x.clientY});q.kb[i]=2;draw();
 				});
 			},
-			onmove=e=>(e.changedTouches?[...e.changedTouches]:[e]).forEach(x=>(x.tmp=ps[x.identifier||'mouse'])&&(Math.hypot(x.tmp.x-x.clientX,x.tmp.y-x.clientY)>16)&&(q.kb[x.tmp.i]=1,draw(),delete ps[x.identifier||'mouse'])),
-			onend=e=>(e.changedTouches?[...e.changedTouches]:[e]).map(x=>(x.tmp=ps[x.identifier||'mouse'])&&(q.kb[x.tmp.i]=1,draw(),delete ps[x.identifier||'mouse'])).some(y=>y)&&e.preventDefault&&e.preventDefault();
-			['touchstart','mousedown'].forEach(x=>kc.addEventListener(x,onstart));
-			['touchmove','mousemove'].forEach(x=>addEventListener(x,onmove));
+			onmov=e=>(e.changedTouches?[...e.changedTouches]:[e]).forEach(x=>(x.id=x.identifier||'mouse',q.pointers.has(x.id))&&(x.tmp=q.pointers.get(x.id))&&(Math.hypot(x.tmp.x-x.clientX,x.tmp.y-x.clientY)>16)&&(q.kb[x.tmp.i]=1,draw(),q.pointers.delete(x.id))),
+			onend=e=>(e.changedTouches?[...e.changedTouches]:[e]).forEach(x=>(x.id=x.identifier||'mouse',q.pointers.has(x.id))&&(x.tmp=q.pointers.get(x.id))&&(q.kb[x.tmp.i]=1,draw(),q.pointers.delete(x.id)));
+			['touchstart','mousedown'].forEach(x=>kc.addEventListener(x,onsta));
+			['touchmove','mousemove'].forEach(x=>addEventListener(x,onmov));
 			['touchend','touchcanceled','mouseup'].forEach(x=>addEventListener(x,onend));
-			document.addEventListener('keydown',e=>(!e.repeat&&(e.tmp=q.k2i[e.code])&&q._instr&&e.tmp.every((x,i)=>x<d.i2g[q._instr[3]][i])&&onstart({p:e.tmp,identifier:e.code})));
-			document.addEventListener('keyup',e=>((e.tmp=q.k2i[e.code])&&q._instr&&e.tmp.every((x,i)=>x<d.i2g[q._instr[3]][i])&&onend({p:e.tmp,identifier:e.code})));
-
+			document.addEventListener('keydown',e=>(!e.repeat&&!'INPUT,TEXTAREA'.includes(document.activeElement.tagName)&&(e.tmp=q.k2i[e.code])&&q._instr&&e.tmp.every((x,i)=>x<q.i2g[i])&&onsta({p:e.tmp,identifier:e.code})));
+			document.addEventListener('keyup',e=>((e.tmp=q.k2i[e.code])&&q._instr&&e.tmp.every((x,i)=>x<q.i2g[i])&&onend({p:e.tmp,identifier:e.code})));
 		}
 		(drwcb.onchange=()=>drwbtn.classList[drwcb.checked?'remove':'add']('a1'))();
 		isel.insertAdjacentHTML('beforeend',d.instr.map((_,i)=>`<input type="radio" name="isel" value="${i}" ${[7,18].includes(i)?'disabled':''} id="isel${i}"><label class="btn a1" style="--bp:${bp(i)};" for="isel${i}"></label>`).join(''));
