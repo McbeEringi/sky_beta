@@ -84,7 +84,7 @@
 						<label><div>${texts.del}<br><input type="range" class="style" min="0" max=".2" step="0.0125" value="${q.del}" oninput="[72,79].forEach((x,i)=>trigger(x+q.octave+q.sc,{abi:0,t:actx.currentTime+.05+this.value*i,out:actx.destination}));save(q.del=this.value);"></div></label>
 						<label><div>${texts.kbs}<br><input type="range" class="style" min="64" max="128" step="4" value="${q.kbs}" oninput="save(q.kbs=this.value);"></div></label>
 						<label><div>${texts.kbp}<br><input type="range" class="style" min="0" max="1" step="0.0625" value="${q.kbp}" oninput="save(q.kbp=this.value);"></div></label>
-						<label><div>${texts.rcv}<br><input type="checkbox" class="toggle"${q.rcv?' checked':''}></div></label>
+						<label><div>${texts.rcv}<br><input type="checkbox" class="toggle"${q.rcv?' checked':''} onchange="save(q.rcv=+this.checked);"></div></label>
 						<label><button class="btn a1" style="--bp:-100% 0;" onclick="gcfg();"></button>${texts.gcfg}</label>
 					</div>
 					<h3>${texts.ci}</h3><div class="items"></div>`).e.lastElementChild,
@@ -215,31 +215,31 @@
 						))).arrayBuffer():(y[1].data||await new Response(y[1]).arrayBuffer()),
 						[n2nn(y[0]),await new Promise((f,r)=>actx.decodeAudioData(y[1],f,r))]
 					)))));
-					q._instr_==id&&(q._instr=w,q.kbs=q.kbs,q.kbp=q.kbp,console.log(w));
+					q._instr_==id&&(q._instr=w,q.kbs=q.kbs,console.log(w));
 				})().catch(errfx);},get instr(){return +(getRadio('isel',isel)||{value:0}).value;},
 				get octave(){return q._instr?q._instr[1]*12:0;},get i2n(){return d.i2n[q._instr?q._instr[3]:0];},get i2g(){return d.i2g[q._instr?q._instr[3]:0];},get i2t(){return d.i2t[q._instr?q._instr[3]:0];},get i2p(){return d.i2p[q._instr?q._instr[3]:0];},
 				set sc (w){q._sc =w=+w||0;scd.children[1].setAttribute('style',`--rot:${w*30+45}deg;`);},get sc(){return q._instr&&q._instr[3]==1?0:q._sc;},
 				set rev(w){q._rev=w=+w||0;gn0.gain.value=w;gn1.gain.value=1-w;},get rev(){return q._rev;},
 				set del(w){q._del=w=+w||0;deln.delayTime.value=w;},get del(){return q._del;},
 				set kbs(w){q._kbs=w=+w||64;if(!q._instr)return;const pr=devicePixelRatio;
-					q.kb=new Array(d.i2g[q._instr[3]].reduce((a,x)=>a*x)).fill(0);
-					[kc.width,kc.style.maxWidth,kc.height]=d.i2g[q._instr[3]].flatMap(x=>[x*w*pr,x*w+'px']);kctx.scale(pr,pr);
+					q.kb=new Array(q.i2g.reduce((a,x)=>a*x)).fill(0);
+					[kc.width,kc.style.maxWidth,kc.height]=q.i2g.flatMap(x=>[x*w*pr,x*w+'px']);kctx.scale(pr,pr);
 					kbtex.width=(kbtex.height=(w*pr))*3;ktctx.scale(pr,pr);
 					const r=16,s=.786,ws=w*s,hwis=w*(1-s)*.5,arc=`a${r} ${r} 0 0 0 `;
 					ktctx.fillStyle=getComputedStyle(kc).getPropertyValue('--g');
 					ktctx.fill(new Path2D(new Array(3).fill(`m${hwis+r} ${hwis+arc+-r} ${r}v${ws-r-r+arc+r} ${r}h${ws-r-r+arc+r} ${-r}v${-(ws-r-r)+arc+-r} ${-r}z`).map((x,i)=>`M ${w*i} 0`+x).join('')));
-					(x=>tex.src?addEventListener('texready',()=>(x(),draw()),{once:true}):x())(()=>new Array(3).fill().forEach((_,i)=>ktctx.drawImage(tex,128*i,0,128,128,hwis+w*i,hwis,ws,ws)));draw();
+					(x=>tex.src?addEventListener('texready',()=>(x(),draw()),{once:true}):x())(()=>new Array(3).fill().forEach((_,i)=>ktctx.drawImage(tex,128*i,0,128,128,hwis+w*i,hwis,ws,ws)));draw();q.kbp=q.kbp;
 				},get kbs(){return q._kbs;},
-				set kbp(w){q._kbp=w=+w||0;if(!q._instr)return;kc.style.marginTop=`min(${100/d.i2g[q._instr[3]][0]}%,${q._kbs*w}px)`;},get kbp(){return q._kbp;},
+				set kbp(w){q._kbp=w=+w||0;if(!q._instr)return;kc.style.marginTop=`min(${100/q.i2g[0]}%,${q._kbs*w}px)`;},get kbp(){return q._kbp;},
 				flip:400,pointers:new Map(),
 				k2i:Object.fromEntries(Array.from('QWERTASDFGZXCVB',(x,i)=>[`Key${x}`,[i%5,Math.floor(i/5)]]))
 			},
-			load=()=>({ci:q._ci,instr:q.instr,sc:q.sc,rev:q.rev,del:q.del=.1,kbs:q.kbs=88,kbp:q.kbp=.5}=JSON.parse(localStorage.sky_instr||localStorage.instr_stat||'{}')),
-			save=()=>localStorage.sky_instr=JSON.stringify({ci:q.ci,instr:q.instr,sc:q.sc,rev:q.rev,del:q.del,kbs:q.kbs,kbp:q.kbp});
+			load=()=>({ci:q._ci,instr:q.instr,sc:q.sc,rev:q.rev,del:q.del=.1,kbs:q.kbs=88,kbp:q.kbp=.5,rcv:q.rcv=0}=JSON.parse(localStorage.sky_instr||localStorage.instr_stat||'{}')),
+			save=()=>localStorage.sky_instr=JSON.stringify({ci:q.ci,instr:q.instr,sc:q.sc,rev:q.rev,del:q.del,kbs:q.kbs,kbp:q.kbp,rcv:q.rcv});
 
 		texts={
 			...texts,
-			info:'<h1>sky_instruments</h1><hr>In game sounds<br><small>recorded by @McbeEringi</small><hr><p>[sky_instr] v6 build:2207190<br><a href="https://twitter.com/mcbeeringi">@McbeEringi</a> MITLicense</p>',
+			info:'<h1>sky_instruments</h1><hr>In game sounds<br><small>recorded by @McbeEringi</small><hr><p>[sky_instr] v6 build:2207191<br><a href="https://twitter.com/mcbeeringi">@McbeEringi</a> MITLicense</p>',
 			cfg:'Config',kbs:'Key Size',kbp:'Key Position',rev:'Reverb',del:'Delay',rcv:'Captures Keyboard<br>(experimental)',fbs:'Feedback Sound',
 			ci:'Custom Instruments',default:'Default',cnew:'Create New…',cin:'Instrument Name',keysig:'Key Sig Name',afile:'Audio Source',
 			delask:x=>`Are you sure you want to delete<br>"${x}" ?`,
@@ -267,8 +267,8 @@
 			onmov=e=>(e.changedTouches?[...e.changedTouches]:[e]).forEach(x=>(x.id=x.identifier||'mouse',q.pointers.has(x.id))&&(x.tmp=q.pointers.get(x.id))&&(Math.hypot(x.tmp.x-x.clientX,x.tmp.y-x.clientY)>16)&&(q.kb[x.tmp.i]=1,draw(),q.pointers.delete(x.id))),
 			onend=e=>(e.changedTouches?[...e.changedTouches]:[e]).forEach(x=>(x.id=x.identifier||'mouse',q.pointers.has(x.id))&&(x.tmp=q.pointers.get(x.id))&&(q.kb[x.tmp.i]=1,draw(),q.pointers.delete(x.id)));
 			['touchstart','mousedown'].forEach(x=>kc.addEventListener(x,onsta));
-			['touchmove','mousemove'].forEach(x=>addEventListener(x,onmov));
-			['touchend','touchcanceled','mouseup'].forEach(x=>addEventListener(x,onend));
+			['touchmove','mousemove'].forEach(x=>addEventListener(x,onmov,{passive:true}));
+			['touchend','touchcanceled','mouseup'].forEach(x=>addEventListener(x,onend,{passive:true}));
 			document.addEventListener('keydown',e=>(!e.repeat&&!'INPUT,TEXTAREA'.includes(document.activeElement.tagName)&&(e.tmp=q.k2i[e.code])&&q._instr&&e.tmp.every((x,i)=>x<q.i2g[i])&&onsta({p:e.tmp,identifier:e.code})));
 			document.addEventListener('keyup',e=>((e.tmp=q.k2i[e.code])&&q._instr&&e.tmp.every((x,i)=>x<q.i2g[i])&&onend({p:e.tmp,identifier:e.code})));
 		}
@@ -286,6 +286,26 @@
 
 		[[deln,revn,gn0,actx.destination],[deln,gn1,actx.destination]].forEach(x=>x.reduce((a,y)=>(a.connect(y),y)));
 		irgen().then(x=>revn.buffer=x);bga.g.disconnect(bga.out);bga.g.connect(bga.out=deln);
+		if(window.MediaRecorder){
+			const recn=actx.createMediaStreamDestination(),mime=MediaRecorder.isTypeSupported('video/mp4')?'mp4':'webm',
+				rec=[new MediaRecorder(recn.stream),new MediaRecorder(new MediaStream([...kc.captureStream(60).getTracks(),...recn.stream.getTracks()]),{mimeType:`video/${mime}`})],
+				toWav=x=>{//https://github.com/Jam3/audiobuffer-to-wav
+					let ch=x.numberOfChannels,rate=x.sampleRate;
+					if(ch==1)x=x.getChannelData(0);else{const l=x.getChannelData(0),r=x.getChannelData(1);x=new Float32Array(l.length+r.length);for(let i=0;i<x.length;i++){x[i*2]=l[i];x[i*2+1]=r[i];}};
+					const b=new ArrayBuffer(44+x.length*2),v=new DataView(b),str=(c,s)=>{for(let i=0;i<s.length;i++)v.setUint8(c+i,s.charCodeAt(i))};
+					str(0,'RIFF');v.setUint32(4,36+x.length*2,true);str(8,'WAVE');
+					str(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,ch,true);v.setUint32(24,rate,true);ch*=2;v.setUint32(28,rate*ch,true);v.setUint16(32,ch,true);v.setUint16(34,16,true);
+					str(36,'data');v.setUint32(40,x.length*2,true);for(let i=0;i<x.length;i++){const s=Math.max(-1,Math.min(1,x[i]));v.setInt16(44+i*2,s<0?s*0x8000:s*0x7FFF,true);}
+					return new Blob([b]);
+				},
+				dl=(x,n)=>{const a=document.createElement('a');a.download=`sky_instr ${new Date().toLocaleString().replace(/[^\w\d\s]/g,'_')}.${n}`;a.href=URL.createObjectURL(x);a.click();setTimeout(URL.revokeObjectURL,0,a.href);};
+			gn0.connect(recn);gn1.connect(recn);
+			rec[0].ondataavailable=e=>new Response(e.data).arrayBuffer().then(x=>new Promise((f,r)=>actx.decodeAudioData(x,f,r))).then(x=>dl(toWav(x),'wav')).catch(errfx);
+			rec[1].ondataavailable=e=>dl(e.data,mime);
+			rec[0].onerror=rec[1].onerror=errfx;
+			recbtn.onclick=()=>rec[q.rcv][recbtn.classList.toggle('a')?'start':'stop']();
+			recbtn.disabled=false;
+		}
 		navigator.requestMIDIAccess&&addEventListener('midiready',()=>midi.inputs.forEach(x=>x.onmidimessage=e=>({
 			0:()=>console.log('noteOff',Array.from(e.data,x=>x.toString(16).padStart(2,'0'))),
 			1:()=>console.log('noteOn',Array.from(e.data,x=>x.toString(16).padStart(2,'0')),e.data[2]&&trigger(e.data[1])),

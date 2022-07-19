@@ -70,7 +70,7 @@ const urlq=Object.fromEntries(location.search.slice(1).split('&').filter(y=>y).m
 					<button class="btn" style="--bp:-600% -500%;" onclick="this.firstElementChild.click();"><input tabindex="-1" type="file" style="width:100%;height:100%;opacity:0;" accept="audio/aac,audio/flac,audio/mpeg,audio/ogg,audio/opus,audio/wav,audio/webm" onclick="event.stopPropagation();" onchange="(async w=>{w=this.files[0];w={name:w.name,data:await w.arrayBuffer()};await e2p(os().put(w,'bga'));~gq.bga||bgaset();})().catch(errfx);">
 					</button><button class="btn" style="--bp:-100% -100%;" onclick="e2p(os().delete('bga')).then(()=>(~gq.bga||bgaset())).catch(errfx);"></button>
 				</div></div>
-				<label><div>${texts.gain}<br><input type="range" step="any" max="1" value="${gq.bgagain}" oninput="gsave(gq.bgagain=bga.g.gain.value=+this.value);"></div></label>
+				<label><div>${texts.gain}<br><input type="range" step=".0625" max="1" value="${gq.bgagain}" oninput="gsave(gq.bgagain=bga.g.gain.value=+this.value);"></div></label>
 				<label><div>${texts.xfade}<br><input type="number" min="0" class="input" value="${gq.bgafade}" oninput="this.checkValidity()&&gsave(gq.bgafade=+this.value);" onchange="this.checkValidity()&&bgaset();"></div></label>
 			</div>
 			<h3>${texts.caches}</h3>
