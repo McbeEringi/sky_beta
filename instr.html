@@ -255,13 +255,10 @@
 		};
 		{
 			const onsta=e=>{if(!q._instr)return;
-				e.preventDefault&&e.preventDefault();
-				const bcr=kc.getBoundingClientRect();
+				e.preventDefault&&e.preventDefault();const bcr=kc.getBoundingClientRect();
 				(e.changedTouches?[...e.changedTouches]:[e]).forEach(x=>{
-					const p=x.p||[(x.clientX-bcr.x)/bcr.width*q.i2g[0],(x.clientY-bcr.y)/bcr.height*q.i2g[1]],
-						i=Math.floor(p[0])+Math.floor(p[1])*q.i2g[0];
-					trigger(69+q.i2n[i]+q.octave+q.sc,{abi:q.i2p[i]});
-					q.pointers.set(x.identifier||'mouse',{i,x:x.clientX,y:x.clientY});q.kb[i]=2;draw();
+					const p=x.p||[(x.clientX-bcr.x)/bcr.width*q.i2g[0],(x.clientY-bcr.y)/bcr.height*q.i2g[1]],i=Math.floor(p[0])+Math.floor(p[1])*q.i2g[0];
+					trigger(69+q.i2n[i]+q.octave+q.sc,{abi:q.i2p[i]});q.pointers.set(x.identifier||'mouse',{i,x:x.clientX,y:x.clientY});q.kb[i]=2;draw();
 				});
 			},
 			onmov=e=>(e.changedTouches?[...e.changedTouches]:[e]).forEach(x=>(x.id=x.identifier||'mouse',q.pointers.has(x.id))&&(x.tmp=q.pointers.get(x.id))&&(Math.hypot(x.tmp.x-x.clientX,x.tmp.y-x.clientY)>16)&&(q.kb[x.tmp.i]=1,draw(),q.pointers.delete(x.id))),
