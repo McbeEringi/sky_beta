@@ -140,11 +140,11 @@
 				let t=performance.now(),re=false;
 				if(dt){if(q.draw)dt=t-dt;else return;}else{if(!q.draw)q.draw=true;else return;}
 				q.kb=q.kb.map((x,i)=>{if(!sk||x){
+					x>0&&1>=x&&(re=true,dt&&(x=Math.max(0,x-dt/q.flip)));
 					i={i,p:[i%q.i2g[0],i/q.i2g[0]|0,1,1].map(y=>y*q.kbs)};
 					kctx.clearRect(...i.p);
 					[[i.p[0],i.p[2]],[i.p[1],i.p[3]]]=((y,s=1-y*.2)=>[Math.abs(Math.cos(y*2*Math.PI))*s,s])(Math.min(x,1)).map((y,j)=>[i.p[j]+i.p[j+2]*(1-y)*.5,i.p[j+2]*y]);
 					kctx.drawImage(kbtex,q.i2t[i.i]*kbtex.height,0,kbtex.height,kbtex.height,...i.p);
-					x>0&&1>=x&&(re=true,dt&&(x=Math.max(0,x-dt/q.flip)));
 				}return x;});
 				if(re)requestAnimationFrame(()=>draw(true,t));else q.draw=false;
 			},
@@ -233,7 +233,7 @@
 
 		texts={
 			...texts,
-			info:'<h1>sky_instruments</h1><hr>In game sounds<br><small>recorded by @McbeEringi</small><hr><p>[sky_instr] v6 build:2207201<br><a href="https://twitter.com/mcbeeringi">@McbeEringi</a> MITLicense</p>',
+			info:'<h1>sky_instruments</h1><hr>In game sounds<br><small>recorded by @McbeEringi</small><hr><p>[sky_instr] v6 build:2207202<br><a href="https://twitter.com/mcbeeringi">@McbeEringi</a> MITLicense</p>',
 			cfg:'Config',kbs:'Key Size',kbp:'Key Position',rev:'Reverb',del:'Delay',rcv:'Captures Keyboard<br>(experimental)',fbs:'Feedback Sound',
 			ci:'Custom Instruments',default:'Default',cnew:'Create New…',cin:'Instrument Name',keysig:'Key Sig Name',afile:'Audio Source',
 			delask:x=>`Are you sure you want to delete<br>"${x}" ?`,
