@@ -138,8 +138,8 @@
 			},
 			draw=(sk,dt)=>{
 				let t=performance.now(),re=false;
-				if(dt){if(q.draw)dt=t-dt;else return;}else{if(!q.draw)q.draw=re=true;else return;}
-				if(!sk||dt)q.kb=q.kb.map((x,i)=>{if(!sk||x){
+				if(dt){if(q.draw)dt=t-dt;else return;}else{if(!q.draw)q.draw=true;else return;}
+				q.kb=q.kb.map((x,i)=>{if(!sk||x){
 					i={i,p:[i%q.i2g[0],i/q.i2g[0]|0,1,1].map(y=>y*q.kbs)};
 					kctx.clearRect(...i.p);
 					[[i.p[0],i.p[2]],[i.p[1],i.p[3]]]=((y,s=1-y*.2)=>[Math.abs(Math.cos(y*2*Math.PI))*s,s])(Math.min(x,1)).map((y,j)=>[i.p[j]+i.p[j+2]*(1-y)*.5,i.p[j+2]*y]);
