@@ -136,23 +136,18 @@
 				};
 				showci();
 			},
-			draw=pt=>{
+			draw=(skip,dt)=>{
 				const t=performance.now();
-				if(pt){if(!q.draw)return;else pt=t-pt;}
-				else{if(!q.draw){requestAnimationFrame(()=>draw(t));q.draw=true;}return;}
+				if(dt){if(q.draw)dt=t-dt;else return;}else{if(!q.draw)q.draw=true;else return;}
 				let re=false;
-				q.kb=q.kb.map((x,i)=>{
-					let ret=x;
+				q.kb=q.kb.map((x,i)=>{if(!skip||x){
 					i={i,p:[i%q.i2g[0],i/q.i2g[0]|0,1,1].map(y=>y*q.kbs)};
 					kctx.clearRect(...i.p);
-					x>0&&1>=x&&(re=true,ret=Math.max(0,ret-pt/q.flip));
-					x=Math.min(x,1);
-					[[i.p[0],i.p[2]],[i.p[1],i.p[3]]]=[Math.abs(Math.cos(x*2*Math.PI))*(1-x*.2),(1-x*.2)].map((y,j)=>[i.p[j]+i.p[j+2]*(1-y)*.5,i.p[j+2]*y]);
-					x=kbtex.height;
-					kctx.drawImage(kbtex,q.i2t[i.i]*x,0,x,x,i.p[0],i.p[1],i.p[2],i.p[3]);
-					return ret;
-				});
-				if(re)requestAnimationFrame(()=>draw(t));else q.draw=false;
+					[[i.p[0],i.p[2]],[i.p[1],i.p[3]]]=((y,s=1-y*.2)=>[Math.abs(Math.cos(y*2*Math.PI))*s,s])(Math.min(x,1)).map((y,j)=>[i.p[j]+i.p[j+2]*(1-y)*.5,i.p[j+2]*y]);
+					kctx.drawImage(kbtex,q.i2t[i.i]*kbtex.height,0,kbtex.height,kbtex.height,...i.p);
+					x>0&&1>=x&&(re=true,dt&&(x=Math.max(0,x-dt/q.flip)));
+				}return x;});
+				if(re)requestAnimationFrame(()=>draw(true,t));else q.draw=false;
 			},
 			kbtex=document.createElement('canvas'),ktctx=kbtex.getContext('2d'),
 			kctx=kc.getContext('2d'),
@@ -258,11 +253,11 @@
 				e.preventDefault&&e.preventDefault();const bcr=kc.getBoundingClientRect();
 				(e.changedTouches?[...e.changedTouches]:[e]).forEach(x=>{
 					const p=x.p||[(x.clientX-bcr.x)/bcr.width*q.i2g[0],(x.clientY-bcr.y)/bcr.height*q.i2g[1]],i=Math.floor(p[0])+Math.floor(p[1])*q.i2g[0];
-					trigger(69+q.i2n[i]+q.octave+q.sc,{abi:q.i2p[i]});q.pointers.set(x.identifier||'mouse',{i,x:x.clientX,y:x.clientY});q.kb[i]=2;draw();
+					trigger(69+q.i2n[i]+q.octave+q.sc,{abi:q.i2p[i]});q.pointers.set(x.identifier||'mouse',{i,x:x.clientX,y:x.clientY});q.kb[i]=2;draw(true);
 				});
 			},
-			onmov=e=>(e.changedTouches?[...e.changedTouches]:[e]).forEach(x=>(x.id=x.identifier||'mouse',q.pointers.has(x.id))&&(x.tmp=q.pointers.get(x.id))&&(Math.hypot(x.tmp.x-x.clientX,x.tmp.y-x.clientY)>16)&&(q.kb[x.tmp.i]=1,draw(),q.pointers.delete(x.id))),
-			onend=e=>(e.changedTouches?[...e.changedTouches]:[e]).forEach(x=>(x.id=x.identifier||'mouse',q.pointers.has(x.id))&&(x.tmp=q.pointers.get(x.id))&&(q.kb[x.tmp.i]=1,draw(),q.pointers.delete(x.id)));
+			onmov=e=>(e.changedTouches?[...e.changedTouches]:[e]).forEach(x=>(x.id=x.identifier||'mouse',q.pointers.has(x.id))&&(x.tmp=q.pointers.get(x.id))&&(Math.hypot(x.tmp.x-x.clientX,x.tmp.y-x.clientY)>16)&&(q.kb[x.tmp.i]=1,draw(true),q.pointers.delete(x.id))),
+			onend=e=>(e.changedTouches?[...e.changedTouches]:[e]).forEach(x=>(x.id=x.identifier||'mouse',q.pointers.has(x.id))&&(x.tmp=q.pointers.get(x.id))&&(q.kb[x.tmp.i]=1,draw(true),q.pointers.delete(x.id)));
 			['touchstart','mousedown'].forEach(x=>kc.addEventListener(x,onsta));
 			['touchmove','mousemove'].forEach(x=>addEventListener(x,onmov,{passive:true}));
 			['touchend','touchcanceled','mouseup'].forEach(x=>addEventListener(x,onend,{passive:true}));
