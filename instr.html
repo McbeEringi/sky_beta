@@ -136,11 +136,10 @@
 				};
 				showci();
 			},
-			draw=(skip,dt)=>{
-				const t=performance.now();
-				if(dt){if(q.draw)dt=t-dt;else return;}else{if(!q.draw)q.draw=true;else return;}
-				let re=false;
-				q.kb=q.kb.map((x,i)=>{if(!skip||x){
+			draw=(sk,dt)=>{
+				let t=performance.now(),re=false;
+				if(dt){if(q.draw)dt=t-dt;else return;}else{if(!q.draw)q.draw=re=true;else return;}
+				if(!sk||dt)q.kb=q.kb.map((x,i)=>{if(!sk||x){
 					i={i,p:[i%q.i2g[0],i/q.i2g[0]|0,1,1].map(y=>y*q.kbs)};
 					kctx.clearRect(...i.p);
 					[[i.p[0],i.p[2]],[i.p[1],i.p[3]]]=((y,s=1-y*.2)=>[Math.abs(Math.cos(y*2*Math.PI))*s,s])(Math.min(x,1)).map((y,j)=>[i.p[j]+i.p[j+2]*(1-y)*.5,i.p[j+2]*y]);
@@ -234,7 +233,7 @@
 
 		texts={
 			...texts,
-			info:'<h1>sky_instruments</h1><hr>In game sounds<br><small>recorded by @McbeEringi</small><hr><p>[sky_instr] v6 build:2207200<br><a href="https://twitter.com/mcbeeringi">@McbeEringi</a> MITLicense</p>',
+			info:'<h1>sky_instruments</h1><hr>In game sounds<br><small>recorded by @McbeEringi</small><hr><p>[sky_instr] v6 build:2207201<br><a href="https://twitter.com/mcbeeringi">@McbeEringi</a> MITLicense</p>',
 			cfg:'Config',kbs:'Key Size',kbp:'Key Position',rev:'Reverb',del:'Delay',rcv:'Captures Keyboard<br>(experimental)',fbs:'Feedback Sound',
 			ci:'Custom Instruments',default:'Default',cnew:'Create New…',cin:'Instrument Name',keysig:'Key Sig Name',afile:'Audio Source',
 			delask:x=>`Are you sure you want to delete<br>"${x}" ?`,
