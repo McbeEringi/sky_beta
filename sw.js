@@ -1,6 +1,6 @@
 //https://developer.mozilla.org/ja/docs/Web/Progressive_web_apps/Offline_Service_workers
 //https://developers.google.com/web/fundamentals/primers/service-workers?hl=ja
-const cname='2207190',
+const cname='2207210',
 cstore=[
 	'util.js',
 	'img/icon.svg','img/icon_.svg','img/icon.png','img/icon192.png',
@@ -17,7 +17,14 @@ cstore=[
 	'audio/instr/musicbox/ds4.mp3',
 	'audio/instr/musicbox/ds5.mp3',
 	'audio/instr/musicbox/ds6.mp3',
-	'audio/instr/musicbox/ds7.mp3'
+	'audio/instr/musicbox/ds7.mp3',
+
+	'info.html',
+	'img/tc/00.webp','img/tc/01.webp','img/tc/02.webp',
+	'img/tc/10.webp','img/tc/11.webp','img/tc/12.webp',
+	'img/tc/20.webp','img/tc/21.webp',
+	'img/tc/30.webp','img/tc/31.webp','img/tc/32.webp',
+	'img/tc/40.webp','img/tc/41.webp'
 ],
 cprev=[
 	'_.html'

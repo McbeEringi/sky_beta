@@ -228,7 +228,7 @@
 				flip:400,pointers:new Map(),
 				k2i:Object.fromEntries(Array.from('QWERTASDFGZXCVB',(x,i)=>[`Key${x}`,[i%5,Math.floor(i/5)]]))
 			},
-			load=()=>({ci:q._ci,instr:q.instr,sc:q.sc,rev:q.rev,del:q.del=.1,kbs:q.kbs=88,kbp:q.kbp=.5,rcv:q.rcv=0}=JSON.parse(localStorage.sky_instr||localStorage.instr_stat||'{}')),
+			load=()=>({ci:q._ci,instr:q.instr,sc:q.sc,rev:q.rev,del:q.del=.1,kbs:q.kbs=96,kbp:q.kbp=.5,rcv:q.rcv=0}=JSON.parse(localStorage.sky_instr||localStorage.instr_stat||'{}')),
 			save=()=>localStorage.sky_instr=JSON.stringify({ci:q.ci,instr:q.instr,sc:q.sc,rev:q.rev,del:q.del,kbs:q.kbs,kbp:q.kbp,rcv:q.rcv});
 
 		texts={
