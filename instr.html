@@ -213,7 +213,7 @@
 						)
 					};
 					setRadio('isel',w=+w||0,isel);drwbtn.setAttribute('style',`--bp:${bp(w)};`);kctx.clearRect(0,0,kc.width,kc.height);
-					w=(idb.name&&!w&&q._ci)?(w=(await e2p(os('instr').get(q._ci))).target.result,{root:w.name,oct:0,d:[w.dat],i:0}):{...d.instr[w]};delete q._instr;scd.classList[w[3]==1?'add':'remove']('d');
+					w=(idb.name&&!w&&q._ci)?(w=(await e2p(os('instr').get(q._ci))).target.result,{root:w.name,oct:0,d:[w.dat],i:0}):{...d.instr[w]};delete q._instr;scd.classList[w.i==1?'add':'remove']('d');
 					const lp=w.loop&&Function('return'+await(await fetch('audio/instr/'+w.root+w.loop)).text())();
 					p._l=w.d.reduce((a,x)=>a+Object.keys(x).length,w.fret?w.fret.length:0);
 					w.d=await Promise.all(w.d.map(x=>Promise.all((Array.isArray(x)?x:Object.entries(x)).map(async y=>(
