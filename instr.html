@@ -245,7 +245,7 @@
 
 		texts={
 			...texts,
-			info:'<h1>sky_instruments</h1><hr>In game sounds<br><small>recorded by @McbeEringi</small><hr><p>[sky_instr] v6 build:2207220<br><a href="https://twitter.com/mcbeeringi">@McbeEringi</a> MITLicense</p>',
+			info:'<h1>sky_instruments</h1><hr>In game sounds<br><small>recorded by @McbeEringi</small><hr><p>[sky_instr] v6 build:2207221<br><a href="https://twitter.com/mcbeeringi">@McbeEringi</a> MITLicense</p>',
 			cfg:'Config',kbs:'Key Size',kbp:'Key Position',rev:'Reverb',del:'Delay',rcv:'Captures Keyboard<br>(experimental)',fbs:'Feedback Sound',
 			ci:'Custom Instruments',default:'Default',cnew:'Create New…',cin:'Instrument Name',keysig:'Key Sig Name',afile:'Audio Source',
 			delask:x=>`Are you sure you want to delete<br>"${x}" ?`,
@@ -311,8 +311,13 @@
 			recbtn.disabled=false;
 		}
 		navigator.requestMIDIAccess&&addEventListener('midiready',()=>midi.inputs.forEach(x=>x.onmidimessage=e=>({
-			0:()=>console.log('noteOff',Array.from(e.data,x=>x.toString(16).padStart(2,'0'))),
-			1:()=>console.log('noteOn',Array.from(e.data,x=>x.toString(16).padStart(2,'0')),e.data[2]&&trigger(e.data[1])),
+			0:()=>(console.log('noteOff',Array.from(e.data,x=>x.toString(16).padStart(2,'0'))),
+					(q.pointers.has('midi'+e.data[1])&&(y=>(y.stop&&y.stop(),q.pointers.delete('midi'+e.data[1])))(q.pointers.get('midi'+e.data[1])))
+				),
+			1:()=>(console.log('noteOn',Array.from(e.data,x=>x.toString(16).padStart(2,'0'))),e.data[2]?
+					q.pointers.set('midi'+e.data[1],{stop:trigger(e.data[1],{sus:true})}):
+					(q.pointers.has('midi'+e.data[1])&&(y=>(y.stop&&y.stop(),q.pointers.delete('midi'+e.data[1])))(q.pointers.get('midi'+e.data[1])))
+				)
 		}[(e.data[0]&0x70)>>>4]||Array)()),{once:true});
 
 		load();idb.name?(q.ci=q.ci):addEventListener('idbready',()=>q.ci=q.ci,{once:true});
