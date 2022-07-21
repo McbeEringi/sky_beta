@@ -72,9 +72,15 @@
 				bs.buffer=ab;[bs,lpf,g0,g1,oac.destination].reduce((a,x)=>a.connect(x));bs.start();oac.startRendering();oac.oncomplete=e=>f(e.renderedBuffer);
 			}),
 			progress=(r,f)=>new Response(new ReadableStream({start:async(c,l=0,x,a=+r.headers.get('content-length'))=>{r=r.body.getReader();while((x=(await r.read()).value)&&!x.done){c.enqueue(x);f(l+=x.byteLength,a);}c.close();}})),
-			trigger=(n=69,{abi=0,t,out=deln}={})=>{if(!q._instr)return;
-				const abs=actx.createBufferSource(),s=q._instr[2][abi].reduce((a,x)=>{const d=Math.abs(n-x[0]);return a[0]<d?a:[d,x];},[Infinity,null])[1];
-				s&&(abs.playbackRate.value=Math.pow(2,(n-s[0])/12),abs.buffer=s[1],abs.connect(out),abs.start(t));
+			trigger=(n=69,{abi=0,t,out=deln,sus=false}={})=>{if(!q._instr)return;
+				const abs=actx.createBufferSource(),s=q._instr.d[abi].reduce((a,x)=>{const d=Math.abs(n-x.n);return a[0]<d?a:[d,x];},[Infinity,null])[1];if(!s)return;
+				abs.playbackRate.value=Math.pow(2,(n-s.n)/12);abs.buffer=s.d;
+				if(s.ls){
+					const g=actx.createGain(),stop=({t=actx.currentTime,d=.8}={})=>(g.gain.setValueAtTime(1,t),g.gain.exponentialRampToValueAtTime(.05,(t+=d)-.05),g.gain.linearRampToValueAtTime(0,t),abs.stop(t));
+					abs.loop=true;abs.loopStart=s.ls;abs.loopEnd=s.d.duration;
+					(abs.connect(g),g.connect(out),abs.start(t));
+					if(sus)return stop;else stop({t:actx.currentTime+.2});
+				}else{abs.connect(out);abs.start(t);}
 			},
 			cfg=()=>{
 				const e=alert(`<h2>${texts.cfg}</h2><hr>
@@ -154,26 +160,27 @@
 			d={
 				instr:[
 					//[baseurl,octave,[{files}],i(type),fret]
-					['musicbox/',1,[stdli(4,6,{a3:'a3.mp3',ds7:'ds7.mp3'})],0],
-					['harp/',-1,[stdli(3,5)],0],//210503
-					['percussion/',0,[{a4:'0.mp3',as4:'1.mp3',b4:'2.mp3',c5:'3.mp3',a5:'4.mp3',as5:'5.mp3',b5:'6.mp3',c6:'7.mp3'}],1],
-					['contrabass/',-2,[stdli(2,4)],0],//211009
-					['horn/',-1,[stdli(3,5)],0],//211009
-					['piano/',0,[stdli(4,6)],0],//220127 +10db
-						['',0,[{ds5:'musicbox/ds6.mp3',a5:'musicbox/a6.mp3'},{ds5:'glock/ds5.mp3',a5:'glock/a5.mp3'}],2],
-						['bell2/',1,[{c4:'c4.mp3',d4:'d4.mp3',g4:'g4.mp3',a4:'a4.mp3'},{c4:'c4_.mp3',d4:'d4_.mp3',g4:'g4_.mp3',a4:'a4_.mp3'}],2],
-					['flute/',0,[stdli(4,6)],0],//211009
-					['quena/',0,[stdli(4,6)],0],//211009
-					['guitar/',-1,[stdli(3,5)],0,4],//main:210503 fret:211009
-					['ukulele/',-1,[stdli(3,5)],0],//211009
-					['piano/',1,[stdli(5,7)],0],//220127 +10db
-					['glock/',0,[stdli(4,6)],0],//210529
-					['handpan/',-1,[stdli(3)],3],
-					['dundun/',0,[{a4:'0.mp3',as4:'1.mp3',b4:'2.mp3',c5:'3.mp3',a5:'4.mp3',as5:'5.mp3',b5:'6.mp3',c6:'7.mp3'}],1],
-					['pipa/',-1,[stdli(3,5)],0],//210529
-					['bugle/',0,[stdli(4,6)],0],//210529
-						['ocarina/',0,[stdli(4,6)],0],
-					['kalimba/',0,[stdli(4,6)],0]//211025
+					{root:'musicbox/',oct:1,d:[stdli(4,6,{a3:'a3.mp3',ds7:'ds7.mp3'})],i:0},
+					{root:'harp/',oct:-1,d:[stdli(3,5)],i:0},//210503
+					{root:'percussion/',oct:0,d:[{a4:'0.mp3',as4:'1.mp3',b4:'2.mp3',c5:'3.mp3',a5:'4.mp3',as5:'5.mp3',b5:'6.mp3',c6:'7.mp3'}],i:1},
+					{root:'contrabass/',oct:-2,d:[stdli(2,4)],i:0},//211009
+					{root:'horn/',oct:-1,d:[stdli(3,5)],i:0},//211009
+					{root:'piano/',oct:0,d:[stdli(4,6)],i:0},//220127 +10db
+					{root:'',oct:0,d:[{ds5:'musicbox/ds6.mp3',a5:'musicbox/a6.mp3'},{ds5:'glock/ds5.mp3',a5:'glock/a5.mp3'}],i:2},
+					{root:'bell2/',oct:1,d:[{c4:'c4.mp3',d4:'d4.mp3',g4:'g4.mp3',a4:'a4.mp3'},{c4:'c4_.mp3',d4:'d4_.mp3',g4:'g4_.mp3',a4:'a4_.mp3'}],i:2},
+					{root:'flute/',oct:0,d:[stdli(4,6)],i:0},//211009
+					{root:'quena/',oct:0,d:[stdli(4,6)],i:0},//211009
+					{root:'guitar/',oct:-1,d:[stdli(3,5)],i:0,fret:Array.from('0123',x=>`fret${x}.mp3`)},//main:210503 fret:211009
+					{root:'ukulele/',oct:-1,d:[stdli(3,5)],i:0},//211009
+					{root:'piano/',oct:1,d:[stdli(5,7)],i:0},//220127 +10db
+					{root:'glock/',oct:0,d:[stdli(4,6)],i:0},//210529
+					{root:'handpan/',oct:-1,d:[stdli(3)],i:3},
+					{root:'dundun/',oct:0,d:[{a4:'0.mp3',as4:'1.mp3',b4:'2.mp3',c5:'3.mp3',a5:'4.mp3',as5:'5.mp3',b5:'6.mp3',c6:'7.mp3'}],i:1},
+					{root:'pipa/',oct:-1,d:[stdli(3,5)],i:0},//210529
+					{root:'bugle/',oct:0,d:[stdli(4,6)],i:0},//210529
+					{root:'ocarina/',oct:0,d:[stdli(4,6)],i:0},
+					{root:'kalimba/',oct:0,d:[stdli(4,6)],i:0},//211025
+					{root:'e_guitar/',oct:-1,d:[stdli(3,5)],i:0,loop:'loop.js'},//220722
 				],
 				i2n:[
 					[-9,-7,-5,-4,-2,0,2,3,5,7,8,10,12,14,15],
@@ -200,23 +207,28 @@
 			q={
 				set ci(w){q._ci=w;q.instr=q.instr;},get ci(){return q._ci;},
 				set instr(w){(async()=>{
-					const id=q._instr_=Symbol(),p={};
-					setRadio('isel',w=+w||0,isel);drwbtn.setAttribute('style',`--bp:${bp(w)};`);w=(idb.name&&!w&&q._ci)?(w=(await e2p(os('instr').get(q._ci))).target.result,[w.name,0,[w.dat],0]):[...d.instr[w]];delete q._instr;scd.classList[w[3]==1?'add':'remove']('d');
-					p._l=w[2].reduce((a,x)=>a+Object.keys(x).length,0);
-					w[2]=await Promise.all(w[2].map(x=>Promise.all((Array.isArray(x)?x:Object.entries(x)).map(async y=>(
-						y[1]=typeof y[1]=='string'?await(progress(await fetch('audio/instr/'+w[0]+y[1]),(...z)=>q._instr_==id&&(p[y[1]]=z,kctx.clearRect(0,0,kc.width,kc.height),kctx.strokeStyle='#aef',kctx.lineWidth=q._kbs/8,
+					const id=q._instr_=Symbol(),p={
+						_fx:(i,x)=>q._instr_==id&&(p[i]=x,kctx.clearRect(0,0,kc.width,kc.height),kctx.strokeStyle='#aef',kctx.lineWidth=q._kbs/8,
 							kctx.beginPath(),kctx.arc(q._kbs/2,q._kbs/2,q._kbs/4,-.25*2*Math.PI,(Object.values(p).reduce((a,_)=>_[1]?a+(_[0]/_[1])/p._l:a,0)-.25)*2*Math.PI),kctx.stroke()
-						))).arrayBuffer():(y[1].data||await new Response(y[1]).arrayBuffer()),
-						[n2nn(y[0]),await new Promise((f,r)=>actx.decodeAudioData(y[1],f,r))]
+						)
+					};
+					setRadio('isel',w=+w||0,isel);drwbtn.setAttribute('style',`--bp:${bp(w)};`);kctx.clearRect(0,0,kc.width,kc.height);
+					w=(idb.name&&!w&&q._ci)?(w=(await e2p(os('instr').get(q._ci))).target.result,{root:w.name,oct:0,d:[w.dat],i:0}):{...d.instr[w]};delete q._instr;scd.classList[w[3]==1?'add':'remove']('d');
+					const lp=w.loop&&Function('return'+await(await fetch('audio/instr/'+w.root+w.loop)).text())();
+					p._l=w.d.reduce((a,x)=>a+Object.keys(x).length,w.fret?w.fret.length:0);
+					w.d=await Promise.all(w.d.map(x=>Promise.all((Array.isArray(x)?x:Object.entries(x)).map(async y=>(
+						y[2]=typeof y[1]=='string'?await(progress(await fetch('audio/instr/'+w.root+y[1]),(...z)=>p._fx(y[1],z))).arrayBuffer():(y[1].data||await new Response(y[1]).arrayBuffer()),
+						({n:n2nn(y[0]),d:await new Promise((f,r)=>actx.decodeAudioData(y[2],f,r)),ls:lp&&lp[y[1].match(/^\w+/)]})
 					)))));
+					w.fret&&(w.fret=await Promise.all(w.fret.map(async x=>(x=await(progress(await fetch('audio/instr/'+w.root+x),(...z)=>p._fx(x,z))).arrayBuffer(),await new Promise((f,r)=>actx.decodeAudioData(x,f,r))))));
 					q._instr_==id&&(q._instr=w,q.kbs=q.kbs,console.log(w));
 				})().catch(errfx);},get instr(){return +(getRadio('isel',isel)||{value:0}).value;},
-				get octave(){return q._instr?q._instr[1]*12:0;},get i2n(){return d.i2n[q._instr?q._instr[3]:0];},get i2g(){return d.i2g[q._instr?q._instr[3]:0];},get i2t(){return d.i2t[q._instr?q._instr[3]:0];},get i2p(){return d.i2p[q._instr?q._instr[3]:0];},
-				set sc (w){q._sc =w=+w||0;scd.children[1].setAttribute('style',`--rot:${w*30+45}deg;`);},get sc(){return q._instr&&q._instr[3]==1?0:q._sc;},
+				get octave(){return q._instr?q._instr.oct*12:0;},get fret(){return q._instr&&q._instr.fret;},get i2n(){return d.i2n[q._instr?q._instr.i:0];},get i2g(){return d.i2g[q._instr?q._instr.i:0];},get i2t(){return d.i2t[q._instr?q._instr.i:0];},get i2p(){return d.i2p[q._instr?q._instr.i:0];},
+				set sc (w){q._sc =w=+w||0;scd.children[1].setAttribute('style',`--rot:${w*30+45}deg;`);},get sc(){return q._instr&&q._instr.i==1?0:q._sc;},
 				set rev(w){q._rev=w=+w||0;gn0.gain.value=w;gn1.gain.value=1-w;},get rev(){return q._rev;},
 				set del(w){q._del=w=+w||0;deln.delayTime.value=w;},get del(){return q._del;},
 				set kbs(w){q._kbs=w=+w||64;if(!q._instr)return;const pr=devicePixelRatio;
-					q.kb=new Array(q.i2g.reduce((a,x)=>a*x)).fill(0);
+					q.kb=new Array(q.i2g.reduce((a,x)=>a*x)).fill(.25);
 					[kc.width,kc.style.maxWidth,kc.height]=q.i2g.flatMap(x=>[x*w*pr,x*w+'px']);kctx.scale(pr,pr);
 					kbtex.width=(kbtex.height=(w*pr))*3;ktctx.scale(pr,pr);
 					const r=16,s=.786,ws=w*s,hwis=w*(1-s)*.5,arc=`a${r} ${r} 0 0 0 `;
@@ -233,7 +245,7 @@
 
 		texts={
 			...texts,
-			info:'<h1>sky_instruments</h1><hr>In game sounds<br><small>recorded by @McbeEringi</small><hr><p>[sky_instr] v6 build:2207202<br><a href="https://twitter.com/mcbeeringi">@McbeEringi</a> MITLicense</p>',
+			info:'<h1>sky_instruments</h1><hr>In game sounds<br><small>recorded by @McbeEringi</small><hr><p>[sky_instr] v6 build:2207220<br><a href="https://twitter.com/mcbeeringi">@McbeEringi</a> MITLicense</p>',
 			cfg:'Config',kbs:'Key Size',kbp:'Key Position',rev:'Reverb',del:'Delay',rcv:'Captures Keyboard<br>(experimental)',fbs:'Feedback Sound',
 			ci:'Custom Instruments',default:'Default',cnew:'Create New…',cin:'Instrument Name',keysig:'Key Sig Name',afile:'Audio Source',
 			delask:x=>`Are you sure you want to delete<br>"${x}" ?`,
@@ -252,11 +264,12 @@
 				e.preventDefault&&e.preventDefault();const bcr=kc.getBoundingClientRect();
 				(e.changedTouches?[...e.changedTouches]:[e]).forEach(x=>{
 					const p=x.p||[(x.clientX-bcr.x)/bcr.width*q.i2g[0],(x.clientY-bcr.y)/bcr.height*q.i2g[1]],i=Math.floor(p[0])+Math.floor(p[1])*q.i2g[0];
-					trigger(69+q.i2n[i]+q.octave+q.sc,{abi:q.i2p[i]});q.pointers.set(x.identifier||'mouse',{i,x:x.clientX,y:x.clientY});q.kb[i]=2;draw(true);
+					if(q.fret){const r=Math.random()*20;if(r<1){const abs=actx.createBufferSource();abs.buffer=q.fret[r*q.fret.length|0];abs.connect(deln);abs.start(actx.currentTime+.85);}}
+					q.pointers.set(x.identifier||'mouse',{i,x:x.clientX,y:x.clientY,stop:trigger(69+q.i2n[i]+q.octave+q.sc,{abi:q.i2p[i],sus:true})});q.kb[i]=2;draw(true);
 				});
 			},
-			onmov=e=>(e.changedTouches?[...e.changedTouches]:[e]).forEach(x=>(x.id=x.identifier||'mouse',q.pointers.has(x.id))&&(x.tmp=q.pointers.get(x.id))&&(Math.hypot(x.tmp.x-x.clientX,x.tmp.y-x.clientY)>16)&&(q.kb[x.tmp.i]=1,draw(true),q.pointers.delete(x.id))),
-			onend=e=>(e.changedTouches?[...e.changedTouches]:[e]).forEach(x=>(x.id=x.identifier||'mouse',q.pointers.has(x.id))&&(x.tmp=q.pointers.get(x.id))&&(q.kb[x.tmp.i]=1,draw(true),q.pointers.delete(x.id)));
+			onmov=e=>(e.changedTouches?[...e.changedTouches]:[e]).forEach(x=>(x.id=x.identifier||'mouse',q.pointers.has(x.id))&&(x.tmp=q.pointers.get(x.id))&&(Math.hypot(x.tmp.x-x.clientX,x.tmp.y-x.clientY)>16)&&(x.tmp.stop&&x.tmp.stop(),q.kb[x.tmp.i]=1,draw(true),q.pointers.delete(x.id))),
+			onend=e=>(e.changedTouches?[...e.changedTouches]:[e]).forEach(x=>(x.id=x.identifier||'mouse',q.pointers.has(x.id))&&(x.tmp=q.pointers.get(x.id))&&(x.tmp.stop&&x.tmp.stop(),q.kb[x.tmp.i]=1,draw(true),q.pointers.delete(x.id)));
 			['touchstart','mousedown'].forEach(x=>kc.addEventListener(x,onsta));
 			['touchmove','mousemove'].forEach(x=>addEventListener(x,onmov,{passive:true}));
 			['touchend','touchcanceled','mouseup'].forEach(x=>addEventListener(x,onend,{passive:true}));
