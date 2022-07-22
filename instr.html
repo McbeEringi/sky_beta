@@ -272,7 +272,7 @@
 			onend=e=>(e.changedTouches?[...e.changedTouches]:[e]).forEach(x=>(x.id=x.identifier||'mouse',q.pointers.has(x.id))&&(x.tmp=q.pointers.get(x.id))&&(x.tmp.stop&&x.tmp.stop(),q.kb[x.tmp.i]=1,draw(true),q.pointers.delete(x.id)));
 			['touchstart','mousedown'].forEach(x=>kc.addEventListener(x,onsta));
 			['touchmove','mousemove'].forEach(x=>addEventListener(x,onmov,{passive:true}));
-			['touchend','touchcanceled','mouseup'].forEach(x=>addEventListener(x,onend,{passive:true}));
+			['touchend','touchcancel','mouseup'].forEach(x=>addEventListener(x,onend,{passive:true}));
 			document.addEventListener('keydown',e=>(!e.repeat&&!'INPUT,TEXTAREA'.includes(document.activeElement.tagName)&&(e.tmp=q.k2i[e.code])&&q._instr&&e.tmp.every((x,i)=>x<q.i2g[i])&&onsta({p:e.tmp,identifier:e.code})));
 			document.addEventListener('keyup',e=>((e.tmp=q.k2i[e.code])&&q._instr&&e.tmp.every((x,i)=>x<q.i2g[i])&&onend({p:e.tmp,identifier:e.code})));
 		}
