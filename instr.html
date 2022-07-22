@@ -75,9 +75,9 @@
 			trigger=(n=69,{abi=0,t,out=deln,sus=false}={})=>{if(!q._instr)return;
 				const abs=actx.createBufferSource(),s=q._instr.d[abi].reduce((a,x)=>{const d=Math.abs(n-x.n);return a[0]<d?a:[d,x];},[Infinity,null])[1];if(!s)return;
 				abs.playbackRate.value=Math.pow(2,(n-s.n)/12);abs.buffer=s.d;
-				if(s.ls){
+				if(s.ls||s.le){
 					const g=actx.createGain(),stop=({t=actx.currentTime,d=.8}={})=>(g.gain.setValueAtTime(1,t),g.gain.exponentialRampToValueAtTime(.05,(t+=d)-.05),g.gain.linearRampToValueAtTime(0,t),abs.stop(t));
-					abs.loop=true;abs.loopStart=s.ls;abs.loopEnd=s.d.duration;
+					abs.loop=true;abs.loopStart=s.ls||0;abs.loopEnd=s.le||s.d.duration;
 					(abs.connect(g),g.connect(out),abs.start(t));
 					if(sus)return stop;else stop({t:actx.currentTime+.2});
 				}else{abs.connect(out);abs.start(t);}
@@ -168,7 +168,7 @@
 					{root:'piano/',oct:0,d:[stdli(4,6)],i:0},//220127 +10db
 					{root:'',oct:0,d:[{ds5:'musicbox/ds6.mp3',a5:'musicbox/a6.mp3'},{ds5:'glock/ds5.mp3',a5:'glock/a5.mp3'}],i:2},
 					{root:'bell2/',oct:1,d:[{c4:'c4.mp3',d4:'d4.mp3',g4:'g4.mp3',a4:'a4.mp3'},{c4:'c4_.mp3',d4:'d4_.mp3',g4:'g4_.mp3',a4:'a4_.mp3'}],i:2},
-					{root:'flute/',oct:0,d:[stdli(4,6)],i:0},//211009
+					{root:'flute/',oct:0,d:[stdli(4,6)],i:0,loop:'loop.js'},//211009
 					{root:'quena/',oct:0,d:[stdli(4,6)],i:0},//211009
 					{root:'guitar/',oct:-1,d:[stdli(3,5)],i:0,fret:Array.from('0123',x=>`fret${x}.mp3`)},//main:210503 fret:211009
 					{root:'ukulele/',oct:-1,d:[stdli(3,5)],i:0},//211009
@@ -214,11 +214,11 @@
 					};
 					setRadio('isel',w=+w||0,isel);drwbtn.setAttribute('style',`--bp:${bp(w)};`);kctx.clearRect(0,0,kc.width,kc.height);
 					w=(idb.name&&!w&&q._ci)?(w=(await e2p(os('instr').get(q._ci))).target.result,{root:w.name,oct:0,d:[w.dat],i:0}):{...d.instr[w]};delete q._instr;scd.classList[w.i==1?'add':'remove']('d');
-					const lp=w.loop&&Function('return'+await(await fetch('audio/instr/'+w.root+w.loop)).text())();
+					const lp=w.loop&&Function('return'+await(await fetch('audio/instr/'+w.root+w.loop)).text())()||{};
 					p._l=w.d.reduce((a,x)=>a+Object.keys(x).length,w.fret?w.fret.length:0);
 					w.d=await Promise.all(w.d.map(x=>Promise.all((Array.isArray(x)?x:Object.entries(x)).map(async y=>(
 						y[2]=typeof y[1]=='string'?await(progress(await fetch('audio/instr/'+w.root+y[1]),(...z)=>p._fx(y[1],z))).arrayBuffer():(y[1].data||await new Response(y[1]).arrayBuffer()),
-						({n:n2nn(y[0]),d:await new Promise((f,r)=>actx.decodeAudioData(y[2],f,r)),ls:lp&&lp[y[1].match(/^\w+/)]})
+						({n:n2nn(y[0]),d:await new Promise((f,r)=>actx.decodeAudioData(y[2],f,r)),...(lp[y[1].match(/^\w+/)]||{})})
 					)))));
 					w.fret&&(w.fret=await Promise.all(w.fret.map(async x=>(x=await(progress(await fetch('audio/instr/'+w.root+x),(...z)=>p._fx(x,z))).arrayBuffer(),await new Promise((f,r)=>actx.decodeAudioData(x,f,r))))));
 					q._instr_==id&&(q._instr=w,q.kbs=q.kbs,console.log(w));
