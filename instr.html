@@ -72,9 +72,10 @@
 				bs.buffer=ab;[bs,lpf,g0,g1,oac.destination].reduce((a,x)=>a.connect(x));bs.start();oac.startRendering();oac.oncomplete=e=>f(e.renderedBuffer);
 			}),
 			progress=(r,f)=>new Response(new ReadableStream({start:async(c,l=0,x,a=+r.headers.get('content-length'))=>{r=r.body.getReader();while((x=(await r.read()).value)&&!x.done){c.enqueue(x);f(l+=x.byteLength,a);}c.close();}})),
-			trigger=(n=69,{abi=0,t,out=deln,sus=false}={})=>{if(!q._instr)return;
+			trigger=(n=69,{abi=0,t=actx.currentTime,out=deln,sus=false}={})=>{if(!q._instr)return;
 				const abs=actx.createBufferSource(),s=q._instr.d[abi].reduce((a,x)=>{const d=Math.abs(n-x.n);return a[0]<d?a:[d,x];},[Infinity,null])[1];if(!s)return;
 				abs.playbackRate.value=Math.pow(2,(n-s.n)/12);abs.buffer=s.d;
+				if(q.fret){const r=Math.random()*20;if(r<1){const abs_=actx.createBufferSource();abs_.buffer=q.fret[r*q.fret.length|0];abs_.connect(out);abs_.start(t+.85);}}
 				if(s.ls||s.le){
 					const g=actx.createGain(),stop=({t=actx.currentTime,d=.8}={})=>(g.gain.setValueAtTime(1,t),g.gain.exponentialRampToValueAtTime(.05,(t+=d)-.05),g.gain.linearRampToValueAtTime(0,t),abs.stop(t));
 					abs.loop=true;abs.loopStart=s.ls||0;abs.loopEnd=s.le||s.d.duration;
@@ -152,6 +153,14 @@
 				}return x;});
 				if(re)requestAnimationFrame(()=>draw(true,t));else q.draw=false;
 			},
+			trgatk=e=>{if(!q._instr)return;
+				e.preventDefault&&e.preventDefault();const bcr=kc.getBoundingClientRect();
+				(e.changedTouches?[...e.changedTouches]:[e]).forEach(x=>{
+					const p=x.p||[(x.clientX-bcr.x)/bcr.width*q.i2g[0],(x.clientY-bcr.y)/bcr.height*q.i2g[1]],i=Math.floor(p[0])+Math.floor(p[1])*q.i2g[0];
+					q.pointers.set(x.identifier||'mouse',{i,x:x.clientX,y:x.clientY,stop:trigger(69+q.i2n[i]+q.octave+q.sc,{abi:q.i2p[i],sus:true})});q.kb[i]=q._instr.loop?2:1;draw(true);
+				});
+			},
+			trgrel=(e,b)=>(e.changedTouches?[...e.changedTouches]:[e]).forEach(x=>(x.id=x.identifier||'mouse',q.pointers.has(x.id))&&(x.tmp=q.pointers.get(x.id))&&(b||Math.hypot(x.tmp.x-x.clientX,x.tmp.y-x.clientY)>16)&&(x.tmp.stop&&x.tmp.stop(),q._instr.loop&&(q.kb[x.tmp.i]=1,draw(true)),q.pointers.delete(x.id))),
 			kbtex=document.createElement('canvas'),ktctx=kbtex.getContext('2d'),
 			kctx=kc.getContext('2d'),
 			deln=actx.createDelay(.5),revn=actx.createConvolver(),gn0=actx.createGain(),gn1=actx.createGain(),
@@ -243,7 +252,7 @@
 
 		texts={
 			...texts,
-			info:'<h1>sky_instruments</h1><hr>In game sounds<br><small>recorded by @McbeEringi</small><hr><p>[sky_instr] v6 build:2207260<br><a href="https://twitter.com/mcbeeringi">@McbeEringi</a> MITLicense</p>',
+			info:'<h1>sky_instruments</h1><hr>In game sounds<br><small>recorded by @McbeEringi</small><hr><p>[sky_instr] v6 build:2207261<br><a href="https://twitter.com/mcbeeringi">@McbeEringi</a> MITLicense</p>',
 			cfg:'Config',kbs:'Key Size',kbp:'Key Position',rev:'Reverb',del:'Delay',rcv:'Captures Keyboard<br>(experimental)',fbs:'Feedback Sound',
 			ci:'Custom Instruments',default:'Default',cnew:'Create New…',cin:'Instrument Name',keysig:'Key Sig Name',afile:'Audio Source',
 			delask:x=>`Are you sure you want to delete<br>"${x}" ?`,
@@ -257,32 +266,15 @@
 				}
 			}[navigator.language.slice(0,2)]
 		};
-		{
-			const onsta=e=>{if(!q._instr)return;
-				e.preventDefault&&e.preventDefault();const bcr=kc.getBoundingClientRect();
-				(e.changedTouches?[...e.changedTouches]:[e]).forEach(x=>{
-					const p=x.p||[(x.clientX-bcr.x)/bcr.width*q.i2g[0],(x.clientY-bcr.y)/bcr.height*q.i2g[1]],i=Math.floor(p[0])+Math.floor(p[1])*q.i2g[0];
-					if(q.fret){const r=Math.random()*20;if(r<1){const abs=actx.createBufferSource();abs.buffer=q.fret[r*q.fret.length|0];abs.connect(deln);abs.start(actx.currentTime+.85);}}
-					q.pointers.set(x.identifier||'mouse',{i,x:x.clientX,y:x.clientY,stop:trigger(69+q.i2n[i]+q.octave+q.sc,{abi:q.i2p[i],sus:true})});q.kb[i]=q._instr.loop?2:1;draw(true);
-				});
-			},
-			onmov=e=>(e.changedTouches?[...e.changedTouches]:[e]).forEach(x=>(x.id=x.identifier||'mouse',q.pointers.has(x.id))&&(x.tmp=q.pointers.get(x.id))&&(Math.hypot(x.tmp.x-x.clientX,x.tmp.y-x.clientY)>16)&&(x.tmp.stop&&x.tmp.stop(),q._instr.loop&&(q.kb[x.tmp.i]=1,draw(true)),q.pointers.delete(x.id))),
-			onend=e=>(e.changedTouches?[...e.changedTouches]:[e]).forEach(x=>(x.id=x.identifier||'mouse',q.pointers.has(x.id))&&(x.tmp=q.pointers.get(x.id))&&(x.tmp.stop&&x.tmp.stop(),q._instr.loop&&(q.kb[x.tmp.i]=1,draw(true)),q.pointers.delete(x.id)));
-			['touchstart','mousedown'].forEach(x=>kc.addEventListener(x,onsta));
-			['touchmove','mousemove'].forEach(x=>addEventListener(x,onmov,{passive:true}));
-			['touchend','touchcancel','mouseup'].forEach(x=>addEventListener(x,onend,{passive:true}));
-			document.addEventListener('keydown',e=>(!e.repeat&&!'INPUT,TEXTAREA'.includes(document.activeElement.tagName)&&(e.tmp=q.k2i[e.code])&&q._instr&&e.tmp.every((x,i)=>x<q.i2g[i])&&onsta({p:e.tmp,identifier:e.code})));
-			document.addEventListener('keyup',e=>((e.tmp=q.k2i[e.code])&&q._instr&&e.tmp.every((x,i)=>x<q.i2g[i])&&onend({p:e.tmp,identifier:e.code})));
-		}
+		['touchstart','mousedown'].forEach(x=>kc.addEventListener(x,trgatk));
+		['touchmove','mousemove'].forEach(x=>addEventListener(x,trgrel,{passive:true}));
+		['touchend','touchcancel','mouseup'].forEach(x=>addEventListener(x,e=>trgrel(e,true),{passive:true}));
+		document.addEventListener('keydown',e=>(!e.repeat&&!'INPUT,TEXTAREA'.includes(document.activeElement.tagName)&&(e.tmp=q.k2i[e.code])&&q._instr&&e.tmp.every((x,i)=>x<q.i2g[i])&&trgatk({p:e.tmp,identifier:e.code})));
+		document.addEventListener('keyup',e=>((e.tmp=q.k2i[e.code])&&q._instr&&e.tmp.every((x,i)=>x<q.i2g[i])&&trgrel({p:e.tmp,identifier:e.code},true)));
 		(drwcb.onchange=()=>drwbtn.classList[drwcb.checked?'remove':'add']('a1'))();
 		isel.insertAdjacentHTML('beforeend',d.instr.map((_,i)=>`<input type="radio" name="isel" value="${i}" ${[7,18].includes(i)?'disabled':''} id="isel${i}"><label class="btn a1" style="--bp:${bp(i)};" for="isel${i}"></label>`).join(''));
 		forRadio('isel',x=>x.onchange=()=>(x.checked&&(q.instr=+x.value,save())),isel);
-		{
-			const fb=(t=actx.currentTime+.05)=>([72,76,79].forEach((x,i)=>trigger(x+q.octave+q.sc,{abi:0,t:t+i*.05,out:actx.destination})),save());
-			scd.children[0].onclick=()=>{q.sc--;fb();};
-			scd.children[1].onclick=()=>{q.sc=0;fb();};
-			scd.children[2].onclick=()=>{q.sc++;fb();};
-		}
+		[...scd.children].forEach((x,i)=>x.onclick=()=>(q.sc=[q.sc-1,0,q.sc+1][i],[72,76,79].forEach((y,j)=>trigger(y+q.octave+q.sc,{abi:0,t:actx.currentTime+(j+1)*.05,out:actx.destination})),save()));
 		cfgbtn.onclick=cfg;
 		infobtn.onclick=()=>alert(texts.info);
 
