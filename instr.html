@@ -289,8 +289,7 @@
 		[[deln,revn,gn0,actx.destination],[deln,gn1,actx.destination]].forEach(x=>x.reduce((a,y)=>(a.connect(y),y)));
 		irgen().then(x=>revn.buffer=x);bga.g.disconnect(bga.out);bga.g.connect(bga.out=deln);
 		if(window.MediaRecorder){
-			const recn=actx.createMediaStreamDestination(),mime=MediaRecorder.isTypeSupported('video/mp4')?'mp4':'webm',
-				rec=[new MediaRecorder(recn.stream),new MediaRecorder(new MediaStream([...kc.captureStream(60).getTracks(),...recn.stream.getTracks()]),{mimeType:`video/${mime}`})],
+			const recn=actx.createMediaStreamDestination(),vext=MediaRecorder.isTypeSupported('video/mp4')?'mp4':'webm',
 				toWav=x=>{//https://github.com/Jam3/audiobuffer-to-wav
 					let ch=x.numberOfChannels,rate=x.sampleRate;
 					if(ch==1)x=x.getChannelData(0);else{const l=x.getChannelData(0),r=x.getChannelData(1);x=new Float32Array(l.length+r.length);for(let i=0;i<x.length;i++){x[i*2]=l[i];x[i*2+1]=r[i];}};
@@ -302,10 +301,11 @@
 				},
 				dl=(x,n)=>{const a=document.createElement('a');a.download=`sky_instr ${new Date().toLocaleString().replace(/[^\w\d\s]/g,'_')}.${n}`;a.href=URL.createObjectURL(x);a.click();setTimeout(URL.revokeObjectURL,0,a.href);};
 			gn0.connect(recn);gn1.connect(recn);
-			rec[0].ondataavailable=e=>new Response(e.data).arrayBuffer().then(x=>new Promise((f,r)=>actx.decodeAudioData(x,f,r))).then(x=>dl(new Blob([toWav(x)]),'wav')).catch(errfx);
-			rec[1].ondataavailable=e=>dl(e.data,mime);
-			rec[0].onerror=rec[1].onerror=errfx;
-			recbtn.onclick=()=>rec[q.rcv][recbtn.classList.toggle('a')?'start':'stop']();
+			recbtn.onclick=w=>recbtn.classList.toggle('a')?
+				Object.assign(q.rec=new MediaRecorder(...q.rcv?[new MediaStream([...kc.captureStream(60).getTracks(),...recn.stream.getTracks()]),{mimeType:`video/${vext}`}]:[recn.stream]),{onerror:errfx,
+					ondataavailable:q.rcv?e=>dl(e.data,vext):e=>new Response(e.data).arrayBuffer().then(x=>new Promise((f,r)=>actx.decodeAudioData(x,f,r))).then(x=>dl(new Blob([toWav(x)]),'wav')).catch(errfx)
+				}).start():
+				(q.rec.stop(),delete q.rec);
 			recbtn.disabled=false;
 		}
 		navigator.requestMIDIAccess&&addEventListener('midiready',()=>midi.inputs.forEach(x=>x.onmidimessage=e=>({
