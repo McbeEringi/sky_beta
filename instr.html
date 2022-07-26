@@ -104,8 +104,7 @@
 							<label><input type="radio" name="cisel" value="-1"><p class="btn" style="--bp:0 -300%;"></p>${texts.default}</label>
 							<label><button class="btn ciedt" style="--bp:-200% -100%;"></button>${texts.cnew}</label>
 							`);e.offsetWidth;
-							setRadio('cisel',Object.fromEntries([...w.map(Array),['',-1]])[q.ci||''],e);
-							forRadio('cisel',x=>x.onchange=()=>(x.checked&&(q.ci=~x.value?w[+x.value]:'',save())),e);
+							setRadio('cisel',Object.fromEntries([...w.map(Array),['',-1]])[q.ci||''],e);forRadio('cisel',x=>x.onchange=()=>(x.checked&&(q.ci=~x.value?w[+x.value]:'',save())),e);
 							const edtfx=async i=>{
 								let abs;
 								const play=async (x,p)=>{p.then(()=>p=null);abs&&(abs.onended=null,abs.stop());const s=actx.createBufferSource(),y=x.data?x.data.slice(0):await new Response(x).arrayBuffer();s.buffer=await new Promise((f,r)=>actx.decodeAudioData(y,f,r));p&&(s.connect(actx.destination),s.onended=()=>abs=null,s.start(),abs=s);},
@@ -121,8 +120,7 @@
 										ch_[1].onclick=async z=>(z=alert(`<label class="prevfl p16">${texts.keysig}: <select>${opt(x[0])}</select></label><br><label class="prevfl p16">${texts.afile}: <button>${esc(x[1].name)}</button></label>`),z.e.querySelector('button').onclick=()=>play(x[1],z.p).catch(errfx),await z.p,stop(),x[0]=z.e.querySelector('select').value,ch_0());
 										ch_[2].classList.add('btn');ch_[2].setAttribute('style','--bp:-100% -100%;');ch_[2].textContent='delete';ch_[2].onclick=async()=>await yn(`<div class="tac">${texts.delask(x[0]+': '+esc(x[1].name))}</div>`).p==1&&(div.remove(),a.dat[i]=null);
 										ch[0].classList.add('btn');ch[0].setAttribute('style','--bp:0 -300%;');ch[0].textContent='preview';ch[0].onclick=()=>play(x[1],e_.p).catch(errfx);
-										ch[1].append(...ch_);
-										div.append(...ch);return div;
+										ch[1].append(...ch_);div.append(...ch);return div;
 									};
 								add.classList.add('btn');add.setAttribute('style','--bp:-200% -100%;');add.textContent='add';
 								add.onclick=async (z,ret)=>(z=alert(`<label class="prevfl p16">${texts.keysig}: <select>${opt()}</select></label><br><label class="prevfl p16">${texts.afile}: <input type="file" accept="audio/aac,audio/flac,audio/mpeg,audio/ogg,audio/opus,audio/wav,audio/webm" class="prevfl"></label>`),
@@ -159,7 +157,6 @@
 			deln=actx.createDelay(.5),revn=actx.createConvolver(),gn0=actx.createGain(),gn1=actx.createGain(),
 			d={
 				instr:[
-					//[baseurl,octave,[{files}],i(type),fret]
 					{root:'musicbox/',oct:1,d:[stdli(4,6,{a3:'a3.mp3',ds7:'ds7.mp3'})],i:0},
 					{root:'harp/',oct:-1,d:[stdli(3,5)],i:0},//210503
 					{root:'percussion/',oct:0,d:[{a4:'0.mp3',as4:'1.mp3',b4:'2.mp3',c5:'3.mp3',a5:'4.mp3',as5:'5.mp3',b5:'6.mp3',c6:'7.mp3'}],i:1},
@@ -168,7 +165,7 @@
 					{root:'piano/',oct:0,d:[stdli(4,6)],i:0},//220127 +10db
 					{root:'',oct:0,d:[{ds5:'musicbox/ds6.mp3',a5:'musicbox/a6.mp3'},{ds5:'glock/ds5.mp3',a5:'glock/a5.mp3'}],i:2},
 					{root:'bell2/',oct:1,d:[{c4:'c4.mp3',d4:'d4.mp3',g4:'g4.mp3',a4:'a4.mp3'},{c4:'c4_.mp3',d4:'d4_.mp3',g4:'g4_.mp3',a4:'a4_.mp3'}],i:2},
-					{root:'flute/',oct:0,d:[stdli(4,6)],i:0,loop:'loop.js'},//211009
+					{root:'flute/',oct:0,d:[stdli(4,6)],i:0},//211009
 					{root:'quena/',oct:0,d:[stdli(4,6)],i:0},//211009
 					{root:'guitar/',oct:-1,d:[stdli(3,5)],i:0,fret:Array.from('0123',x=>`fret${x}.mp3`)},//main:210503 fret:211009
 					{root:'ukulele/',oct:-1,d:[stdli(3,5)],i:0},//211009
@@ -246,7 +243,7 @@
 
 		texts={
 			...texts,
-			info:'<h1>sky_instruments</h1><hr>In game sounds<br><small>recorded by @McbeEringi</small><hr><p>[sky_instr] v6 build:2207221<br><a href="https://twitter.com/mcbeeringi">@McbeEringi</a> MITLicense</p>',
+			info:'<h1>sky_instruments</h1><hr>In game sounds<br><small>recorded by @McbeEringi</small><hr><p>[sky_instr] v6 build:2207260<br><a href="https://twitter.com/mcbeeringi">@McbeEringi</a> MITLicense</p>',
 			cfg:'Config',kbs:'Key Size',kbp:'Key Position',rev:'Reverb',del:'Delay',rcv:'Captures Keyboard<br>(experimental)',fbs:'Feedback Sound',
 			ci:'Custom Instruments',default:'Default',cnew:'Create New…',cin:'Instrument Name',keysig:'Key Sig Name',afile:'Audio Source',
 			delask:x=>`Are you sure you want to delete<br>"${x}" ?`,
@@ -266,11 +263,11 @@
 				(e.changedTouches?[...e.changedTouches]:[e]).forEach(x=>{
 					const p=x.p||[(x.clientX-bcr.x)/bcr.width*q.i2g[0],(x.clientY-bcr.y)/bcr.height*q.i2g[1]],i=Math.floor(p[0])+Math.floor(p[1])*q.i2g[0];
 					if(q.fret){const r=Math.random()*20;if(r<1){const abs=actx.createBufferSource();abs.buffer=q.fret[r*q.fret.length|0];abs.connect(deln);abs.start(actx.currentTime+.85);}}
-					q.pointers.set(x.identifier||'mouse',{i,x:x.clientX,y:x.clientY,stop:trigger(69+q.i2n[i]+q.octave+q.sc,{abi:q.i2p[i],sus:true})});q.kb[i]=2;draw(true);
+					q.pointers.set(x.identifier||'mouse',{i,x:x.clientX,y:x.clientY,stop:trigger(69+q.i2n[i]+q.octave+q.sc,{abi:q.i2p[i],sus:true})});q.kb[i]=q._instr.loop?2:1;draw(true);
 				});
 			},
-			onmov=e=>(e.changedTouches?[...e.changedTouches]:[e]).forEach(x=>(x.id=x.identifier||'mouse',q.pointers.has(x.id))&&(x.tmp=q.pointers.get(x.id))&&(Math.hypot(x.tmp.x-x.clientX,x.tmp.y-x.clientY)>16)&&(x.tmp.stop&&x.tmp.stop(),q.kb[x.tmp.i]=1,draw(true),q.pointers.delete(x.id))),
-			onend=e=>(e.changedTouches?[...e.changedTouches]:[e]).forEach(x=>(x.id=x.identifier||'mouse',q.pointers.has(x.id))&&(x.tmp=q.pointers.get(x.id))&&(x.tmp.stop&&x.tmp.stop(),q.kb[x.tmp.i]=1,draw(true),q.pointers.delete(x.id)));
+			onmov=e=>(e.changedTouches?[...e.changedTouches]:[e]).forEach(x=>(x.id=x.identifier||'mouse',q.pointers.has(x.id))&&(x.tmp=q.pointers.get(x.id))&&(Math.hypot(x.tmp.x-x.clientX,x.tmp.y-x.clientY)>16)&&(x.tmp.stop&&x.tmp.stop(),q._instr.loop&&(q.kb[x.tmp.i]=1,draw(true)),q.pointers.delete(x.id))),
+			onend=e=>(e.changedTouches?[...e.changedTouches]:[e]).forEach(x=>(x.id=x.identifier||'mouse',q.pointers.has(x.id))&&(x.tmp=q.pointers.get(x.id))&&(x.tmp.stop&&x.tmp.stop(),q._instr.loop&&(q.kb[x.tmp.i]=1,draw(true)),q.pointers.delete(x.id)));
 			['touchstart','mousedown'].forEach(x=>kc.addEventListener(x,onsta));
 			['touchmove','mousemove'].forEach(x=>addEventListener(x,onmov,{passive:true}));
 			['touchend','touchcancel','mouseup'].forEach(x=>addEventListener(x,onend,{passive:true}));
@@ -301,11 +298,11 @@
 					str(0,'RIFF');v.setUint32(4,36+x.length*2,true);str(8,'WAVE');
 					str(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,ch,true);v.setUint32(24,rate,true);ch*=2;v.setUint32(28,rate*ch,true);v.setUint16(32,ch,true);v.setUint16(34,16,true);
 					str(36,'data');v.setUint32(40,x.length*2,true);for(let i=0;i<x.length;i++){const s=Math.max(-1,Math.min(1,x[i]));v.setInt16(44+i*2,s<0?s*0x8000:s*0x7FFF,true);}
-					return new Blob([b]);
+					return b;
 				},
 				dl=(x,n)=>{const a=document.createElement('a');a.download=`sky_instr ${new Date().toLocaleString().replace(/[^\w\d\s]/g,'_')}.${n}`;a.href=URL.createObjectURL(x);a.click();setTimeout(URL.revokeObjectURL,0,a.href);};
 			gn0.connect(recn);gn1.connect(recn);
-			rec[0].ondataavailable=e=>new Response(e.data).arrayBuffer().then(x=>new Promise((f,r)=>actx.decodeAudioData(x,f,r))).then(x=>dl(toWav(x),'wav')).catch(errfx);
+			rec[0].ondataavailable=e=>new Response(e.data).arrayBuffer().then(x=>new Promise((f,r)=>actx.decodeAudioData(x,f,r))).then(x=>dl(new Blob([toWav(x)]),'wav')).catch(errfx);
 			rec[1].ondataavailable=e=>dl(e.data,mime);
 			rec[0].onerror=rec[1].onerror=errfx;
 			recbtn.onclick=()=>rec[q.rcv][recbtn.classList.toggle('a')?'start':'stop']();
