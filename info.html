@@ -106,7 +106,7 @@
 		gallery.insertAdjacentHTML('beforeend',texts.cls.map((x,i)=>`<label><button class="btn" style="--bp:0 -300%;">${x[0]}</button>${x[0]}(${x.length-1})</label>`).join(''));
 		gallery.querySelectorAll('button').forEach((x,i)=>x.onclick=()=>alert(texts.cls[i].slice(1).map((y,j)=>`${y}<br><img src="img/tc/${i}${j}.webp" alt="image: ${y}" width="4" height="3">`).join('<hr>')));
 
-		wings.insertAdjacentHTML('beforeend',Object.entries(texts.wls).map(x=>(x[1]=Object.entries(x[1]).map(y=>y[1].map(z=>`<li><label><input type="checkbox">${y[0]} - ${z}</label></li>`).join('')).join('<br>'),`<div class="ib"><h2>${x[0]}</h2><ul>${x[1]}</ul></div>`)).join(''));
+		wings.insertAdjacentHTML('beforeend',Object.entries(texts.wls).map(x=>(x[1]=Object.entries(x[1]).map(y=>y[1].map(z=>`<li><label><input type="checkbox">${y[0]} - ${z}</label></li>`).join('')).join('</ul><ul>'),`<div class="ib"><h2>${x[0]}</h2><ul>${x[1]}</ul></div>`)).join(''));
 		const wcb=[...wings.children].map(x=>[...x.querySelectorAll('input')]),
 			save=()=>localStorage.sky_wings=wcb.map(x=>x.map(y=>+y.checked).join('')).join(','),
 			wcbcl=()=>wcb.flat().forEach(x=>x.checked=false),
