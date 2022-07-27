@@ -28,7 +28,7 @@
 		img{width:100%;max-width:320px;height:auto;}
 		#out>div{display:inline-block;padding:4px;box-sizing:border-box;vertical-align:top;}
 		#wings label{display:block;border-bottom:2px solid var(--w);}
-		#wings ul{display:inline-block;vertical-align:top;}
+		#wings>*{display:inline-block;vertical-align:top;}
 	</style>
 	<div class="flex">
 		<h1>sky_info</h1>
@@ -42,18 +42,17 @@
 	<div id="gallery" class="items" style="--items:128px;"></div>
 	<hr>
 	<h2 id="wltxt">Winged Lights</h2>
-	<div id="wings">
-		<div class="flex">
-			<h3 id="wc"></h3>
-			<button class="btn" style="--bp:-100% -100%;" onclick="yn(texts.delask).p.then(x=>(x==1&&(wcbcl(),save(),count())));">clear</button>
-		</div>
+	<div class="flex">
+		<h3 id="wc"></h3>
+		<button class="btn" style="--bp:-100% -100%;" onclick="yn(texts.delask).p.then(x=>(x==1&&(wcbcl(),save(),count())));">clear</button>
 	</div>
+	<div id="wings"></div>
 	<hr>
 	参考: <br>
 	<a href="https://sky-children-of-the-light.fandom.com/wiki/Secret_Area#The_Spirits_of_the_Office">Sky Wiki</a><br>
 	<a href="https://twitter.com/sky_tea11">ティー</a>様 <br><!--/status/1356572540437635073-->
 	<p>
-		[sky_info] build:2207270 <br>
+		[sky_info] build:2207271 <br>
 		<a href="https://twitter.com/mcbeeringi">@McbeEringi</a> MITLicense
 	</p>
 
@@ -101,14 +100,14 @@
 			const t=new Date(inp.value),c=[((t.getTime()-new Date('2020/11/4 00:00').getTime())/864e5|0)%5],o=(t.getDate()-1)%7;c[1]=(((t.getDate()-1)/5)|0)%[3,3,2,3,2][c[0]];
 			const e=['div','img'].map(x=>document.createElement(x));
 			e[0].insertAdjacentHTML('beforeend',`${t.toLocaleDateString()}<br>${texts.cls[c[0]][0]}<br>${texts.cls[c[0]][c[1]+1]}<br>${texts.o}: ${texts.ols[o]}<br>`);
-			e[1].src=`img/tc/${c.join('')}.webp`;e[1].alt='image: '+texts.cls[c[0]][c[1]+1];
+			e[1].src=`img/tc/${c.join('')}.webp`;e[1].alt='image: '+texts.cls[c[0]][c[1]+1];e[1].width=4;e[1].height=3;
 			e[0].append(e[1]);out.prepend(e[0]);[...out.children].slice(3).forEach(x=>x.remove());jpgfb();
 		};
 		gallery.insertAdjacentHTML('beforeend',texts.cls.map((x,i)=>`<label><button class="btn" style="--bp:0 -300%;">${x[0]}</button>${x[0]}(${x.length-1})</label>`).join(''));
 		gallery.querySelectorAll('button').forEach((x,i)=>x.onclick=()=>alert(texts.cls[i].slice(1).map((y,j)=>`${y}<br><img src="img/tc/${i}${j}.webp" alt="image: ${y}" width="4" height="3">`).join('<hr>')));
 
-		wings.insertAdjacentHTML('beforeend',Object.entries(texts.wls).map(x=>(x[1]=Object.entries(x[1]).map(y=>y[1].map(z=>`<li><label><input type="checkbox">${y[0]} - ${z}</label></li>`).join('')).join('<br>'),`<ul><h2>${x[0]}</h2>${x[1]}</ul>`)).join(''));
-		const wcb=Object.keys(texts.wls).map((_,i)=>[...document.querySelectorAll(`#wings ul:nth-of-type(${i+1}) input`)]),
+		wings.insertAdjacentHTML('beforeend',Object.entries(texts.wls).map(x=>(x[1]=Object.entries(x[1]).map(y=>y[1].map(z=>`<li><label><input type="checkbox">${y[0]} - ${z}</label></li>`).join('')).join('<br>'),`<div class="ib"><h2>${x[0]}</h2><ul>${x[1]}</ul></div>`)).join(''));
+		const wcb=[...wings.children].map(x=>[...x.querySelectorAll('input')]),
 			save=()=>localStorage.sky_wings=wcb.map(x=>x.map(y=>+y.checked).join('')).join(','),
 			wcbcl=()=>wcb.flat().forEach(x=>x.checked=false),
 			count=()=>wc.textContent=`${((localStorage.sky_wings||'').match(/1/g)||[]).length}/${wcb.flat().length}`;
