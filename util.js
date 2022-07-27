@@ -103,13 +103,13 @@ Object.assign(new Image(),{onerror:()=>document.body.classList.add('nowebp'),src
 document.body.insertAdjacentHTML('afterbegin',`<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@300&family=M+PLUS+Rounded+1c&display=swap" media="print" onload="this.media='all'"><style>
 @keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
 :root,.input,.btn{
-	--bc:#222;--fc:#fff;--l:#fea;--b0:#48f;--b1:#8af;--b2:#aef;--p0:#84f;--p1:#a8f;--p2:#eaf;--r0:#f00;--r1:#f44;
-	--g:#2228;--btn:64px;--bp:0 0;--items:200px;
-	background-color:var(--bc);color:var(--fc);font-family:"M PLUS Rounded 1c",sans-serif;text-shadow:0 0 2px var(--bc),0 0 4px currentColor;
+	--bc:#222;--fc:#fff;--l:#fea;--b0:#7af;--b1:#acf;--b2:#def;--p0:#a7f;--p1:#caf;--p2:#edf;--r0:#f00;--r1:#f44;
+	--g:#2228;--w:#fff8;--btn:64px;--bp:0 0;--items:200px;
+	background-color:var(--bc);color:var(--fc);font-family:"M PLUS Rounded 1c",sans-serif;text-shadow:0 0 .5ex var(--bc);
 }
 *{-webkit-tap-highlight-color:#0000;}
 :link{color:var(--b2);}:link:hover{color:var(--b1);}:link:active{color:var(--b0);}:visited{color:var(--p2);}:visited:hover{color:var(--p1);}:visited:active{color:var(--p0);}
-hr{border:1px solid #fff8;border-radius:1px;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);}
+hr{border:1px solid var(--w);border-radius:1px;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);}
 #bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-16;transition:background 1s;background:center/cover;pointer-events:none;user-select:none;-webkit-user-select:none;}
 #bgi{width:100vmin;height:auto;float:right;transform:translateX(25%);filter:drop-shadow(0 0 16px var(--l))blur(4px)opacity(.2);}
 .tac{text-align:center;}
