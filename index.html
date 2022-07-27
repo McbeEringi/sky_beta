@@ -28,15 +28,11 @@
 		.stuff>a::before{content:"";display:block;height:144px;border-radius:25%;background:center/cover var(--img);}
 		.stuff>a:hover,.stuff>a:focus{transform:scale(1.05);filter:brightness(1.2)saturate(1.2)drop-shadow(0 0 8px var(--l));}
 		@media(max-width:512px){.stuff{text-align:center;}}
-		#pwab{width:100%;max-width:256px;height:auto;image-rendering:crisp-edges;image-rendering:pixelated;background:var(--g);border-radius:8px;}
+		#pwab{width:100%;max-width:256px;height:auto;vertical-align:middle;image-rendering:crisp-edges;image-rendering:pixelated;background:var(--g);border-radius:8px;}
 	</style>
 	<div class="flex">
 		<h1>Sky Stuff</h1>
-		<div>
-			<a class="btn" style="--bp:-700% 0;" href="https://twitter.com/McbeEringi" target="_blank">Twitter</a>
-			<a class="btn" style="--bp:-600% 0;" href="https://discord.gg/BJsbqSZX7s" target="_blank">Discord</a>
-			<button class="btn a1" style="--bp:-100% 0;" onclick="gcfg();">General Config</button>
-		</div>
+		<button class="btn a1" style="--bp:-100% 0;" onclick="gcfg();">General Config</button>
 	</div>
 	<hr>
 	<div class="stuff">
@@ -46,6 +42,8 @@
 		<a href="manual.html" style="--img:url(img/icon/manual.svg);">sky_manual</a>
 	</div>
 	<img hidden id="pwab" width="7" height="3" alt="pwa_banner">
+	<a class="btn" style="--bp:-700% 0;" href="https://twitter.com/McbeEringi" target="_blank">Twitter</a>
+	<a class="btn" style="--bp:-600% 0;" href="https://discord.gg/BJsbqSZX7s" target="_blank">Discord</a>
 	<script>
 		if(!('pwa'in urlq)){pwab.hidden=false;pwab.src='img/pwab.png';}
 		texts={...texts,...{
