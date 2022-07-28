@@ -87,12 +87,17 @@
 				const e=alert(`<h2>${texts.cfg}</h2><hr>
 					<h3>${texts.cfg}</h3>
 					<div class="items">
-						<label><div>${texts.rev}<br><input type="range" class="style" min="0" max="1" step="0.0625" value="${q.rev}" oninput="save(q.rev=this.value);"></div></label>
-						<label><div>${texts.del}<br><input type="range" class="style" min="0" max=".2" step="0.0125" value="${q.del}" oninput="[72,79].forEach((x,i)=>trigger(x+q.octave+q.sc,{abi:0,t:actx.currentTime+.05+this.value*i,out:actx.destination}));save(q.del=this.value);"></div></label>
-						<label><div>${texts.kbs}<br><input type="range" class="style" min="64" max="128" step="4" value="${q.kbs}" oninput="save(q.kbs=this.value);"></div></label>
-						<label><div>${texts.kbp}<br><input type="range" class="style" min="0" max="1" step="0.0625" value="${q.kbp}" oninput="save(q.kbp=this.value);"></div></label>
+						<label><div>${texts.rev}<br><input type="range" min="0" max="1" step="0.0625" value="${q.rev}" oninput="save(q.rev=this.value);"></div></label>
+						<label><div>${texts.del}<br><input type="range" min="0" max=".2" step="0.0125" value="${q.del}" oninput="[72,79].forEach((x,i)=>trigger(x+q.octave+q.sc,{abi:0,t:actx.currentTime+.05+this.value*i,out:actx.destination}));save(q.del=this.value);"></div></label>
+						<label><div>${texts.kbs}<br><input type="range" min="64" max="128" step="4" value="${q.kbs}" oninput="save(q.kbs=this.value);"></div></label>
+						<label><div>${texts.kbp}<br><input type="range" min="0" max="1" step="0.0625" value="${q.kbp}" oninput="save(q.kbp=this.value);"></div></label>
 						<label><div>${texts.rcv}<br><input type="checkbox" class="toggle"${q.rcv?' checked':''} onchange="save(q.rcv=+this.checked);"></div></label>
 						<label><button class="btn a1" style="--bp:-100% 0;" onclick="gcfg();"></button>${texts.gcfg}</label>
+					</div>
+					<h3>WIP ${texts.mrn}</h3>
+					<div class="items" style="--items:150px;">
+						<label><div>${texts.mrn}<br><input type="checkbox" class="toggle"${q.mrn<0?'':' checked'} onchange="save(q.mrn=(this.checked?1:-1)*Math.abs(q.mrn));"></div></label>
+						<label><div>${texts.bpm}<br><input type="number" class="input" min="1" value="${Math.abs(q.mrn)}" oninput="this.checkValidity()&&save(q.mrn=(q.mrn<0?-1:1)*this.value);"></div></label>
 					</div>
 					<h3>${texts.ci}</h3><div class="items"></div>`).e.lastElementChild,
 				showci=()=>{
@@ -247,19 +252,19 @@
 				flip:400,pointers:new Map(),
 				k2i:Object.fromEntries(Array.from('QWERTASDFGZXCVB',(x,i)=>[`Key${x}`,[i%5,Math.floor(i/5)]]))
 			},
-			load=()=>({ci:q._ci,instr:q.instr,sc:q.sc,rev:q.rev,del:q.del=.1,kbs:q.kbs=96,kbp:q.kbp=.5,rcv:q.rcv=0}=JSON.parse(localStorage.sky_instr||localStorage.instr_stat||'{}')),
-			save=()=>localStorage.sky_instr=JSON.stringify({ci:q.ci,instr:q.instr,sc:q.sc,rev:q.rev,del:q.del,kbs:q.kbs,kbp:q.kbp,rcv:q.rcv});
+			load=()=>({ci:q._ci,instr:q.instr,sc:q.sc,rev:q.rev,del:q.del=.1,kbs:q.kbs=96,kbp:q.kbp=.5,rcv:q.rcv=0,mrn:q.mrn=-100}=JSON.parse(localStorage.sky_instr||localStorage.instr_stat||'{}')),
+			save=()=>localStorage.sky_instr=JSON.stringify({ci:q.ci,instr:q.instr,sc:q.sc,rev:q.rev,del:q.del,kbs:q.kbs,kbp:q.kbp,rcv:q.rcv,mrn:q.mrn});
 
 		texts={
 			...texts,
 			info:'<h1>sky_instruments</h1><hr>In game sounds<br><small>recorded by @McbeEringi</small><hr><p>[sky_instr] v6 build:2207261<br><a href="https://twitter.com/mcbeeringi">@McbeEringi</a> MITLicense</p>',
-			cfg:'Config',kbs:'Key Size',kbp:'Key Position',rev:'Reverb',del:'Delay',rcv:'Captures Keyboard<br>(experimental)',fbs:'Feedback Sound',
+			cfg:'Config',kbs:'Key Size',kbp:'Key Position',rev:'Reverb',del:'Delay',rcv:'Captures Keyboard<br>(experimental)',fbs:'Feedback Sound',mrn:'Metronome',bpm:'BPM',
 			ci:'Custom Instruments',default:'Default',cnew:'Create New…',cin:'Instrument Name',keysig:'Key Sig Name',afile:'Audio Source',
 			delask:x=>`Are you sure you want to delete<br>"${x}" ?`,
 			nyan:'Nyan',
 			...{
 				ja:{
-					cfg:'設定',kbs:'鍵盤サイズ',kbp:'鍵盤位置',rev:'リバーブ',del:'遅延',rcv:'鍵盤録画の使用(試験的)',fbs:'操作音',
+					cfg:'設定',kbs:'鍵盤サイズ',kbp:'鍵盤位置',rev:'リバーブ',del:'遅延',rcv:'鍵盤録画の使用(試験的)',fbs:'操作音',mrn:'メトロノーム',
 					ci:'カスタム楽器',default:'デフォルト',cnew:'新規作成…',cin:'楽器名',keysig:'音名',afile:'音源',
 					delask:x=>`本当に<br>「${x}」<br>を削除してよろしいですか?`,
 					nyan:'ﾆｬｰﾝ'
