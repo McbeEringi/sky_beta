@@ -72,8 +72,8 @@
 				bs.buffer=ab;[bs,lpf,g0,g1,oac.destination].reduce((a,x)=>a.connect(x));bs.start();oac.startRendering();oac.oncomplete=e=>f(e.renderedBuffer);
 			}),
 			progress=(r,f)=>new Response(new ReadableStream({start:async(c,l=0,x,a=+r.headers.get('content-length'))=>{r=r.body.getReader();while((x=(await r.read()).value)&&!x.done){c.enqueue(x);f(l+=x.byteLength,a);}c.close();}})),
-			trigger=(n=69,{abi=0,t=actx.currentTime,out=deln,sus=false}={})=>{if(!q._instr)return;
-				const abs=actx.createBufferSource(),s=q._instr.d[abi].reduce((a,x)=>{const d=Math.abs(n-x.n);return a[0]<d?a:[d,x];},[Infinity,null])[1];if(!s)return;
+			trigger=(n=69,{abi=0,t=actx.currentTime,out=deln,sus=false}={})=>{if(!q.tmp.instr)return;
+				const abs=actx.createBufferSource(),s=q.tmp.instr.d[abi].reduce((a,x)=>{const d=Math.abs(n-x.n);return a[0]<d?a:[d,x];},[Infinity,null])[1];if(!s)return;
 				abs.playbackRate.value=Math.pow(2,(n-s.n)/12);abs.buffer=s.d;
 				if(q.fret){const r=Math.random()*20;if(r<1){const abs_=actx.createBufferSource();abs_.buffer=q.fret[r*q.fret.length|0];abs_.connect(out);abs_.start(t+.85);}}
 				if(s.ls||s.le){
@@ -158,14 +158,14 @@
 				}return x;});
 				if(re)requestAnimationFrame(()=>draw(true,t));else q.draw=false;
 			},
-			trgatk=e=>{if(!q._instr)return;
+			trgatk=e=>{if(!q.tmp.instr)return;
 				e.preventDefault&&e.preventDefault();const bcr=kc.getBoundingClientRect();
 				(e.changedTouches?[...e.changedTouches]:[e]).forEach(x=>{
 					const p=x.p||[(x.clientX-bcr.x)/bcr.width*q.i2g[0],(x.clientY-bcr.y)/bcr.height*q.i2g[1]],i=Math.floor(p[0])+Math.floor(p[1])*q.i2g[0];
-					q.pointers.set(x.identifier||'mouse',{i,x:x.clientX,y:x.clientY,stop:trigger(69+q.i2n[i]+q.octave+q.sc,{abi:q.i2p[i],sus:true})});q.kb[i]=q._instr.loop?2:1;draw(true);
+					q.pointers.set(x.identifier||'mouse',{i,x:x.clientX,y:x.clientY,stop:trigger(69+q.i2n[i]+q.octave+q.sc,{abi:q.i2p[i],sus:true})});q.kb[i]=q.tmp.instr.loop?2:1;draw(true);
 				});
 			},
-			trgrel=(e,b)=>(e.changedTouches?[...e.changedTouches]:[e]).forEach(x=>(x.id=x.identifier||'mouse',q.pointers.has(x.id))&&(x.tmp=q.pointers.get(x.id))&&(b||Math.hypot(x.tmp.x-x.clientX,x.tmp.y-x.clientY)>16)&&(x.tmp.stop&&x.tmp.stop(),q._instr.loop&&(q.kb[x.tmp.i]=1,draw(true)),q.pointers.delete(x.id))),
+			trgrel=(e,b)=>(e.changedTouches?[...e.changedTouches]:[e]).forEach(x=>(x.id=x.identifier||'mouse',q.pointers.has(x.id))&&(x.tmp=q.pointers.get(x.id))&&(b||Math.hypot(x.tmp.x-x.clientX,x.tmp.y-x.clientY)>16)&&(x.tmp.stop&&x.tmp.stop(),q.tmp.instr.loop&&(q.kb[x.tmp.i]=1,draw(true)),q.pointers.delete(x.id))),
 			kbtex=document.createElement('canvas'),ktctx=kbtex.getContext('2d'),
 			kctx=kc.getContext('2d'),
 			deln=actx.createDelay(.5),revn=actx.createConvolver(),gn0=actx.createGain(),gn1=actx.createGain(),
@@ -217,15 +217,15 @@
 				][x])
 			},
 			q={
-				set ci(w){q._ci=w;q.instr=q.instr;},get ci(){return q._ci;},
+				set ci(w){q.tmp.ci=w;q.instr=q.instr;},get ci(){return q.tmp.ci;},
 				set instr(w){(async()=>{
-					const id=q._instr_=Symbol(),p={
-						_fx:(i,x)=>q._instr_==id&&(p[i]=x,kctx.clearRect(0,0,kc.width,kc.height),kctx.strokeStyle='#aef',kctx.lineWidth=q._kbs/8,
-							kctx.beginPath(),kctx.arc(q._kbs/2,q._kbs/2,q._kbs/4,-.25*2*Math.PI,(Object.values(p).reduce((a,_)=>_[1]?a+(_[0]/_[1])/p._l:a,0)-.25)*2*Math.PI),kctx.stroke()
+					const id=q.tmp.instr_=Symbol(),p={
+						_fx:(i,x)=>q.tmp.instr_==id&&(p[i]=x,kctx.clearRect(0,0,kc.width,kc.height),kctx.strokeStyle='#aef',kctx.lineWidth=q.tmp.kbs/8,
+							kctx.beginPath(),kctx.arc(q.tmp.kbs/2,q.tmp.kbs/2,q.tmp.kbs/4,-.25*2*Math.PI,(Object.values(p).reduce((a,_)=>_[1]?a+(_[0]/_[1])/p._l:a,0)-.25)*2*Math.PI),kctx.stroke()
 						)
 					};
 					setRadio('isel',w=+w||0,isel);drwbtn.setAttribute('style',`--bp:${bp(w)};`);kctx.clearRect(0,0,kc.width,kc.height);
-					w=(idb.name&&!w&&q._ci)?(w=(await e2p(os('instr').get(q._ci))).target.result,{root:w.name,oct:0,d:[w.dat],i:0}):{...d.instr[w]};delete q._instr;scd.classList[w.i==1?'add':'remove']('d');
+					w=(idb.name&&!w&&q.tmp.ci)?(w=(await e2p(os('instr').get(q.tmp.ci))).target.result,{root:w.name,oct:0,d:[w.dat],i:0}):{...d.instr[w]};delete q.tmp.instr;scd.classList[w.i==1?'add':'remove']('d');
 					const lp=w.loop&&Function('return'+await(await fetch('audio/instr/'+w.root+w.loop)).text())()||{};
 					p._l=w.d.reduce((a,x)=>a+Object.keys(x).length,w.fret?w.fret.length:0);
 					w.d=await Promise.all(w.d.map(x=>Promise.all((Array.isArray(x)?x:Object.entries(x)).map(async y=>(
@@ -233,13 +233,13 @@
 						({n:n2nn(y[0]),d:await new Promise((f,r)=>actx.decodeAudioData(y[2],f,r)),...(y[1].match&&lp[y[1].match(/^\w+/)]||{})})
 					)))));
 					w.fret&&(w.fret=await Promise.all(w.fret.map(async x=>(x=await(progress(await fetch('audio/instr/'+w.root+x),(...z)=>p._fx(x,z))).arrayBuffer(),await new Promise((f,r)=>actx.decodeAudioData(x,f,r))))));
-					q._instr_==id&&(q._instr=w,q.kbs=q.kbs,console.log(w));
+					q.tmp.instr_==id&&(q.tmp.instr=w,q.kbs=q.kbs,console.log(w));
 				})().catch(errfx);},get instr(){return +(getRadio('isel',isel)||{value:0}).value;},
-				get octave(){return q._instr?q._instr.oct*12:0;},get fret(){return q._instr&&q._instr.fret;},get i2n(){return d.i2n[q._instr?q._instr.i:0];},get i2g(){return d.i2g[q._instr?q._instr.i:0];},get i2t(){return d.i2t[q._instr?q._instr.i:0];},get i2p(){return d.i2p[q._instr?q._instr.i:0];},
-				set sc (w){q._sc =w=+w||0;scd.children[1].setAttribute('style',`--rot:${w*30+45}deg;`);},get sc(){return q._instr&&q._instr.i==1?0:q._sc;},
-				set rev(w){q._rev=w=+w||0;gn0.gain.value=w;gn1.gain.value=1-w;},get rev(){return q._rev;},
-				set del(w){q._del=w=+w||0;deln.delayTime.value=w;},get del(){return q._del;},
-				set kbs(w){q._kbs=w=+w||64;if(!q._instr)return;const pr=devicePixelRatio;
+				get octave(){return q.tmp.instr?q.tmp.instr.oct*12:0;},get fret(){return q.tmp.instr&&q.tmp.instr.fret;},get i2n(){return d.i2n[q.tmp.instr?q.tmp.instr.i:0];},get i2g(){return d.i2g[q.tmp.instr?q.tmp.instr.i:0];},get i2t(){return d.i2t[q.tmp.instr?q.tmp.instr.i:0];},get i2p(){return d.i2p[q.tmp.instr?q.tmp.instr.i:0];},
+				set sc (w){q.tmp.sc =w=+w||0;scd.children[1].setAttribute('style',`--rot:${w*30+45}deg;`);},get sc(){return q.tmp.instr&&q.tmp.instr.i==1?0:q.tmp.sc;},
+				set rev(w){q.tmp.rev=w=+w||0;gn0.gain.value=w;gn1.gain.value=1-w;},get rev(){return q.tmp.rev;},
+				set del(w){q.tmp.del=w=+w||0;deln.delayTime.value=w;},get del(){return q.tmp.del;},
+				set kbs(w){q.tmp.kbs=w=+w||64;if(!q.tmp.instr)return;const pr=devicePixelRatio;
 					q.kb=new Array(q.i2g.reduce((a,x)=>a*x)).fill(.25);
 					[kc.width,kc.style.maxWidth,kc.height]=q.i2g.flatMap(x=>[x*w*pr,x*w+'px']);kctx.scale(pr,pr);
 					kbtex.width=(kbtex.height=(w*pr))*3;ktctx.scale(pr,pr);
@@ -247,12 +247,21 @@
 					ktctx.fillStyle=getComputedStyle(kc).getPropertyValue('--g');
 					ktctx.fill(new Path2D(new Array(3).fill(`m${hwis+r} ${hwis+arc+-r} ${r}v${ws-r-r+arc+r} ${r}h${ws-r-r+arc+r} ${-r}v${-(ws-r-r)+arc+-r} ${-r}z`).map((x,i)=>`M ${w*i} 0`+x).join('')));
 					(x=>tex.src?addEventListener('texready',()=>(x(),draw()),{once:true}):x())(()=>new Array(3).fill().forEach((_,i)=>ktctx.drawImage(tex,128*i,0,128,128,hwis+w*i,hwis,ws,ws)));draw();q.kbp=q.kbp;
-				},get kbs(){return q._kbs;},
-				set kbp(w){q._kbp=w=+w||0;if(!q._instr)return;kc.style.marginTop=`min(${100/q.i2g[0]}%,${q._kbs*w}px)`;},get kbp(){return q._kbp;},
-				flip:400,pointers:new Map(),
+				},get kbs(){return q.tmp.kbs;},
+				set kbp(w){q.tmp.kbp=w=+w||0;if(!q.tmp.instr)return;kc.style.marginTop=`min(${100/q.i2g[0]}%,${q.tmp.kbs*w}px)`;},get kbp(){return q.tmp.kbp;},
+				set mrn(w){q.tmp.mrn=w=+w||-120;console.log(1,w)
+					const t0=actx.currentTime,dt=60/w,
+						main=()=>{if(!q.mrnab||actx.state!='running')return;
+							let t=actx.currentTime+dt-(actx.currentTime-t0)%dt;
+							while(actx.currentTime+1>t){const abs=actx.createBufferSource();abs.buffer=q.mrnab;abs.connect(actx.destination);abs.start(t);t+=dt;}
+						};
+					q.tmp.mrn_&&clearInterval(q.tmp.mrn_);
+					w>0&&(q.tmp.mrn_=setInterval(main,1000),main());
+				},get mrn(){return q.tmp.mrn;},
+				tmp:{},flip:400,pointers:new Map(),
 				k2i:Object.fromEntries(Array.from('QWERTASDFGZXCVB',(x,i)=>[`Key${x}`,[i%5,Math.floor(i/5)]]))
 			},
-			load=()=>({ci:q._ci,instr:q.instr,sc:q.sc,rev:q.rev,del:q.del=.1,kbs:q.kbs=96,kbp:q.kbp=.5,rcv:q.rcv=0,mrn:q.mrn=-100}=JSON.parse(localStorage.sky_instr||localStorage.instr_stat||'{}')),
+			load=()=>({ci:q.tmp.ci,instr:q.instr,sc:q.sc,rev:q.rev,del:q.del=.1,kbs:q.kbs=96,kbp:q.kbp=.5,rcv:q.rcv=0,mrn:q.mrn=-100}=JSON.parse(localStorage.sky_instr||localStorage.instr_stat||'{}')),
 			save=()=>localStorage.sky_instr=JSON.stringify({ci:q.ci,instr:q.instr,sc:q.sc,rev:q.rev,del:q.del,kbs:q.kbs,kbp:q.kbp,rcv:q.rcv,mrn:q.mrn});
 
 		texts={
@@ -274,8 +283,8 @@
 		['touchstart','mousedown'].forEach(x=>kc.addEventListener(x,trgatk));
 		['touchmove','mousemove'].forEach(x=>addEventListener(x,trgrel,{passive:true}));
 		['touchend','touchcancel','mouseup'].forEach(x=>addEventListener(x,e=>trgrel(e,true),{passive:true}));
-		document.addEventListener('keydown',e=>(!e.repeat&&!'INPUT,TEXTAREA'.includes(document.activeElement.tagName)&&(e.tmp=q.k2i[e.code])&&q._instr&&e.tmp.every((x,i)=>x<q.i2g[i])&&trgatk({p:e.tmp,identifier:e.code})));
-		document.addEventListener('keyup',e=>((e.tmp=q.k2i[e.code])&&q._instr&&e.tmp.every((x,i)=>x<q.i2g[i])&&trgrel({p:e.tmp,identifier:e.code},true)));
+		document.addEventListener('keydown',e=>(!e.repeat&&!'INPUT,TEXTAREA'.includes(document.activeElement.tagName)&&(e.tmp=q.k2i[e.code])&&q.tmp.instr&&e.tmp.every((x,i)=>x<q.i2g[i])&&trgatk({p:e.tmp,identifier:e.code})));
+		document.addEventListener('keyup',e=>((e.tmp=q.k2i[e.code])&&q.tmp.instr&&e.tmp.every((x,i)=>x<q.i2g[i])&&trgrel({p:e.tmp,identifier:e.code},true)));
 		(drwcb.onchange=()=>drwbtn.classList[drwcb.checked?'remove':'add']('a1'))();
 		isel.insertAdjacentHTML('beforeend',d.instr.map((_,i)=>`<input type="radio" name="isel" value="${i}" ${[7,18].includes(i)?'disabled':''} id="isel${i}"><label class="btn a1" style="--bp:${bp(i)};" for="isel${i}"></label>`).join(''));
 		forRadio('isel',x=>x.onchange=()=>(x.checked&&(q.instr=+x.value,save())),isel);
@@ -285,6 +294,7 @@
 
 		[[deln,revn,gn0,actx.destination],[deln,gn1,actx.destination]].forEach(x=>x.reduce((a,y)=>(a.connect(y),y)));
 		irgen().then(x=>revn.buffer=x);bga.g.disconnect(bga.out);bga.g.connect(bga.out=deln);
+		(async x=>{x=await(await fetch('audio/instr/percussion/4.mp3')).arrayBuffer();q.mrnab=await new Promise((f,r)=>actx.decodeAudioData(x,f,r));})().catch(errfx);
 		if(window.MediaRecorder){
 			const recn=actx.createMediaStreamDestination(),vext=MediaRecorder.isTypeSupported('video/mp4')?'mp4':'webm',
 				toWav=x=>{//https://github.com/Jam3/audiobuffer-to-wav
