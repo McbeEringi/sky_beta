@@ -229,8 +229,9 @@
 					const lp=w.loop&&Function('return'+await(await fetch('audio/instr/'+w.root+w.loop)).text())()||{};
 					p._l=w.d.reduce((a,x)=>a+Object.keys(x).length,w.fret?w.fret.length:0);
 					w.d=await Promise.all(w.d.map(x=>Promise.all((Array.isArray(x)?x:Object.entries(x)).map(async y=>(
-						y[2]=typeof y[1]=='string'?await(progress(await fetch('audio/instr/'+w.root+y[1]),(...z)=>p._fx(y[1],z))).arrayBuffer():(y[1].data||await new Response(y[1]).arrayBuffer()),
-						({n:n2nn(y[0]),d:await new Promise((f,r)=>actx.decodeAudioData(y[2],f,r)),...(y[1].match&&lp[y[1].match(/^\w+/)]||{})})
+						y[1].name||(y[1]={name:y[1],data:await(progress(await fetch('audio/instr/'+w.root+y[1]),(...z)=>p._fx(y[1],z))).arrayBuffer()}),
+						y[1].data||(y[1]={name:y[1].name,data:await new Response(y[1]).arrayBuffer()}),
+						({n:n2nn(y[0]),d:await new Promise((f,r)=>actx.decodeAudioData(y[1].data,f,r)),...(lp[y[1].name.match(/^\w+/)]||{})})
 					)))));
 					w.fret&&(w.fret=await Promise.all(w.fret.map(async x=>(x=await(progress(await fetch('audio/instr/'+w.root+x),(...z)=>p._fx(x,z))).arrayBuffer(),await new Promise((f,r)=>actx.decodeAudioData(x,f,r))))));
 					q.tmp.instr_==id&&(q.tmp.instr=w,q.kbs=q.kbs,console.log(w));
@@ -266,7 +267,7 @@
 
 		texts={
 			...texts,
-			info:'<h1>sky_instruments</h1><hr>In game sounds<br><small>recorded by @McbeEringi</small><hr><p>[sky_instr] v6 build:2207280<br><a href="https://twitter.com/mcbeeringi">@McbeEringi</a> MITLicense</p>',
+			info:'<h1>sky_instruments</h1><hr>In game sounds<br><small>recorded by @McbeEringi</small><hr><p>[sky_instr] v6 build:2207290<br><a href="https://twitter.com/mcbeeringi">@McbeEringi</a> MITLicense</p>',
 			cfg:'Config',kbs:'Key Size',kbp:'Key Position',rev:'Reverb',del:'Delay',rcv:'Captures Keyboard<br>(experimental)',fbs:'Feedback Sound',mrn:'Metronome',bpm:'BPM',
 			ci:'Custom Instruments',default:'Default',cnew:'Create New…',cin:'Instrument Name',keysig:'Key Sig Name',afile:'Audio Source',
 			delask:x=>`Are you sure you want to delete<br>"${x}" ?`,
