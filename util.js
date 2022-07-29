@@ -71,7 +71,7 @@ const urlq=Object.fromEntries(location.search.slice(1).split('&').filter(y=>y).m
 					</button><button class="btn" style="--bp:-100% -100%;" onclick="e2p(os().delete('bga')).then(()=>(~gq.bga||bgaset())).catch(errfx);"></button>
 				</div></div>
 				<label><div>${texts.gain}<br><input type="range" step=".0625" max="1" value="${gq.bgagain}" oninput="gsave(gq.bgagain=bga.g.gain.value=+this.value);"></div></label>
-				<label><div>${texts.xfade}<br><input type="number" min="0" class="input" value="${gq.bgafade}" oninput="this.checkValidity()&&gsave(gq.bgafade=+this.value);" onchange="this.checkValidity()&&bgaset();"></div></label>
+				<label><div>${texts.xfade}<br><input type="number" min="0" class="input" value="${gq.bgafade}" oninput="this.value&&this.checkValidity()&&gsave(gq.bgafade=+this.value);" onchange="this.value&&this.checkValidity()&&bgaset();"></div></label>
 			</div>
 			<h3>${texts.caches}</h3>
 			<button class="btn" style="--bp:0 -500%;" onclick="caches.keys().then(alert);">

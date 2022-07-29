@@ -94,10 +94,11 @@
 						<label><div>${texts.rcv}<br><input type="checkbox" class="toggle"${q.rcv?' checked':''} onchange="save(q.rcv=+this.checked);"></div></label>
 						<label><button class="btn a1" style="--bp:-100% 0;" onclick="gcfg();"></button>${texts.gcfg}</label>
 					</div>
-					<h3>WIP ${texts.mrn}</h3>
+					<h3>${texts.mrn}</h3>
 					<div class="items" style="--items:150px;">
 						<label><div>${texts.mrn}<br><input type="checkbox" class="toggle"${q.mrn<0?'':' checked'} onchange="save(q.mrn=(this.checked?1:-1)*Math.abs(q.mrn));"></div></label>
-						<label><div>${texts.bpm}<br><input type="number" class="input" min="1" value="${Math.abs(q.mrn)}" oninput="this.checkValidity()&&save(q.mrn=(q.mrn<0?-1:1)*this.value);"></div></label>
+						<label><div>${texts.bpm}<br><input type="number" class="input" min="1" value="${Math.abs(q.mrn)}" oninput="this.value&&this.checkValidity()&&save(q.mrn=(q.mrn<0?-1:1)*this.value);"
+							onpointerdown="this.dataset.pt&&(this.value=(60000/(performance.now()-this.dataset.pt)).toFixed(0),this.oninput());this.dataset.pt=performance.now();" onblur="delete this.dataset.pt"></div></label>
 					</div>
 					<h3>${texts.ci}</h3><div class="items"></div>`).e.lastElementChild,
 				showci=()=>{
@@ -229,8 +230,7 @@
 					const lp=w.loop&&Function('return'+await(await fetch('audio/instr/'+w.root+w.loop)).text())()||{};
 					p._l=w.d.reduce((a,x)=>a+Object.keys(x).length,w.fret?w.fret.length:0);
 					w.d=await Promise.all(w.d.map(x=>Promise.all((Array.isArray(x)?x:Object.entries(x)).map(async y=>(
-						y[1].name||(y[1]={name:y[1],data:await(progress(await fetch('audio/instr/'+w.root+y[1]),(...z)=>p._fx(y[1],z))).arrayBuffer()}),
-						y[1].data||(y[1]={name:y[1].name,data:await new Response(y[1]).arrayBuffer()}),
+						y[1].name||(y[1]={name:y[1],data:await(progress(await fetch('audio/instr/'+w.root+y[1]),(...z)=>p._fx(y[1],z))).arrayBuffer()}),y[1].data||(y[1]={name:y[1].name,data:await new Response(y[1]).arrayBuffer()}),
 						({n:n2nn(y[0]),d:await new Promise((f,r)=>actx.decodeAudioData(y[1].data,f,r)),...(lp[y[1].name.match(/^\w+/)]||{})})
 					)))));
 					w.fret&&(w.fret=await Promise.all(w.fret.map(async x=>(x=await(progress(await fetch('audio/instr/'+w.root+x),(...z)=>p._fx(x,z))).arrayBuffer(),await new Promise((f,r)=>actx.decodeAudioData(x,f,r))))));
@@ -250,14 +250,11 @@
 					(x=>tex.src?addEventListener('texready',()=>(x(),draw()),{once:true}):x())(()=>new Array(3).fill().forEach((_,i)=>ktctx.drawImage(tex,128*i,0,128,128,hwis+w*i,hwis,ws,ws)));draw();q.kbp=q.kbp;
 				},get kbs(){return q.tmp.kbs;},
 				set kbp(w){q.tmp.kbp=w=+w||0;if(!q.tmp.instr)return;kc.style.marginTop=`min(${100/q.i2g[0]}%,${q.tmp.kbs*w}px)`;},get kbp(){return q.tmp.kbp;},
-				set mrn(w){q.tmp.mrn=w=+w||-120;console.log(1,w)
+				set mrn(w){q.tmp.mrn=w=+w||-120;let i=0;
 					const t0=actx.currentTime,dt=60/w,
-						main=()=>{if(!q.mrnab||actx.state!='running')return;
-							let t=actx.currentTime+dt-(actx.currentTime-t0)%dt;
-							while(actx.currentTime+1>t){const abs=actx.createBufferSource();abs.buffer=q.mrnab;abs.connect(actx.destination);abs.start(t);t+=dt;}
-						};
+						main=()=>{if(!q.mrnab||actx.state!='running')return;while(1){const t=t0+i*dt,abs=actx.createBufferSource();if(actx.currentTime+1<t)return;actx.currentTime<t&&(abs.buffer=q.mrnab,abs.connect(actx.destination),abs.start(t));i++;}};
 					q.tmp.mrn_&&clearInterval(q.tmp.mrn_);
-					w>0&&(q.tmp.mrn_=setInterval(main,1000),main());
+					w>0&&(q.tmp.mrn_=setInterval(main,500),main());
 				},get mrn(){return q.tmp.mrn;},
 				tmp:{},flip:400,pointers:new Map(),
 				k2i:Object.fromEntries(Array.from('QWERTASDFGZXCVB',(x,i)=>[`Key${x}`,[i%5,Math.floor(i/5)]]))
@@ -267,7 +264,7 @@
 
 		texts={
 			...texts,
-			info:'<h1>sky_instruments</h1><hr>In game sounds<br><small>recorded by @McbeEringi</small><hr><p>[sky_instr] v6 build:2207290<br><a href="https://twitter.com/mcbeeringi">@McbeEringi</a> MITLicense</p>',
+			info:'<h1>sky_instruments</h1><hr>In game sounds<br><small>recorded by @McbeEringi</small><hr><p>[sky_instr] v6 build:2207291<br><a href="https://twitter.com/mcbeeringi">@McbeEringi</a> MITLicense</p>',
 			cfg:'Config',kbs:'Key Size',kbp:'Key Position',rev:'Reverb',del:'Delay',rcv:'Captures Keyboard<br>(experimental)',fbs:'Feedback Sound',mrn:'Metronome',bpm:'BPM',
 			ci:'Custom Instruments',default:'Default',cnew:'Create New…',cin:'Instrument Name',keysig:'Key Sig Name',afile:'Audio Source',
 			delask:x=>`Are you sure you want to delete<br>"${x}" ?`,
