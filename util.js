@@ -5,12 +5,12 @@ let idb=indexedDB.open('sky_idb',4),
 	tex=new Image(),
 	texts={
 		loading:'<p class="btn a1 spin">loading</p>',ename:'Error',emsg:'Something went wrong :(',
-		idberr:'Failed to access indexedDB.<br>The app may not work properly.<br>Make sure your browser is not in private mode.',nodata:'Data not found',caches:'Caches',
+		idberr:'Failed to access indexedDB.<br>The app may not work properly.<br>Make sure your browser is not in private mode.',nf:'Not Found',caches:'Offline Caches',check:'Check',frcupd:'Fource Update',
 		back2top:'Back to Top',gcfg:'General Config',bgi:'Background Image',bgil:['Dynamic','Photo','CSS Code'],bga:'Background Audio',bgal:['Hotspring','Home','Forest','Vault'],custom:'Custom',gain:'Volume',xfade:'Crossfade(sec)',
 		...{
 			ja:{
 				ename:'エラー',emsg:'問題が発生しました Σ(・ω・ﾉ)ﾉ',
-				idberr:'indexedDBのアクセスに失敗しました。<br>アプリが正常に動作しない可能性があります。<br>ブラウザがプライベートモードでないことを確認してください。',nodata:'データがありません!',caches:'キャッシュ',
+				idberr:'indexedDBのアクセスに失敗しました。<br>アプリが正常に動作しない可能性があります。<br>ブラウザがプライベートモードでないことを確認してください。',nf:'見つかりません',caches:'オフラインキャッシュ',check:'確認',frcupd:'強制更新',
 				back2top:'トップに戻る',gcfg:'一般設定',bgi:'背景画像',bgil:['ダイナミック','画像','CSSコード'],bga:'背景音',bgal:['温泉','ホーム','雨林','書庫'],custom:'カスタム',gain:'音量',xfade:'クロスフェード(秒)'
 			}
 		}[navigator.language.slice(0,2)]
@@ -51,7 +51,11 @@ const urlq=Object.fromEntries(location.search.slice(1).split('&').filter(y=>y).m
 		bga.g.gain.value=gq.bgagain;bga.abs.connect(bga.g);
 	})().catch(errfx),
 	gcfg=()=>{
-		const e=alert(`<h2>${texts.gcfg}</h2><hr>
+		const e=alert(`<div class="flex">
+				<h2>${texts.gcfg}</h2>
+				<a class="btn" style="--bp:-400% -200%;" href="${root}manual.html">manual</a>
+			</div>
+			<hr>
 			<h3>${texts.bgi}</h3>
 			<div class="items" style="--items:170px;">
 				<label><input type="radio" name="bgir" value="0"><p class="btn" style="--bp:0 -100%;"></p>${texts.bgil[0]}</label>
@@ -74,8 +78,10 @@ const urlq=Object.fromEntries(location.search.slice(1).split('&').filter(y=>y).m
 				<label><div>${texts.xfade}<br><input type="number" min="0" class="input" value="${gq.bgafade}" oninput="this.value&&this.checkValidity()&&gsave(gq.bgafade=+this.value);" onchange="this.value&&this.checkValidity()&&bgaset();"></div></label>
 			</div>
 			<h3>${texts.caches}</h3>
-			<button class="btn" style="--bp:0 -500%;" onclick="caches.keys().then(alert);">
-			</button><button class="btn" style="--bp:-200% -500%;" onclick="caches.keys().then(x=>Promise.all(x.map(y=>caches.delete(y)))).then(x=>(x.every(y=>y)&&location.reload(true)));"></button>
+			<div class="items" style="--items:150px;">
+				<label><button class="btn" style="--bp:0 -500%;" onclick="caches.keys().then(x=>alert((''+x)||texts.nf));">check</button>${texts.check}</label>
+				<label><button class="btn" style="--bp:-200% -500%;" onclick="caches.keys().then(x=>Promise.all(x.map(y=>caches.delete(y)))).then(x=>(x.every(y=>y)&&location.reload(true)));">update</button>${texts.frcupd}</label>
+			</div>
 		`).e;
 		setRadio('bgir',gq.bgi,e);forRadio('bgir',x=>x.onchange=()=>(gsave(gq.bgi=+x.value),bgiset()));
 		e.querySelector('.bgicode').onclick=()=>alert(`<a href="https://developer.mozilla.org/docs/Web/CSS/gradient">background-image</a>:<br><textarea class="input" rows="8" cols="40" oninput="(gsave(gq.bgicode=this.value),gq.bgi==2&&bgiset());">${gq.bgicode}</textarea>`).e.querySelector('textarea').focus();
@@ -140,9 +146,9 @@ hr{border:1px solid var(--w);border-radius:1px;backdrop-filter:blur(2px);-webkit
 
 .items{display:grid;max-width:100%;width:100vw;grid-template-columns:repeat(auto-fill,minmax(min(var(--items),100%),1fr));grid-auto-rows:1fr;grid-gap:8px;}
 .items::after{content:"";grid-column:1/-1;}
-.items input[type=radio]{position:absolute;opacity:0;pointer-event:none;}
+.items input[type=radio]{position:absolute;opacity:0;pointer-events:none;}
 .items *{max-width:100%;margin:0;overflow:hidden;text-overflow:ellipsis;overflow-wrap:normal;word-break:keep-all;}
-.items>*{box-sizing:border-box;padding:4px;display:flex;align-items:center;}
+.items>*{box-sizing:border-box;padding:4px;display:flex;align-items:center;position:relative;}
 .items>* .btn{--btn:40px;max-width:initial;}
 .items>*>.btn{--btn:56px;flex-shrink:0;align-self:start;}
 
