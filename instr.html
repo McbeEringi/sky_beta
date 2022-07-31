@@ -72,23 +72,23 @@
 				bs.buffer=ab;[bs,lpf,g0,g1,oac.destination].reduce((a,x)=>a.connect(x));bs.start();oac.startRendering();oac.oncomplete=e=>f(e.renderedBuffer);
 			}),
 			progress=(r,f)=>new Response(new ReadableStream({start:async(c,l=0,x,a=+r.headers.get('content-length'))=>{r=r.body.getReader();while((x=(await r.read()).value)&&!x.done){c.enqueue(x);f(l+=x.byteLength,a);}c.close();}})),
-			trigger=(n=69,{abi=0,t=actx.currentTime,out=deln,sus=false}={})=>{if(!q.tmp.instr)return;
+			trigger=(n=69,{abi=0,t=+q.del+actx.currentTime,out=[revn,gn1],sus=false}={})=>{if(!q.tmp.instr)return;
 				const abs=actx.createBufferSource(),s=q.tmp.instr.d[abi].reduce((a,x)=>{const d=Math.abs(n-x.n);return a[0]<d?a:[d,x];},[Infinity,null])[1];if(!s)return;
 				abs.playbackRate.value=Math.pow(2,(n-s.n)/12);abs.buffer=s.d;
-				if(q.fret){const r=Math.random()*20;if(r<1){const abs_=actx.createBufferSource();abs_.buffer=q.fret[r*q.fret.length|0];abs_.connect(out);abs_.start(t+.85);}}
+				if(q.fret){const r=Math.random()*20;if(r<1){const abs_=actx.createBufferSource();abs_.buffer=q.fret[r*q.fret.length|0];out.forEach(x=>abs_.connect(x));abs_.start(t+.85);}}
 				if(s.ls||s.le){
 					const g=actx.createGain(),stop=({t=actx.currentTime,d=.8}={})=>(g.gain.setValueAtTime(1,t),g.gain.exponentialRampToValueAtTime(.05,(t+=d)-.05),g.gain.linearRampToValueAtTime(0,t),abs.stop(t));
 					abs.loop=true;abs.loopStart=s.ls||0;abs.loopEnd=s.le||s.d.duration;
-					(abs.connect(g),g.connect(out),abs.start(t));
+					(abs.connect(g),out.forEach(x=>g.connect(x)),abs.start(t));
 					if(sus)return stop;else stop({t:actx.currentTime+.2});
-				}else{abs.connect(out);abs.start(t);}
+				}else{out.forEach(x=>abs.connect(x));abs.start(t);}
 			},
 			cfg=()=>{
 				const e=alert(`<h2>${texts.cfg}</h2><hr>
 					<h3>${texts.cfg}</h3>
 					<div class="items">
 						<label><div>${texts.rev}<br><input type="range" min="0" max="1" step="0.0625" value="${q.rev}" oninput="save(q.rev=this.value);"></div></label>
-						<label><div>${texts.del}<br><input type="range" min="0" max=".2" step="0.0125" value="${q.del}" oninput="[72,79].forEach((x,i)=>trigger(x+q.octave+q.sc,{abi:0,t:actx.currentTime+.05+this.value*i,out:actx.destination}));save(q.del=this.value);"></div></label>
+						<label><div>${texts.del}<br><input type="range" min="0" max=".2" step="0.0125" value="${q.del}" oninput="[72,79].forEach((x,i)=>trigger(x+q.octave+q.sc,{abi:0,t:actx.currentTime+.05+this.value*i,out:[actx.destination]}));save(q.del=this.value);"></div></label>
 						<label><div>${texts.kbs}<br><input type="range" min="64" max="128" step="4" value="${q.kbs}" oninput="save(q.kbs=this.value);"></div></label>
 						<label><div>${texts.kbp}<br><input type="range" min="0" max="1" step="0.0625" value="${q.kbp}" oninput="save(q.kbp=this.value);"></div></label>
 						<label><div>${texts.rcv}<br><input type="checkbox" class="toggle"${q.rcv?' checked':''} onchange="save(q.rcv=+this.checked);"></div></label>
@@ -169,7 +169,7 @@
 			trgrel=(e,b)=>(e.changedTouches?[...e.changedTouches]:[e]).forEach(x=>(x.id=x.identifier||'mouse',q.pointers.has(x.id))&&(x.tmp=q.pointers.get(x.id))&&(b||Math.hypot(x.tmp.x-x.clientX,x.tmp.y-x.clientY)>16)&&(x.tmp.stop&&x.tmp.stop(),q.tmp.instr.loop&&(q.kb[x.tmp.i]=1,draw(true)),q.pointers.delete(x.id))),
 			kbtex=document.createElement('canvas'),ktctx=kbtex.getContext('2d'),
 			kctx=kc.getContext('2d'),
-			deln=actx.createDelay(.5),revn=actx.createConvolver(),gn0=actx.createGain(),gn1=actx.createGain(),
+			revn=actx.createConvolver(),gn0=actx.createGain(),gn1=actx.createGain(),
 			d={
 				instr:[
 					{root:'musicbox/',oct:1,d:[stdli(4,6,{a3:'a3.mp3',ds7:'ds7.mp3'})],i:0},
@@ -239,7 +239,6 @@
 				get octave(){return q.tmp.instr?q.tmp.instr.oct*12:0;},get fret(){return q.tmp.instr&&q.tmp.instr.fret;},get i2n(){return d.i2n[q.tmp.instr?q.tmp.instr.i:0];},get i2g(){return d.i2g[q.tmp.instr?q.tmp.instr.i:0];},get i2t(){return d.i2t[q.tmp.instr?q.tmp.instr.i:0];},get i2p(){return d.i2p[q.tmp.instr?q.tmp.instr.i:0];},
 				set sc (w){q.tmp.sc =w=+w||0;scd.children[1].setAttribute('style',`--rot:${w*30+45}deg;`);},get sc(){return q.tmp.instr&&q.tmp.instr.i==1?0:q.tmp.sc;},
 				set rev(w){q.tmp.rev=w=+w||0;gn0.gain.value=w;gn1.gain.value=1-w;},get rev(){return q.tmp.rev;},
-				set del(w){q.tmp.del=w=+w||0;deln.delayTime.value=w;},get del(){return q.tmp.del;},
 				set kbs(w){q.tmp.kbs=w=+w||64;if(!q.tmp.instr)return;const pr=devicePixelRatio;
 					q.kb=new Array(q.i2g.reduce((a,x)=>a*x)).fill(.25);
 					[kc.width,kc.style.maxWidth,kc.height]=q.i2g.flatMap(x=>[x*w*pr,x*w+'px']);kctx.scale(pr,pr);
@@ -264,7 +263,7 @@
 
 		texts={
 			...texts,
-			info:'<h1>sky_instruments</h1><hr>In game sounds<br><small>recorded by @McbeEringi</small><hr><p>[sky_instr] v6 build:2207292<br><a href="https://twitter.com/mcbeeringi">@McbeEringi</a> MITLicense</p>',
+			info:'<h1>sky_instruments</h1><hr>In game sounds<br><small>recorded by @McbeEringi</small><hr><p>[sky_instr] v6 build:2207310<br><a href="https://twitter.com/mcbeeringi">@McbeEringi</a> MITLicense</p>',
 			cfg:'Config',kbs:'Key Size',kbp:'Key Position',rev:'Reverb',del:'Delay',rcv:'Captures Keyboard<br>(experimental)',fbs:'Feedback Sound',mrn:'Metronome',bpm:'BPM',
 			ci:'Custom Instruments',default:'Default',cnew:'Create New…',cin:'Instrument Name',keysig:'Key Sig Name',afile:'Audio Source',
 			delask:x=>`Are you sure you want to delete<br>"${x}" ?`,
@@ -286,12 +285,12 @@
 		(drwcb.onchange=()=>drwbtn.classList[drwcb.checked?'remove':'add']('a1'))();
 		isel.insertAdjacentHTML('beforeend',d.instr.map((_,i)=>`<input type="radio" name="isel" value="${i}" ${[7,18].includes(i)?'disabled':''} id="isel${i}"><label class="btn a1" style="--bp:${bp(i)};" for="isel${i}"></label>`).join(''));
 		forRadio('isel',x=>x.onchange=()=>(x.checked&&(q.instr=+x.value,save())),isel);
-		[...scd.children].forEach((x,i)=>x.onclick=()=>(q.sc=[q.sc-1,0,q.sc+1][i],[72,76,79].forEach((y,j)=>trigger(y+q.octave+q.sc,{abi:0,t:actx.currentTime+(j+1)*.05,out:actx.destination})),save()));
+		[...scd.children].forEach((x,i)=>x.onclick=()=>(q.sc=[q.sc-1,0,q.sc+1][i],[72,76,79].forEach((y,j)=>trigger(y+q.octave+q.sc,{abi:0,t:actx.currentTime+(j+1)*.05,out:[actx.destination]})),save()));
 		cfgbtn.onclick=cfg;
 		infobtn.onclick=()=>alert(texts.info);
 
-		[[deln,revn,gn0,actx.destination],[deln,gn1,actx.destination]].forEach(x=>x.reduce((a,y)=>(a.connect(y),y)));
-		irgen().then(x=>revn.buffer=x);bga.g.disconnect(bga.out);bga.g.connect(bga.out=deln);
+		[[revn,gn0,actx.destination],[gn1,actx.destination]].forEach(x=>x.reduce((a,y)=>(a.connect(y),y)));
+		irgen().then(x=>revn.buffer=x);bga.g.disconnect(bga.out);(bga.out=[revn,gn1]).forEach(x=>bga.g.connect(x));
 		(async x=>{x=await(await fetch('audio/instr/percussion/4.mp3')).arrayBuffer();q.mrnab=await new Promise((f,r)=>actx.decodeAudioData(x,f,r));})().catch(errfx);
 		if(window.MediaRecorder){
 			const recn=actx.createMediaStreamDestination(),vext=MediaRecorder.isTypeSupported('video/mp4')?'mp4':'webm',
