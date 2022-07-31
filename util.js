@@ -181,6 +181,14 @@ tex.onload=()=>{
 	c.getContext('2d').drawImage(tex,0,0,c.width,c.height);tex=c;dispatchEvent(new Event('texready'));
 	document.body.insertAdjacentHTML('beforeend',`<style>.btn::before{background-image:url(${c.toDataURL()});}</style>`);
 };tex.src=root+'img/atlas0.svg';
+requestAnimationFrame(w=>{const img=new Image();img.onload=()=>{
+	w={c:document.createElement('canvas'),w:screen.width*devicePixelRatio,h:screen.height*devicePixelRatio};
+	const draw=([cw,ch])=>{
+		w.c.width=cw;w.c.height=ch;const ctx=w.c.getContext('2d'),{width:iw,height:ih}=img,s=Math.min(cw/iw,ch/ih);
+		ctx.drawImage(img,0,0,1,1,0,0,cw,ch);ctx.drawImage(img,0,0,iw,ih,(cw-iw*s)/2,(ch-ih*s)/2,iw*s,ih*s);return w.c.toDataURL();
+	};
+	document.head.insertAdjacentHTML('beforeend',[[draw([w.w,w.h]),'portrait'],[draw([w.h,w.w]),'landscape']].map(x=>`<link rel="apple-touch-startup-image" href="${x[0]}" media="(orientation:${x[1]})">`).join(''));
+};img.src=root+'img/teaser.png';});
 {const bg_=()=>gq.bgi==0&&bgiset();setTimeout(()=>{bg_();setInterval(bg_,36e5);},36e5-(Date.now()%36e5));bgiset();}
 ['touchstart','mousedown'].forEach(x=>addEventListener(x,()=>(actx.state=='suspended'&&actx.resume())));bga.out.forEach(x=>bga.g.connect(x));bgaset();
 if('pwa'in urlq&&document.referrer)addEventListener('DOMContentLoaded',()=>document.body.insertAdjacentHTML('beforeend','<button class="btn" style="--bp:-400% -100%;--btn:48px;position:fixed;bottom:0;left:0;" onclick="history.back();">back</button>'),{once:true});
