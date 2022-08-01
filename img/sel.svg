@@ -1,5 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 96 96">
-	<desc>selected button</desc>
-	<path d="M0,0m4,32v32a28,28,0,0,0,28,28h32a28,28,0,0,0,28,-28v-32a28,28,0,0,0,-28,-28h-32a28,28,0,0,0,-28,28z" style="fill:none;stroke:#feac;stroke-width:2;"/>
-	<path d="M0,0m48,83l16,8h-32" style="fill:#feac;stroke:none;"/>
-</svg>
