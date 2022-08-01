@@ -111,7 +111,7 @@
 							<label><input type="radio" name="cisel" value="-1"><p class="btn" style="--bp:0 -300%;"></p>${texts.default}</label>
 							<label><button class="btn ciedt" style="--bp:-200% -100%;"></button>${texts.cnew}</label>
 							`);e.offsetWidth;
-							setRadio('cisel',Object.fromEntries([...w.map(Array),['',-1]])[q.ci||''],e);forRadio('cisel',x=>x.onchange=()=>(x.checked&&(q.ci=~x.value?w[+x.value]:'',save())),e);
+							setRadio('cisel',((x=-1)=>x)(Object.fromEntries([...w.map(Array)])[q.ci]),e);forRadio('cisel',x=>x.onchange=()=>(x.checked&&(q.ci=~x.value?w[+x.value]:'',save())),e);
 							const edtfx=async i=>{
 								let abs;
 								const play=async (x,p)=>{p.then(()=>p=null);abs&&(abs.onended=null,abs.stop());const s=actx.createBufferSource(),y=x.data?x.data.slice(0):await new Response(x).arrayBuffer();s.buffer=await new Promise((f,r)=>actx.decodeAudioData(y,f,r));p&&(s.connect(actx.destination),s.onended=()=>abs=null,s.start(),abs=s);},
@@ -263,7 +263,7 @@
 
 		texts={
 			...texts,
-			info:'<h1>sky_instruments</h1><hr>In game sounds<br><small>recorded by @McbeEringi</small><hr><p>[sky_instr] v6 build:2207310<br><a href="https://twitter.com/mcbeeringi">@McbeEringi</a> MITLicense</p>',
+			info:'<h1>sky_instruments</h1><hr>In game sounds<br><small>recorded by @McbeEringi</small><hr><p>[sky_instr] v6 build:2208010<br><a href="https://twitter.com/mcbeeringi">@McbeEringi</a> MITLicense</p>',
 			cfg:'Config',kbs:'Key Size',kbp:'Key Position',rev:'Reverb',del:'Delay',rcv:'Captures Keyboard<br>(experimental)',fbs:'Feedback Sound',mrn:'Metronome',bpm:'BPM',
 			ci:'Custom Instruments',default:'Default',cnew:'Create New…',cin:'Instrument Name',keysig:'Key Sig Name',afile:'Audio Source',
 			delask:x=>`Are you sure you want to delete<br>"${x}" ?`,
